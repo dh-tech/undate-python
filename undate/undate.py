@@ -1,4 +1,5 @@
-from datetime import date
+import datetime
+from calendar import monthrange
 
 class Undate:
     """Simple object for representing uncertain or partially unknown dates"""
@@ -15,10 +16,15 @@ class Undate:
     }
 
     def __init__(self, year=None, month=None, day=None):
-        # TODO: for unknowns, assume smallest possible value for earliest and
+        # for unknowns, assume smallest possible value for earliest and
         # largest valid for latest
-        self.earliest = date(year or self._default, month or self._default, day or self._default)
-        self.latest = self.earliest  # TODO: needs to be a copy, not same object
+        self.earliest = datetime.date(year or datetime.MINYEAR, month or 1, day or 1)
+        # if day is unknown but we have year and month, calculate max day
+        if day is None and year and month:
+            _, maxday = monthrange(year, month)
+        else:
+            maxday = 31  # ???
+        self.latest = datetime.date(year or datetime.MAXYEAR, month or 12, day or maxday)
         # keep track of which values are known
         self.known_values = {
             "year": year is not None,
