@@ -29,7 +29,7 @@ jobs:
         if: steps.python-cache.outputs.cache-hit != 'true'
       - name: Run black
         run: |
-          black src --check --diff
+          black undate --check --diff
       - name: Run unit tests
         run: |
           python -m pytest
