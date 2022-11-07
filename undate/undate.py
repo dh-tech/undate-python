@@ -2,13 +2,13 @@ import datetime
 from calendar import monthrange
 
 class Undate:
-    """Simple object for representing uncertain or partially unknown dates"""
+    """Simple object for representing uncertain, fuzzy or partially unknown dates"""
 
     earliest = None
     latest = None
     label = None
 
-    #: ISO format based on date precision
+    #: datetime strftime format for known part of date
     iso_format = {
         "year": "%Y",
         "month": "%m",
@@ -47,12 +47,13 @@ class Undate:
 
 
 class UndateInterval:
-    # date range between two undates
+    # date range between two uncertain dates
 
-    def __init__(self, earliest, latest):
+    def __init__(self, earliest=None, latest=None):
         # for now, assume takes two undate objects
         self.earliest = earliest
         self.latest = latest
 
     def __str__(self):
-        return "%s/%s" % (self.earliest, self.latest)
+        # using EDTF syntax for open ranges
+        return "%s/%s" % (self.earliest or "..", self.latest or "")
