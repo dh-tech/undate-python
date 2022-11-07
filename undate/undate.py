@@ -1,6 +1,7 @@
 import datetime
 from calendar import monthrange
 
+
 class Undate:
     """Simple object for representing uncertain, fuzzy or partially unknown dates"""
 
@@ -24,12 +25,14 @@ class Undate:
             _, maxday = monthrange(year, month)
         else:
             maxday = 31  # ???
-        self.latest = datetime.date(year or datetime.MAXYEAR, month or 12, day or maxday)
+        self.latest = datetime.date(
+            year or datetime.MAXYEAR, month or 12, day or maxday
+        )
         # keep track of which values are known
         self.known_values = {
             "year": year is not None,
             "month": month is not None,
-            "day": day is not None
+            "day": day is not None,
         }
 
     def __str__(self):
