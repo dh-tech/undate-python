@@ -17,6 +17,10 @@ class Undate:
     }
 
     def __init__(self, year=None, month=None, day=None):
+        # TODO: support initializing for unknown values in each of these
+        # e.g., maybe values could be string or int; if string with
+        # unknown digits, calculate min/max for unknowns
+
         # for unknowns, assume smallest possible value for earliest and
         # largest valid for latest
         self.earliest = datetime.date(year or datetime.MINYEAR, month or 1, day or 1)
@@ -48,6 +52,18 @@ class Undate:
                 date_parts.append("-")
         return "-".join(date_parts)
 
+    def __repr__(self):
+        return "<Undate %s>" % self
+
+    def __eq__(self, other):
+        # question: should label be taken into account when checking equality?
+        # for now, assuming label differences don't matter for comparing dates
+        return (
+            self.earliest == other.earliest
+            and self.latest == other.latest
+            and self.known_values == other.known_values
+        )
+
 
 class UndateInterval:
     # date range between two uncertain dates
@@ -60,3 +76,7 @@ class UndateInterval:
     def __str__(self):
         # using EDTF syntax for open ranges
         return "%s/%s" % (self.earliest or "..", self.latest or "")
+
+    def __eq__(self, other):
+        # consider interval equal if both dates are equal
+        return self.earliest == other.earliest and self.latest == other.latest

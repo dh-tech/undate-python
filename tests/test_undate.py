@@ -1,3 +1,5 @@
+import pytest
+
 from undate.undate import Undate, UndateInterval
 
 
@@ -6,6 +8,12 @@ def test_single_date():
     assert str(Undate(2022, 11)) == "2022-11"
     assert str(Undate(2022)) == "2022"
     assert str(Undate(month=11, day=7)) == "--11-07"
+
+
+def test_invalid_date():
+    # invalid month should raise an error
+    with pytest.raises(ValueError):
+        Undate(1990, 22)
 
 
 def test_range():
