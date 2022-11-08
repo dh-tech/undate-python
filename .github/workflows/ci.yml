@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - "**"
+    paths:
+      - 'undate/**'
+      - 'tests/**'
+  pull_request:
+
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+          cache: 'pip'
+          cache-dependency-path: '**/requirements-dev.txt'
+      - name: Install deps using Pip
+        run: pip install -r requirements-dev.txt
+        if: steps.python-cache.outputs.cache-hit != 'true'
+      - name: Run black
+        run: |
+          black undate --check --diff
+      - name: Run unit tests
+        run: |
+          python -m pytest
