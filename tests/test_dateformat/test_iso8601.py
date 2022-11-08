@@ -9,6 +9,13 @@ def test_parse_singledate():
     # missing year but month/day known
     assert ISO8601DateFormat().parse("--05-03") == Undate(month=5, day=3)
 
+def test_parse_singledate_unequal():
+    assert ISO8601DateFormat().parse("2002") != Undate(2003)
+    assert ISO8601DateFormat().parse("1991-05") != Undate(1991, 6)
+    assert ISO8601DateFormat().parse("1991-05-03") != Undate(1991, 5, 4)
+    # missing year but month/day known
+    assert ISO8601DateFormat().parse("--05-03") != Undate(month=5, day=4)
+
 
 def test_parse_invalid():
     # allow but warn?
