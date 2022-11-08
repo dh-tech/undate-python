@@ -22,7 +22,7 @@ def test_range():
 
 def test_open_range():
     # 900 -
-    assert str(UndateInterval(Undate(900))) == "0900/"
+    assert str(UndateInterval(Undate(900))) == "900/"
     # - 1900
     assert str(UndateInterval(latest=Undate(1900))) == "../1900"
     # - 1900-12
