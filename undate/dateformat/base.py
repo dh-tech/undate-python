@@ -17,4 +17,4 @@ class BaseDateFormat:
 
     @classmethod
     def available_formatters(cls):
-        return { c.name: c for c in cls.__subclasses__()}
+        return {c.name: c for c in cls.__subclasses__()}

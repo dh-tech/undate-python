@@ -7,13 +7,12 @@ from undate.dateformat.base import BaseDateFormat
 class Undate:
     """Simple object for representing uncertain, fuzzy or partially unknown dates"""
 
-    DEFAULT_FORMAT = 'ISO8601'
+    DEFAULT_FORMAT = "ISO8601"
 
     earliest = None
     latest = None
     label = None
     formatter = None
-
 
     def __init__(self, year=None, month=None, day=None, formatter=None):
         # TODO: support initializing for unknown values in each of these

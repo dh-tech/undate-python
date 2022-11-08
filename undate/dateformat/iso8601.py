@@ -10,7 +10,7 @@ class ISO8601DateFormat(BaseDateFormat):
     # do not change; Undate relies on this string
     name = "ISO8601"
 
-     #: datetime strftime format for known part of date
+    #: datetime strftime format for known part of date
     iso_format = {
         "year": "%Y",
         "month": "%m",
@@ -47,7 +47,9 @@ class ISO8601DateFormat(BaseDateFormat):
         # then combine
         for date_portion, known in undate.known_values.items():
             if known:
-                date_parts.append(undate.earliest.strftime(self.iso_format[date_portion]))
+                date_parts.append(
+                    undate.earliest.strftime(self.iso_format[date_portion])
+                )
             elif date_portion == "year":
                 # if not known but this is year, add '-' for --MM-DD unknown year format
                 date_parts.append("-")

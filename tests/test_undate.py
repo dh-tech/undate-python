@@ -2,13 +2,13 @@ import pytest
 
 from undate.undate import Undate, UndateInterval
 
+
 class TestUndate:
     def test_str(self):
         assert str(Undate(2022, 11, 7)) == "2022-11-07"
         assert str(Undate(2022, 11)) == "2022-11"
         assert str(Undate(2022)) == "2022"
         assert str(Undate(month=11, day=7)) == "--11-07"
-
 
     def test_invalid_date(self):
         # invalid month should raise an error
@@ -30,7 +30,6 @@ class TestUndate:
         assert Undate(2022, 10) != Undate(2022, 10, 1)
 
 
-
 class TestUndateInterval:
     def test_str(self):
         # 2022 - 2023
@@ -43,7 +42,6 @@ class TestUndateInterval:
             == "2022-11-01/2023-11-07"
         )
 
-
     def test_str_open_range(self):
         # 900 -
         assert str(UndateInterval(Undate(900))) == "0900/"
@@ -53,12 +51,22 @@ class TestUndateInterval:
         assert str(UndateInterval(latest=Undate(1900, 12))) == "../1900-12"
 
     def test_eq(self):
-        assert UndateInterval(Undate(2022), Undate(2023)) == UndateInterval(Undate(2022), Undate(2023))
-        assert UndateInterval(Undate(2022), Undate(2023, 5)) == UndateInterval(Undate(2022), Undate(2023, 5))
+        assert UndateInterval(Undate(2022), Undate(2023)) == UndateInterval(
+            Undate(2022), Undate(2023)
+        )
+        assert UndateInterval(Undate(2022), Undate(2023, 5)) == UndateInterval(
+            Undate(2022), Undate(2023, 5)
+        )
         assert UndateInterval(Undate(2022, 5)) == UndateInterval(Undate(2022, 5))
 
     def test_not_eq(self):
-        assert UndateInterval(Undate(2022), Undate(2023)) != UndateInterval(Undate(2022), Undate(2024))
-        assert UndateInterval(Undate(2022), Undate(2023, 5)) != UndateInterval(Undate(2022), Undate(2023, 6))
-        assert UndateInterval(Undate(2022), Undate(2023, 5)) != UndateInterval(Undate(2022), Undate(2023))
+        assert UndateInterval(Undate(2022), Undate(2023)) != UndateInterval(
+            Undate(2022), Undate(2024)
+        )
+        assert UndateInterval(Undate(2022), Undate(2023, 5)) != UndateInterval(
+            Undate(2022), Undate(2023, 6)
+        )
+        assert UndateInterval(Undate(2022), Undate(2023, 5)) != UndateInterval(
+            Undate(2022), Undate(2023)
+        )
         assert UndateInterval(Undate(2022, 5)) != UndateInterval(Undate(2022, 6))
