@@ -1,22 +1,21 @@
 import datetime
 from calendar import monthrange
 
+from undate.dateformat.base import BaseDateFormat
+
 
 class Undate:
     """Simple object for representing uncertain, fuzzy or partially unknown dates"""
 
+    DEFAULT_FORMAT = 'ISO8601'
+
     earliest = None
     latest = None
     label = None
+    formatter = None
 
-    #: datetime strftime format for known part of date
-    iso_format = {
-        "year": "%Y",
-        "month": "%m",
-        "day": "%d",
-    }
 
-    def __init__(self, year=None, month=None, day=None):
+    def __init__(self, year=None, month=None, day=None, formatter=None):
         # TODO: support initializing for unknown values in each of these
         # e.g., maybe values could be string or int; if string with
         # unknown digits, calculate min/max for unknowns
@@ -39,18 +38,12 @@ class Undate:
             "day": day is not None,
         }
 
+        if not formatter:
+            formatter = BaseDateFormat.available_formatters()[self.DEFAULT_FORMAT]()
+        self.formatter = formatter
+
     def __str__(self):
-        # serialize to iso format for simplicity, for now
-        date_parts = []
-        # for each part of the date that is known, generate the string format
-        # then combine
-        for date_portion, known in self.known_values.items():
-            if known:
-                date_parts.append(self.earliest.strftime(self.iso_format[date_portion]))
-            elif date_portion == "year":
-                # if not known but this is year, add '-' for --MM-DD unknown year format
-                date_parts.append("-")
-        return "-".join(date_parts)
+        return self.formatter.to_string(self)
 
     def __repr__(self):
         return "<Undate %s>" % self

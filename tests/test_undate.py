@@ -30,6 +30,7 @@ class TestUndate:
         assert Undate(2022, 10) != Undate(2022, 10, 1)
 
 
+
 class TestUndateInterval:
     def test_str(self):
         # 2022 - 2023
@@ -45,7 +46,7 @@ class TestUndateInterval:
 
     def test_str_open_range(self):
         # 900 -
-        assert str(UndateInterval(Undate(900))) == "900/"
+        assert str(UndateInterval(Undate(900))) == "0900/"
         # - 1900
         assert str(UndateInterval(latest=Undate(1900))) == "../1900"
         # - 1900-12
