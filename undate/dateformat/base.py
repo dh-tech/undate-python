@@ -1,4 +1,14 @@
-# base class for date format parsers
+"""Base class for date format parsing and serializing
+
+To add support for a new date format:
+
+- create a new file under undate/dateformat
+- extend BaseDateFormat and implement parse and to_string methods
+  as desired/appropriate
+- Add your new formatter to [... details TBD ...]
+  so that it will be included in the available formatters
+
+"""
 
 
 class BaseDateFormat:
@@ -17,4 +27,7 @@ class BaseDateFormat:
 
     @classmethod
     def available_formatters(cls):
+        # FIXME: workaround for circular import problem
+        from undate.dateformat.iso8601 import ISO8601DateFormat
+
         return {c.name: c for c in cls.__subclasses__()}

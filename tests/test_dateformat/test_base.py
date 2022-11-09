@@ -1,5 +1,3 @@
-from undate.dateformat.iso8601 import ISO8601DateFormat
-from undate.undate import Undate, UndateInterval
 from undate.dateformat.base import BaseDateFormat
 
 
@@ -7,6 +5,11 @@ class TestBaseDateFormat:
     def test_available_formatters(self):
         available_formatters = BaseDateFormat.available_formatters()
         assert type(available_formatters) == dict
+
+        # NOTE: import _after_ generating available formatters
+        # so we can confirm it gets loaded
+        from undate.dateformat.iso8601 import ISO8601DateFormat
+
         assert ISO8601DateFormat.name in available_formatters
         assert available_formatters[ISO8601DateFormat.name] == ISO8601DateFormat
 
