@@ -25,3 +25,9 @@ class TestISO8601DateFormat:
         assert ISO8601DateFormat().parse("1800/1900") == UndateInterval(
             Undate(1800), Undate(1900)
         )
+
+    def test_to_string(self):
+        # NOTE: iso8601 to_string currently tested more thoroughly
+        # in undate str tests; may want to move those tests here
+        assert ISO8601DateFormat().to_string(Undate(900)) == "0900"
+        assert ISO8601DateFormat().to_string(Undate(33)) == "0033"
