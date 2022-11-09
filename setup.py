@@ -7,7 +7,7 @@ from undate import __version__
 with open(os.path.join(os.path.dirname(__file__), "README.md")) as readme:
     README = readme.read()
 
-REQUIREMENTS = []
+REQUIREMENTS = ["python-dateutil"]
 TEST_REQUIREMENTS = ["pytest>=7.2"]
 DEV_REQUIREMENTS = [
     "black>=22.10.0",

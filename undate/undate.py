@@ -4,7 +4,13 @@ from calendar import monthrange
 # Pre 3.10 requires Union for multiple types, e.g. Union[int, None] instead of int | None
 from typing import Optional, Dict, Union
 
+from dateutil.relativedelta import relativedelta
+
 from undate.dateformat.base import BaseDateFormat
+
+
+# duration of a single day
+ONE_DAY = datetime.timedelta(days=1)
 
 
 class Undate:
@@ -46,7 +52,7 @@ class Undate:
             year or datetime.MAXYEAR, month or 12, day or maxday
         )
         # keep track of which values are known
-        self.known_values: Dict[str, int] = {
+        self.known_values: Dict[str, bool] = {
             "year": year is not None,
             "month": month is not None,
             "day": day is not None,
@@ -72,10 +78,14 @@ class Undate:
             and self.known_values == other.known_values
         )
 
+    @property
+    def known_year(self) -> bool:
+        return self.known_values["year"]
+
     def duration(self) -> datetime.timedelta:
         # what is the duration of this date?
         # subtract earliest from latest, and add a day to count the starting day
-        return self.latest - self.earliest + datetime.timedelta(days=1)
+        return self.latest - self.earliest + ONE_DAY
 
 
 class UndateInterval:
@@ -95,3 +105,28 @@ class UndateInterval:
     def __eq__(self, other) -> bool:
         # consider interval equal if both dates are equal
         return self.earliest == other.earliest and self.latest == other.latest
+
+    def duration(self) -> datetime.timedelta:
+        # what is the duration of this date range?
+
+        # if both years are known, subtract end of range from beginning of start
+        if self.latest.known_year and self.earliest.known_year:
+            return self.latest.latest - self.earliest.earliest + ONE_DAY
+
+        # if neither year is known...
+        elif not self.latest.known_year and not self.earliest.known_year:
+            # under what circumstances can we assume that if both years
+            # are unknown the dates are in the same year or sequential?
+            duration = self.latest.earliest - self.earliest.earliest + ONE_DAY
+            # if we get a negative, we've wrapped from end of one year
+            # to the beginning of the next
+            if duration.days < 0:
+                end = self.latest.earliest + relativedelta(years=1)
+                duration = end - self.earliest.earliest
+
+            return duration
+
+        else:
+            # is there any meaningful way to calculate duration
+            # if one year is known and the other is not?
+            raise NotImplementedError
