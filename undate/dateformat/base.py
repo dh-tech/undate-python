@@ -1,6 +1,5 @@
 # base class for date format parsers
 from typing import Union, Dict
-from undate.undate import Undate, UndateInterval
 
 
 class BaseDateFormat:
@@ -9,11 +8,13 @@ class BaseDateFormat:
     # Subclasses should define a unique name.
     name: str = "Base Formatter"
 
-    def parse(self, value) -> Union[Undate, UndateInterval]:
+    def parse(self, value: str):
+        # can't add type hint here because of circular import
         # should return an undate or undate interval
         raise NotImplementedError
 
-    def to_string(self, undate: Union[Undate, UndateInterval]) -> str:
+    def to_string(self, undate) -> str:
+        # undate param should be of type Union[Undate, UndateInterval but can't add type hint here because of circular import
         # convert an undate or interval to string representation for this format
         raise NotImplementedError
 
