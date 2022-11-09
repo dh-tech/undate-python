@@ -1,5 +1,17 @@
 # base class for date format parsers
-from typing import Union, Dict
+from typing import Dict
+
+"""Base class for date format parsing and serializing
+
+To add support for a new date format:
+
+- create a new file under undate/dateformat
+- extend BaseDateFormat and implement parse and to_string methods
+  as desired/appropriate
+- Add your new formatter to [... details TBD ...]
+  so that it will be included in the available formatters
+
+"""
 
 
 class BaseDateFormat:
@@ -14,13 +26,14 @@ class BaseDateFormat:
         raise NotImplementedError
 
     def to_string(self, undate) -> str:
-        # undate param should be of type Union[Undate, UndateInterval but can't add type hint here because of circular import
+        # undate param should be of type Union[Undate, UndateInterval] but can't add type hint here because of circular import
         # convert an undate or interval to string representation for this format
         raise NotImplementedError
 
     @classmethod
     def available_formatters(cls) -> Dict[str, "BaseDateFormat"]:
-        # TODO: fix type error
-        # Expression of type "dict[str, Type[BaseDateFormat]]" cannot be assigned to return type "Dict[str, BaseDateFormat]"
-        # "dict[str, Type[BaseDateFormat]]" is incompatible with "Dict[str, BaseDateFormat]"
+        # FIXME: workaround for circular import problem"
+
+        from undate.dateformat.iso8601 import ISO8601DateFormat
+
         return {c.name: c for c in cls.__subclasses__()}  # type: ignore
