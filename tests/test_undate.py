@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 import pytest
 
 from undate.undate import Undate, UndateInterval
@@ -28,6 +30,24 @@ class TestUndate:
         assert Undate(month=2, day=7) != Undate(month=2, day=8)
         assert Undate(2022) != Undate(2022, 10)
         assert Undate(2022, 10) != Undate(2022, 10, 1)
+
+    def test_duration(self):
+        day_duration = Undate(2022, 11, 7).duration()
+        assert isinstance(day_duration, timedelta)
+        assert day_duration.days == 1
+
+        january_duration = Undate(2022, 1).duration()
+        assert january_duration.days == 31
+        feb_duration = Undate(2022, 2).duration()
+        assert feb_duration.days == 28
+        # next leap year will be 2024
+        leapyear_feb_duration = Undate(2024, 2).duration()
+        assert leapyear_feb_duration.days == 29
+
+        year_duration = Undate(2022).duration()
+        assert year_duration.days == 365
+        leapyear_duration = Undate(2024).duration()
+        assert leapyear_duration.days == 366
 
 
 class TestUndateInterval:

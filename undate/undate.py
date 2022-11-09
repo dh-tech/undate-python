@@ -72,6 +72,11 @@ class Undate:
             and self.known_values == other.known_values
         )
 
+    def duration(self) -> datetime.timedelta:
+        # what is the duration of this date?
+        # subtract earliest from latest, and add a day to count the starting day
+        return self.latest - self.earliest + datetime.timedelta(days=1)
+
 
 class UndateInterval:
     # date range between two uncertain dates
