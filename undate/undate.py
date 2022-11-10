@@ -44,6 +44,8 @@ class Undate:
             "day": day,
         }
 
+        # TODO: refactor partial date min/max calculations
+
         if year is not None:
             try:
                 year = int(year)
@@ -173,6 +175,14 @@ class Undate:
     def duration(self) -> datetime.timedelta:
         # what is the duration of this date?
         # subtract earliest from latest, and add a day to count the starting day
+
+        # TODO: update to account for partially known values;
+        # can it be based on known granularity somehow?
+        # 1900-11-2X => one day
+        # 1900-1X  => one month ? (30? 31?)
+        # maybe go with the maximum possible value?
+        # if granularity == month but not known month, duration = 31
+
         return self.latest - self.earliest + ONE_DAY
 
 
