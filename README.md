@@ -1,13 +1,13 @@
 # hackathon-2022
-<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-4-orange.svg?style=flat-square)](#contributors-)
-<!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Repository for the DHTech 2022 Hackathon
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![unit tests](https://github.com/dh-tech/hackathon-2022/actions/workflows/unit_tests.yml/badge.svg)](https://github.com/dh-tech/hackathon-2022/actions/workflows/unit_tests.yml)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+[![All Contributors](https://img.shields.io/badge/all_contributors-4-orange.svg)](#contributors-)
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 ## License
 
