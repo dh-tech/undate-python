@@ -17,15 +17,18 @@ ONE_DAY = datetime.timedelta(days=1)
 class Undate:
     """Simple object for representing uncertain, fuzzy or partially unknown dates"""
 
-    DEFAULT_FORMAT = "ISO8601"
+    DEFAULT_FORMAT: str = "ISO8601"
 
     #: symbol for unknown digits within a date value
-    MISSING_DIGIT = "X"
+    MISSING_DIGIT: str = "X"
 
     earliest: Union[datetime.date, None] = None
     latest: Union[datetime.date, None] = None
     label: Union[str, None] = None
     formatter: Union[BaseDateFormat, None] = None
+
+    #: known non-leap year
+    NON_LEAP_YEAR: int = 2022
 
     def __init__(
         self,
@@ -77,28 +80,9 @@ class Undate:
                 min_month = max_month = month
             except ValueError:
                 # if not, calculate min/max for missing digits
-                # determine the range of possible values
-                possible_values = [f"{n:02}" for n in range(min_month, max_month + 1)]
-                # generate regex where missing digit matches anything
-                # make sure month is two-digit string
-                month = "%02s" % month
-                month_pattern = re.compile(month.replace(self.MISSING_DIGIT, "."))
-                # identify all possible matches, then get min and max
-                matches = [val for val in possible_values if month_pattern.match(val)]
-                min_match = min(matches)
-                max_match = max(matches)
-
-                # split input month string into a list so we can update digits
-                min_month = list(month)
-                max_month = list(month)
-                for i, digit in enumerate(month):
-                    if digit == self.MISSING_DIGIT:
-                        min_month[i] = min_match[i]
-                        max_month[i] = max_match[i]
-
-                # combine the lists of digits back together and convert to int
-                min_month = int("".join(min_month))
-                max_month = int("".join(max_month))
+                min_month, max_month = self._missing_digit_minmax(
+                    month, min_month, max_month
+                )
 
         # similar to month above — unknown day, but day-level granularity
         if day == "XX":
@@ -116,36 +100,16 @@ class Undate:
             if year and month:
                 _, max_day = monthrange(year, max_month)
             elif year is None and month:
-                # TODO: what to do if we don't have year and month?
-                # This will produce bad data if the year is a leap year and the month is February
-                # 2022 chosen below as it is not a not leap year
-                # Better than just setting 31, but still not great
-                _, max_day = monthrange(2022, max_month)
+                # If we don't have year and month,
+                # calculate based on a known non-leap year
+                # (better than just setting 31, but still not great)
+                _, max_day = monthrange(self.NON_LEAP_YEAR, max_month)
             else:
                 max_day: int = 31
 
             # if day is partially specified, narrow min/max further
             if day is not None:
-                possible_values = [f"{n:02}" for n in range(min_day, max_day + 1)]
-                day = "%02s" % day
-                # generate regex where missing digit matches anything
-                day_pattern = re.compile(day.replace(self.MISSING_DIGIT, "."))
-                # identify all possible matches, then get min and max
-                matches = [val for val in possible_values if day_pattern.match(val)]
-                min_match = min(matches)
-                max_match = max(matches)
-
-                # split input string into a list so we can update digits
-                min_day = list(day)
-                max_day = list(day)
-                for i, digit in enumerate(day):
-                    if digit == self.MISSING_DIGIT:
-                        min_day[i] = min_match[i]
-                        max_day[i] = max_match[i]
-
-                # combine the lists of digits back together and convert to int
-                min_day = int("".join(min_day))
-                max_day = int("".join(max_day))
+                min_day, max_day = self._missing_digit_minmax(day, min_day, max_day)
 
         # for unknowns, assume smallest possible value for earliest and
         # largest valid for latest
@@ -201,6 +165,37 @@ class Undate:
         # if granularity == month but not known month, duration = 31
 
         return self.latest - self.earliest + ONE_DAY
+
+    def _missing_digit_minmax(
+        self, value: str, min_val: int, max_val: int
+    ) -> (int, int):
+        # given a possible range, calculate min/max values for a string
+        # with a missing digit
+
+        # assuming two digit only (i.e., month or day)
+        possible_values = [f"{n:02}" for n in range(min_val, max_val + 1)]
+        # ensure input value has two digits
+        value = "%02s" % value
+        # generate regex where missing digit matches anything
+        val_pattern = re.compile(value.replace(self.MISSING_DIGIT, "."))
+        # identify all possible matches, then get min and max
+        matches = [val for val in possible_values if val_pattern.match(val)]
+        min_match = min(matches)
+        max_match = max(matches)
+
+        # split input string into a list so we can update individually
+        min_val = list(value)
+        max_val = list(value)
+        for i, digit in enumerate(value):
+            # replace the corresponding digit with our min and max
+            if digit == self.MISSING_DIGIT:
+                min_val[i] = min_match[i]
+                max_val[i] = max_match[i]
+
+        # combine the lists of digits back together and convert to int
+        min_val = int("".join(min_val))
+        max_val = int("".join(max_val))
+        return (min_val, max_val)
 
 
 class UndateInterval:
