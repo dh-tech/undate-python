@@ -3,6 +3,10 @@
 Repository for the DHTech 2022 Hackathon
 
 
+## License
+
+This software is licensed under the [Apache 2.0 License](LICENSE.md).
+
 ## Instructions to setup for development
 
 ### Clone repo
