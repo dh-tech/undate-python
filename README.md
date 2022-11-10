@@ -12,7 +12,9 @@ This software is licensed under the [Apache 2.0 License](LICENSE.md).
 To install the latest development version from GitHub::
 
    pip install git+https://github.com/dh-tech/hackathon-2022.git@main#egg=undate
+To install a specific release, run the following (replace `[tag-name]` with the release you want to install):
 
+   pip install git+https://github.com/dh-tech/hackathon-2022.git@[tag-name]
 
 ## Instructions to setup for development
 
