@@ -1,10 +1,10 @@
-name: black check
+name: style check
 
 on:
   pull_request:
 
 jobs:
-  python-unit:
+  check:
     runs-on: ubuntu-latest
 
     defaults:
