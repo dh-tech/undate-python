@@ -22,7 +22,7 @@ setup(
     long_description=README,
     url="https://github.com/dh-tech/hackathon-2022",
     author="DHTech",
-    # author_email='', ?
+    author_email="dhtech.community@gmail.com",
     license="Apache License, Version 2.0",
     packages=["undate"],
     install_requires=REQUIREMENTS,
