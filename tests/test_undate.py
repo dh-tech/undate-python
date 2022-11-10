@@ -46,6 +46,47 @@ class TestUndate:
         assert unknown_month.latest.month == 12
         assert str(unknown_month) == "1900"  # NOT 1900-XX ?
 
+    def test_init_partially_known_day(self):
+        uncertain_day = Undate(1900, 1, "XX")  # treat as None
+        assert uncertain_day.earliest.day == 1
+        assert uncertain_day.latest.day == 31
+
+        uncertain_day = Undate(1900, 1, "1X")
+        assert uncertain_day.earliest.day == 10
+        assert uncertain_day.latest.day == 19
+
+        uncertain_day = Undate(1900, 1, "0X")
+        assert uncertain_day.earliest.day == 1
+        assert uncertain_day.latest.day == 9
+        uncertain_day = Undate(1900, 1, "2X")
+        assert uncertain_day.earliest.day == 20
+        assert uncertain_day.latest.day == 29
+        uncertain_day = Undate(1900, 1, "3X")
+        assert uncertain_day.earliest.day == 30
+        assert uncertain_day.latest.day == 31
+
+        uncertain_day = Undate(1900, 1, "X5")
+        assert uncertain_day.earliest.day == 5
+        assert uncertain_day.latest.day == 25
+
+        uncertain_day = Undate(1900, 1, "X1")
+        assert uncertain_day.earliest.day == 1
+        assert uncertain_day.latest.day == 31
+
+        # TODO: handle months with only 30 days
+
+        # month with only 30 days
+        uncertain_day = Undate(1900, 6, "X1")
+        assert uncertain_day.earliest.day == 1
+        assert uncertain_day.latest.day == 30
+        uncertain_day = Undate(1900, 6, "3X")
+        assert uncertain_day.earliest.day == 30
+        assert uncertain_day.latest.day == 30
+
+        # special cases
+        # february! TODO
+        # uncertain_day = Undate(1900, 2, "2X")
+
     def test_init_invalid(self):
         with pytest.raises(ValueError):
             Undate("19xx")

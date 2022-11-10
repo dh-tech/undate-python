@@ -30,7 +30,7 @@ class Undate:
         self,
         year: Optional[Union[int, str]] = None,
         month: Optional[Union[int, str]] = None,
-        day: Optional[int] = None,
+        day: Optional[Union[int, str]] = None,
         formatter: Optional[BaseDateFormat] = None,
     ):
         # TODO: support initializing for unknown values in each of these
@@ -89,21 +89,58 @@ class Undate:
             min_month = 1
             max_month = 12
 
+        # similar to month above — unknown day, but day-level granularity
+        if day == "XX":
+            day = None
+
+        if day is not None:
+            try:
+                day = int(day)
+                min_day = max_day = day
+            except ValueError:
+                min_day = max_day = None
+                if len(day) == 2:
+                    # special case since most months only go up to 30/31
+                    if day[0] == "3":
+                        min_day = int(day.replace(self.MISSING_DIGIT, "0"))
+                        # TODO: possibly max is 0 depending on the month
+                        max_day = int(day.replace(self.MISSING_DIGIT, "1"))
+                    # if second digit is missing, e.g. 1X or 2X
+                    elif day[1] == self.MISSING_DIGIT:
+                        if day[0] == "0":
+                            # can't have 00
+                            min_day = int(day.replace(self.MISSING_DIGIT, "1"))
+                        else:
+                            min_day = int(day.replace(self.MISSING_DIGIT, "0"))
+                        max_day = int(day.replace(self.MISSING_DIGIT, "9"))
+                    # if first digit is missing
+                    elif day[0] == self.MISSING_DIGIT:
+                        min_day = int(day.replace(self.MISSING_DIGIT, "0"))
+                        if int(day[1]) > 1:
+                            max_day = int(day.replace(self.MISSING_DIGIT, "2"))
+                        else:
+                            max_day = int(day.replace(self.MISSING_DIGIT, "3"))
+
+        else:
+            min_day = 1
+
+            # if we know year and month (or max month), calculate exactly
+            if year and month:
+                _, max_day = monthrange(year, max_month)
+
+            elif year is None and month:
+                # TODO: what to do if we don't have year and month?
+                # This will produce bad data if the year is a leap year and the month is February
+                # 2022 chosen below as it is not a not leap year
+                # Better than just setting 31, but still not great
+                _, max_day = monthrange(2022, max_month)
+            else:
+                max_day: int = 31
+
         # for unknowns, assume smallest possible value for earliest and
         # largest valid for latest
-        self.earliest = datetime.date(min_year, min_month, day or 1)
-        # if day is unknown but we have year and month, calculate max day
-        if day is None and year and month:
-            _, maxday = monthrange(year, max_month)
-        elif day is None and year is None and month:
-            # TODO: what to do if we don't have year and month?
-            # This will produce bad data if the year is a leap year and the month is February
-            # 2022 chosen below as it is not a not leap year
-            # Better than just setting 31, but still not great
-            _, maxday = monthrange(2022, max_month)
-        else:
-            maxday: int = 31
-        self.latest = datetime.date(max_year, max_month, day or maxday)
+        self.earliest = datetime.date(min_year, min_month, min_day)
+        self.latest = datetime.date(max_year, max_month, max_day)
 
         if not formatter:
             # TODO subclass definitions not available unless they are imported where Undate() is called
