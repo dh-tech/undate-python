@@ -9,12 +9,15 @@ This software is licensed under the [Apache 2.0 License](LICENSE.md).
 
 ## Installation
 
-To install the latest development version from GitHub::
+To install the latest development version from GitHub:
+```sh
+pip install git+https://github.com/dh-tech/hackathon-2022.git@main#egg=undate
+```
 
-   pip install git+https://github.com/dh-tech/hackathon-2022.git@main#egg=undate
-To install a specific release, run the following (replace `[tag-name]` with the release you want to install):
-
-   pip install git+https://github.com/dh-tech/hackathon-2022.git@[tag-name]
+To install a specific release or branch, run the following (replace `[tag-name]` with the tag or branch you want to install):
+```sh
+pip install git+https://github.com/dh-tech/hackathon-2022.git@[tag-name]
+```
 
 ## Instructions to setup for development
 
@@ -31,8 +34,9 @@ python3 -m venv undate
 source undate/bin/activate
 ```
 
-### Install editable version of the local package and test+development
-dependencies
+### Install the package
+
+Install an editable version of the local package along with python dependencies needed for testing and development.
 
 ```sh
 pip install -e ".[dev]"
