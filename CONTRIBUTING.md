@@ -20,4 +20,4 @@ If you report a bug, please include any error messages you get and a full descri
 The best and recommended way to get help is to join the [DHTech Slack](https://dh-tech.github.io/join/) and ask for help there. Only in cases when this is not feasible at all, you can open a new issue and tag it with "Help Request".  
 
 ## DHTech
-This project started during the DHTech 2022 Hackathon. If you do technical work in the digital humanities and are intersted in like-minded people, [consider joining](https://dh-tech.github.io/join/)!
+This project started during the DHTech 2022 Hackathon. If you do technical work in the digital humanities and are intersted in meeting like-minded people, [consider joining](https://dh-tech.github.io/join/)!
