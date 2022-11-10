@@ -1,5 +1,6 @@
 import datetime
 from calendar import monthrange
+import re
 
 # Pre 3.10 requires Union for multiple types, e.g. Union[int, None] instead of int | None
 from typing import Optional, Dict, Union
@@ -33,10 +34,6 @@ class Undate:
         day: Optional[Union[int, str]] = None,
         formatter: Optional[BaseDateFormat] = None,
     ):
-        # TODO: support initializing for unknown values in each of these
-        # e.g., maybe values could be string or int; if string with
-        # unknown digits, calculate min/max for unknowns
-
         # keep track of initial values and which values are known
         self.initial_values: Dict[str, Union[int, str]] = {
             "year": year,
@@ -69,32 +66,37 @@ class Undate:
         if month == "XX":
             month = None
 
+        min_month = 1
+        max_month = 12
         if month is not None:
             try:
+                # treat as an integer if we can
                 month = int(month)
                 # update initial value
                 self.initial_values["month"] = month
                 min_month = max_month = month
             except ValueError:
-                min_month = max_month = None
-                if len(month) == 2:
-                    # if two digit month is 1x, range is 10 - 12
-                    if month[0] == "1":
-                        min_month = int(month.replace(self.MISSING_DIGIT, "0"))
-                        max_month = int(month.replace(self.MISSING_DIGIT, "2"))
-                    # if two digit month is 0x, range is 01 - 09
-                    elif month[0] == "0":
-                        min_month = int(month.replace(self.MISSING_DIGIT, "1"))
-                        max_month = int(month.replace(self.MISSING_DIGIT, "9"))
+                # if not, calculate min/max for missing digits
+                # determine the range of possible values
+                possible_values = [f"{n:02}" for n in range(min_month, max_month + 1)]
+                # generate regex where missing digit matches anything
+                month_pattern = re.compile(month.replace(self.MISSING_DIGIT, "."))
+                # identify all possible matches, then get min and max
+                matches = [val for val in possible_values if month_pattern.match(val)]
+                min_match = min(matches)
+                max_match = max(matches)
 
-                # are these possible/plausible ? X1 X2
-                # assuming not
-                if not min_month and not max_month:
-                    raise ValueError
+                # split input month string into a list so we can update digits
+                min_month = list(month)
+                max_month = list(month)
+                for i, digit in enumerate(month):
+                    if digit == self.MISSING_DIGIT:
+                        min_month[i] = min_match[i]
+                        max_month[i] = max_match[i]
 
-        else:
-            min_month = 1
-            max_month = 12
+                # combine the lists of digits back together and convert to int
+                min_month = int("".join(min_month))
+                max_month = int("".join(max_month))
 
         # similar to month above — unknown day, but day-level granularity
         if day == "XX":

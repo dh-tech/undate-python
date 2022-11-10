@@ -40,6 +40,10 @@ class TestUndate:
         assert uncertain_notfall.earliest.month == 1
         assert uncertain_notfall.latest.month == 9
 
+        # unlikely case, but now possible to calculate
+        assert Undate(1900, "X1").earliest.month == 1
+        assert Undate(1900, "X1").latest.month == 11
+
         # treat as unknown but allow
         unknown_month = Undate(1900, "XX")
         assert unknown_month.earliest.month == 1
@@ -94,9 +98,6 @@ class TestUndate:
     def test_init_invalid(self):
         with pytest.raises(ValueError):
             Undate("19xx")
-
-        with pytest.raises(ValueError):
-            Undate(1900, "X1")
 
     def test_invalid_date(self):
         # invalid month should raise an error
