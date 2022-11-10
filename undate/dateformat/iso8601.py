@@ -51,9 +51,15 @@ class ISO8601DateFormat(BaseDateFormat):
         # then combine
         for date_portion, known in undate.known_values.items():
             if known:
-                date_parts.append(
-                    undate.earliest.strftime(self.iso_format[date_portion])
-                )
+                # NOTE: datetime strftime for %Y for 3-digit year
+                # results in leading zero in some environments
+                # and not others; force year to always be 4 digits
+                if date_portion == "year":
+                    date_parts.append("%04d" % undate.earliest.year)
+                else:
+                    date_parts.append(
+                        undate.earliest.strftime(self.iso_format[date_portion])
+                    )
             elif date_portion == "year":
                 # if not known but this is year, add '-' for --MM-DD unknown year format
                 date_parts.append("-")
