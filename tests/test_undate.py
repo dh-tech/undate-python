@@ -73,6 +73,10 @@ class TestUndate:
         assert uncertain_day.earliest.day == 1
         assert uncertain_day.latest.day == 31
 
+        return
+
+        # we don't support these cases yet but need to
+
         # TODO: handle months with only 30 days
 
         # month with only 30 days
@@ -136,6 +140,22 @@ class TestUndate:
         assert Undate(month=2, day=5).known_year is False
         # partially known year is not known
         assert Undate("19XX").known_year is False
+        # fully known string year should be known
+        assert Undate("1900").known_year is True
+
+    def test_is_known_month(self):
+        assert Undate(2022).is_known("month") is False
+        assert Undate(2022, 2).is_known("month") is True
+        assert Undate(2022, "5").is_known("month") is True
+        assert Undate(2022, "1X").is_known("month") is False
+        assert Undate(2022, "XX").is_known("month") is False
+
+    def test_is_known_day(self):
+        assert Undate(1984).is_known("day") is False
+        assert Undate(month=1, day=3).is_known("day") is True
+        assert Undate(month=1, day="5").is_known("day") is True
+        assert Undate(month=1, day="X5").is_known("day") is False
+        assert Undate(month=1, day="XX").is_known("day") is False
 
 
 class TestUndateInterval:

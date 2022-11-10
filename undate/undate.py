@@ -49,6 +49,9 @@ class Undate:
         if year is not None:
             try:
                 year = int(year)
+                # update initial value since it is used to determine
+                # whether or not year is known
+                self.initial_values["year"] = year
                 min_year = max_year = year
             except ValueError:
                 # year is a string that can't be converted to int
@@ -69,6 +72,8 @@ class Undate:
         if month is not None:
             try:
                 month = int(month)
+                # update initial value
+                self.initial_values["month"] = month
                 min_month = max_month = month
             except ValueError:
                 min_month = max_month = None
@@ -98,6 +103,8 @@ class Undate:
         if day is not None:
             try:
                 day = int(day)
+                # update initial value
+                self.initial_values["day"] = day
                 min_day = max_day = day
             except ValueError:
                 min_day = max_day = None
@@ -170,7 +177,16 @@ class Undate:
 
     @property
     def known_year(self) -> bool:
-        return isinstance(self.initial_values["year"], int)
+        return self.is_known("year")
+
+    def is_known(self, part: str) -> bool:
+        """Check if a part of the date (year, month, day) is known.
+        Returns False if unknown or only partially known."""
+        # TODO: should we use constants or enum for values?
+
+        # if we have an integer, then consider the date known
+        # if we have a string, then it is only partially known; return false
+        return isinstance(self.initial_values[part], int)
 
     def duration(self) -> datetime.timedelta:
         # what is the duration of this date?
