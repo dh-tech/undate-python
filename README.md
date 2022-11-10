@@ -7,6 +7,13 @@ Repository for the DHTech 2022 Hackathon
 
 This software is licensed under the [Apache 2.0 License](LICENSE.md).
 
+## Installation
+
+To install the latest version from GitHub::
+
+   pip install git+https://github.com/dh-tech/hackathon-2022.git@main#egg=undate
+
+
 ## Instructions to setup for development
 
 ### Clone repo
@@ -22,17 +29,19 @@ python3 -m venv undate
 source undate/bin/activate
 ```
 
-### Install dependencies
-```
-$ pip install -r requirements-dev.txt
+### Install editable version of the local package and test+development
+dependencies
+
+```sh
+pip install -e ".[dev]"
 ```
 
 ### Install pre-commit hooks
-```
-$ pre-commit install
+```sh
+pre-commit install
 ```
 
 ### Run unit tests
 ```
-python -m pytest
+pytest
 ```

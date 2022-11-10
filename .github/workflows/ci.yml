@@ -23,13 +23,11 @@ jobs:
         with:
           python-version: 3.9
           cache: 'pip'
-          cache-dependency-path: '**/requirements-dev.txt'
-      - name: Install deps using Pip
-        run: pip install -r requirements-dev.txt
+          cache-dependency-path: '**/setup.py'
+      - name: Install package with dependencies
+        run: pip install -e ".[dev]"
         if: steps.python-cache.outputs.cache-hit != 'true'
       - name: Run black
-        run: |
-          black undate --check --diff
+        run: black undate --check --diff
       - name: Run unit tests
-        run: |
-          python -m pytest
+        run: pytest
