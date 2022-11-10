@@ -77,23 +77,22 @@ class TestUndate:
         assert uncertain_day.earliest.day == 1
         assert uncertain_day.latest.day == 31
 
-        return
-
-        # we don't support these cases yet but need to
-
-        # TODO: handle months with only 30 days
-
         # month with only 30 days
         uncertain_day = Undate(1900, 6, "X1")
         assert uncertain_day.earliest.day == 1
-        assert uncertain_day.latest.day == 30
+        assert uncertain_day.latest.day == 21  # doesn't go to 31
         uncertain_day = Undate(1900, 6, "3X")
         assert uncertain_day.earliest.day == 30
         assert uncertain_day.latest.day == 30
 
         # special cases
-        # february! TODO
-        # uncertain_day = Undate(1900, 2, "2X")
+        # february! 28 days usually
+        uncertain_day = Undate(1900, 2, "2X")
+        assert uncertain_day.earliest.day == 20
+        assert uncertain_day.latest.day == 28
+        # february in a leap year
+        uncertain_day = Undate(2024, 2, "2X")
+        assert uncertain_day.latest.day == 29
 
     def test_init_invalid(self):
         with pytest.raises(ValueError):
