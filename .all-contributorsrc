@@ -23,6 +23,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "robcast",
+      "name": "Robert Casties",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1488847?v=4",
+      "profile": "https://github.com/robcast",
+      "contributions": [
+        "data"
+      ]
     }
   ],
   "contributorsPerLine": 7,
