@@ -12,6 +12,47 @@ class TestUndate:
         assert str(Undate(2022)) == "2022"
         assert str(Undate(month=11, day=7)) == "--11-07"
 
+    def test_init_str(self):
+        assert Undate("2000").earliest.year == 2000
+        # single or double digit string month should be ok
+        assert Undate("2000", "2").earliest.month == 2
+        assert Undate("2000", "02").earliest.month == 2
+
+    def test_init_partially_known_year(self):
+        uncertain1900s = Undate("19XX")
+        assert uncertain1900s.earliest.year == 1900
+        assert uncertain1900s.latest.year == 1999
+
+        uncertain1x = Undate("1X05")
+        assert uncertain1x.earliest.year == 1005
+        assert uncertain1x.latest.year == 1905
+
+        uncertain18x7 = Undate("18X7")
+        assert uncertain18x7.earliest.year == 1807
+        assert uncertain18x7.latest.year == 1897
+
+    def test_init_partially_known_month(self):
+        uncertain_fall = Undate(1900, "1X")
+        assert uncertain_fall.earliest.month == 10
+        assert uncertain_fall.latest.month == 12
+
+        uncertain_notfall = Undate(1900, "0X")
+        assert uncertain_notfall.earliest.month == 1
+        assert uncertain_notfall.latest.month == 9
+
+        # treat as unknown but allow
+        unknown_month = Undate(1900, "XX")
+        assert unknown_month.earliest.month == 1
+        assert unknown_month.latest.month == 12
+        assert str(unknown_month) == "1900"  # NOT 1900-XX ?
+
+    def test_init_invalid(self):
+        with pytest.raises(ValueError):
+            Undate("19xx")
+
+        with pytest.raises(ValueError):
+            Undate(1900, "X1")
+
     def test_invalid_date(self):
         # invalid month should raise an error
         with pytest.raises(ValueError):
@@ -52,6 +93,8 @@ class TestUndate:
     def test_known_year(self):
         assert Undate(2022).known_year is True
         assert Undate(month=2, day=5).known_year is False
+        # partially known year is not known
+        assert Undate("19XX").known_year is False
 
 
 class TestUndateInterval:
