@@ -30,5 +30,12 @@ jobs:
       - name: Install package with dependencies
         run: pip install -e ".[dev]"
         if: steps.python-cache.outputs.cache-hit != 'true'
-      - name: Run unit tests
-        run: pytest
+      - name: Run unit tests with slipcover for code coverage
+        run: python -m slipcover --json --out coverage.json -m pytest
+      - name: Upload test coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage.json
+
+    fail_ci_if_error: true # optional (default = false)
+    verbose: true # optional (default = false)

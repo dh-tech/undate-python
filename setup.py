@@ -9,10 +9,7 @@ with open(os.path.join(os.path.dirname(__file__), "README.md")) as readme:
 
 REQUIREMENTS = ["python-dateutil"]
 TEST_REQUIREMENTS = ["pytest>=7.2"]
-DEV_REQUIREMENTS = [
-    "black>=22.10.0",
-    "pre-commit>=2.20.0",
-]
+DEV_REQUIREMENTS = ["black>=22.10.0", "pre-commit>=2.20.0", "slipcover"]
 
 setup(
     name="undate",
