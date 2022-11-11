@@ -6,7 +6,7 @@ Repository for the DHTech 2022 Hackathon
 [![unit tests](https://github.com/dh-tech/hackathon-2022/actions/workflows/unit_tests.yml/badge.svg)](https://github.com/dh-tech/hackathon-2022/actions/workflows/unit_tests.yml)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-4-orange.svg)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-4-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 ## License
@@ -66,7 +66,7 @@ pytest
 <table>
   <tbody>
     <tr>
-      <td align="center"><a href="https://github.com/ColeDCrawford"><img src="https://avatars.githubusercontent.com/u/16374762?v=4?s=100" width="100px;" alt="Cole Crawford"/><br /><sub><b>Cole Crawford</b></sub></a><br /><a href="https://github.com/dh-tech/hackathon-2022/commits?author=ColeDCrawford" title="Code">💻</a></td>
+      <td align="center"><a href="https://github.com/ColeDCrawford"><img src="https://avatars.githubusercontent.com/u/16374762?v=4?s=100" width="100px;" alt="Cole Crawford"/><br /><sub><b>Cole Crawford</b></sub></a><br /><a href="https://github.com/dh-tech/hackathon-2022/commits?author=ColeDCrawford" title="Code">💻</a> <a href="https://github.com/dh-tech/hackathon-2022/pulls?q=is%3Apr+reviewed-by%3AColeDCrawford" title="Reviewed Pull Requests">👀</a></td>
       <td align="center"><a href="http://rlskoeser.github.io"><img src="https://avatars.githubusercontent.com/u/691231?v=4?s=100" width="100px;" alt="Rebecca Sutton Koeser"/><br /><sub><b>Rebecca Sutton Koeser</b></sub></a><br /><a href="https://github.com/dh-tech/hackathon-2022/commits?author=rlskoeser" title="Code">💻</a></td>
       <td align="center"><a href="https://github.com/robcast"><img src="https://avatars.githubusercontent.com/u/1488847?v=4?s=100" width="100px;" alt="Robert Casties"/><br /><sub><b>Robert Casties</b></sub></a><br /><a href="#data-robcast" title="Data">🔣</a></td>
       <td align="center"><a href="https://github.com/jdamerow"><img src="https://avatars.githubusercontent.com/u/8881141?v=4?s=100" width="100px;" alt="Julia Damerow"/><br /><sub><b>Julia Damerow</b></sub></a><br /><a href="https://github.com/dh-tech/hackathon-2022/commits?author=jdamerow" title="Code">💻</a></td>
