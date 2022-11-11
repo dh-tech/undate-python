@@ -43,6 +43,16 @@
         "code",
         "review"
       ]
+    },
+    {
+      "login": "maltevogl",
+      "name": "Malte Vogl",
+      "avatar_url": "https://avatars.githubusercontent.com/u/20907912?v=4",
+      "profile": "https://github.com/maltevogl",
+      "contributions": [
+        "code",
+        "review"
+      ]
     }
   ],
   "contributorsPerLine": 7,
