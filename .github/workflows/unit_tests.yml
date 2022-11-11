@@ -40,6 +40,7 @@ jobs:
         if: ${{ matrix.python != env.COV_PYTHON_VERSION }}
 
       # run code coverage in one version only
+      - name: Run unit tests with code coverage reporting
         run: pytest --cov=./ --cov-report=xml
         if: ${{ matrix.python == env.COV_PYTHON_VERSION }}
       - name: Upload test coverage to Codecov
