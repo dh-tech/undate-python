@@ -1,5 +1,7 @@
 # base class for date format parsers
 from typing import Dict
+import pkgutil
+import importlib
 
 """Base class for date format parsing and serializing
 
@@ -30,10 +32,32 @@ class BaseDateFormat:
         # convert an undate or interval to string representation for this format
         raise NotImplementedError
 
+    _formatters_imported = False
+
+    @classmethod
+    def import_formatters(cls):
+        # dynamically import all undate.dateformat formatters
+        # so that they will be included in available formatters
+        # even if not explicitly imported. Only import once.
+        if not cls._formatters_imported:
+            # TODO: add debug loading; confirm in test that not called again
+            import undate.dateformat
+
+            # load packages under this path with curent package prefix
+            formatter_path = undate.dateformat.__path__
+            formatter_prefix = f"{undate.dateformat.__name__}."
+
+            for importer, modname, ispkg in pkgutil.iter_modules(
+                formatter_path, formatter_prefix
+            ):
+                # import everything except the current file
+                if not modname.endswith(".base"):
+                    importlib.import_module(modname)
+
+            cls._formatters_imported = True
+
     @classmethod
     def available_formatters(cls) -> Dict[str, "BaseDateFormat"]:
-        # FIXME: workaround for circular import problem"
-
-        from undate.dateformat.iso8601 import ISO8601DateFormat
-
+        # ensure undate formatters are imported
+        cls.import_formatters()
         return {c.name: c for c in cls.__subclasses__()}  # type: ignore
