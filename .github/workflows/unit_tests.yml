@@ -37,17 +37,19 @@ jobs:
       # for all versions but the one we use for code coverage, run normally
       - name: Run unit tests normally
         run: pytest
-        if: "matrix.python != ${{ env.COV_PYTHON_VERSION }}"
+        if: ${{ matrix.python != env.COV_PYTHON_VERSION }}
 
       # run code coverage in one version only; slipcover install fails on 3.11
       - name: Install slipcover (python 3.9 only)
         run: pip install slipcover
-        if: "matrix.python == ${{ env.COV_PYTHON_VERSION }}"
+        if: ${{ matrix.python  == env.COV_PYTHON_VERSION }}
       - name: Run unit tests with slipcover for code coverage
         run: python -m slipcover --json --out coverage.json -m pytest
-        if: "matrix.python == ${{ env.COV_PYTHON_VERSION }}"
+        if: ${{ matrix.python == env.COV_PYTHON_VERSION }}
       - name: Upload test coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
           files: ./coverage.json
-        if: "matrix.python == ${{ env.COV_PYTHON_VERSION }}"
+          fail_ci_if_error: true # optional (default = false)
+          verbose: true # optional (default = false)
+        if: ${{ matrix.python == env.COV_PYTHON_VERSION }}
