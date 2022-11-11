@@ -36,3 +36,5 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           files: ./coverage.json
+        if: matrix.python-version == 3.11
+        # only upload for one version of python, not all!
