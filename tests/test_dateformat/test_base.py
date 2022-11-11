@@ -1,3 +1,5 @@
+import pytest
+
 from undate.dateformat.base import BaseDateFormat
 
 
@@ -26,3 +28,11 @@ class TestBaseDateFormat:
         #     name = "ISO8601"
 
         # assert len(BaseDateFormat.available_formatters()) != len(BaseDateFormat.__subclasses__())
+
+    def test_parse_not_implemented(self):
+        with pytest.raises(NotImplementedError):
+            BaseDateFormat().parse("foo bar baz")
+
+    def test_parse_to_string(self):
+        with pytest.raises(NotImplementedError):
+            BaseDateFormat().to_string(1991)
