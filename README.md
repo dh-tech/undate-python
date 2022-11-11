@@ -55,7 +55,12 @@ pre-commit install
 
 ### Run unit tests
 ```
-pytest
+tox
+```
+
+### Create documentation
+```
+tox -e docs
 ```
 
 ## Contributors

@@ -1,0 +1,3 @@
+License
+=======
+.. mdinclude:: ../LICENSE.md
