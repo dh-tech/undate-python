@@ -1,5 +1,6 @@
 import datetime
 from calendar import monthrange
+import re
 
 # Pre 3.10 requires Union for multiple types, e.g. Union[int, None] instead of int | None
 from typing import Optional, Dict, Union
@@ -16,47 +17,104 @@ ONE_DAY = datetime.timedelta(days=1)
 class Undate:
     """Simple object for representing uncertain, fuzzy or partially unknown dates"""
 
-    DEFAULT_FORMAT = "ISO8601"
+    DEFAULT_FORMAT: str = "ISO8601"
+
+    #: symbol for unknown digits within a date value
+    MISSING_DIGIT: str = "X"
 
     earliest: Union[datetime.date, None] = None
     latest: Union[datetime.date, None] = None
     label: Union[str, None] = None
     formatter: Union[BaseDateFormat, None] = None
 
+    #: known non-leap year
+    NON_LEAP_YEAR: int = 2022
+
     def __init__(
         self,
-        year: Optional[int] = None,
-        month: Optional[int] = None,
-        day: Optional[int] = None,
+        year: Optional[Union[int, str]] = None,
+        month: Optional[Union[int, str]] = None,
+        day: Optional[Union[int, str]] = None,
         formatter: Optional[BaseDateFormat] = None,
     ):
-        # TODO: support initializing for unknown values in each of these
-        # e.g., maybe values could be string or int; if string with
-        # unknown digits, calculate min/max for unknowns
+        # keep track of initial values and which values are known
+        self.initial_values: Dict[str, Union[int, str]] = {
+            "year": year,
+            "month": month,
+            "day": day,
+        }
+
+        # TODO: refactor partial date min/max calculations
+
+        if year is not None:
+            try:
+                year = int(year)
+                # update initial value since it is used to determine
+                # whether or not year is known
+                self.initial_values["year"] = year
+                min_year = max_year = year
+            except ValueError:
+                # year is a string that can't be converted to int
+                min_year = int(year.replace(self.MISSING_DIGIT, "0"))
+                max_year = int(year.replace(self.MISSING_DIGIT, "9"))
+        else:
+            min_year = datetime.MINYEAR
+            max_year = datetime.MAXYEAR
+
+        # if month is passed in as a string but completely unknown,
+        # treat as none
+        # TODO: we should preserve this information somehow;
+        # difference between just a year and and an unknown month within a year
+        # maybe in terms of granularity / size ?
+        if month == "XX":
+            month = None
+
+        min_month = 1
+        max_month = 12
+        if month is not None:
+            try:
+                # treat as an integer if we can
+                month = int(month)
+                # update initial value
+                self.initial_values["month"] = month
+                min_month = max_month = month
+            except ValueError:
+                # if not, calculate min/max for missing digits
+                min_month, max_month = self._missing_digit_minmax(
+                    month, min_month, max_month
+                )
+
+        # similar to month above — unknown day, but day-level granularity
+        if day == "XX":
+            day = None
+
+        if isinstance(day, int) or isinstance(day, str) and day.isnumeric():
+            day = int(day)
+            # update initial value - fully known day
+            self.initial_values["day"] = day
+            min_day = max_day = day
+        else:
+            # if we have no day or partial day, calculate min / max
+            min_day = 1
+            # if we know year and month (or max month), calculate exactly
+            if year and month:
+                _, max_day = monthrange(year, max_month)
+            elif year is None and month:
+                # If we don't have year and month,
+                # calculate based on a known non-leap year
+                # (better than just setting 31, but still not great)
+                _, max_day = monthrange(self.NON_LEAP_YEAR, max_month)
+            else:
+                max_day: int = 31
+
+            # if day is partially specified, narrow min/max further
+            if day is not None:
+                min_day, max_day = self._missing_digit_minmax(day, min_day, max_day)
 
         # for unknowns, assume smallest possible value for earliest and
         # largest valid for latest
-        self.earliest = datetime.date(year or datetime.MINYEAR, month or 1, day or 1)
-        # if day is unknown but we have year and month, calculate max day
-        if day is None and year and month:
-            _, maxday = monthrange(year, month)
-        elif day is None and year is None and month:
-            # TODO: what to do if we don't have year and month?
-            # This will produce bad data if the year is a leap year and the month is February
-            # 2022 chosen below as it is not a not leap year
-            # Better than just setting 31, but still not great
-            _, maxday = monthrange(2022, month)
-        else:
-            maxday: int = 31
-        self.latest = datetime.date(
-            year or datetime.MAXYEAR, month or 12, day or maxday
-        )
-        # keep track of which values are known
-        self.known_values: Dict[str, bool] = {
-            "year": year is not None,
-            "month": month is not None,
-            "day": day is not None,
-        }
+        self.earliest = datetime.date(min_year, min_month, min_day)
+        self.latest = datetime.date(max_year, max_month, max_day)
 
         if not formatter:
             # TODO subclass definitions not available unless they are imported where Undate() is called
@@ -75,17 +133,69 @@ class Undate:
         return (
             self.earliest == other.earliest
             and self.latest == other.latest
-            and self.known_values == other.known_values
+            # NOTE: assumes that partially known values can only be written
+            # in one format (i.e. X for missing digits).
+            # If we support other formats, may need to normalize to common
+            # internal format for comparison
+            and self.initial_values == other.initial_values
         )
 
     @property
     def known_year(self) -> bool:
-        return self.known_values["year"]
+        return self.is_known("year")
+
+    def is_known(self, part: str) -> bool:
+        """Check if a part of the date (year, month, day) is known.
+        Returns False if unknown or only partially known."""
+        # TODO: should we use constants or enum for values?
+
+        # if we have an integer, then consider the date known
+        # if we have a string, then it is only partially known; return false
+        return isinstance(self.initial_values[part], int)
 
     def duration(self) -> datetime.timedelta:
         # what is the duration of this date?
         # subtract earliest from latest, and add a day to count the starting day
+
+        # TODO: update to account for partially known values;
+        # can it be based on known granularity somehow?
+        # 1900-11-2X => one day
+        # 1900-1X  => one month ? (30? 31?)
+        # maybe go with the maximum possible value?
+        # if granularity == month but not known month, duration = 31
+
         return self.latest - self.earliest + ONE_DAY
+
+    def _missing_digit_minmax(
+        self, value: str, min_val: int, max_val: int
+    ) -> (int, int):
+        # given a possible range, calculate min/max values for a string
+        # with a missing digit
+
+        # assuming two digit only (i.e., month or day)
+        possible_values = [f"{n:02}" for n in range(min_val, max_val + 1)]
+        # ensure input value has two digits
+        value = "%02s" % value
+        # generate regex where missing digit matches anything
+        val_pattern = re.compile(value.replace(self.MISSING_DIGIT, "."))
+        # identify all possible matches, then get min and max
+        matches = [val for val in possible_values if val_pattern.match(val)]
+        min_match = min(matches)
+        max_match = max(matches)
+
+        # split input string into a list so we can update individually
+        min_val = list(value)
+        max_val = list(value)
+        for i, digit in enumerate(value):
+            # replace the corresponding digit with our min and max
+            if digit == self.MISSING_DIGIT:
+                min_val[i] = min_match[i]
+                max_val[i] = max_match[i]
+
+        # combine the lists of digits back together and convert to int
+        min_val = int("".join(min_val))
+        max_val = int("".join(max_val))
+        return (min_val, max_val)
 
 
 class UndateInterval:

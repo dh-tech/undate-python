@@ -49,17 +49,15 @@ class ISO8601DateFormat(BaseDateFormat):
         date_parts: List[Union[str, None]] = []
         # for each part of the date that is known, generate the string format
         # then combine
-        for date_portion, known in undate.known_values.items():
-            if known:
+        for date_portion, iso_format in self.iso_format.items():
+            if undate.is_known(date_portion):
                 # NOTE: datetime strftime for %Y for 3-digit year
                 # results in leading zero in some environments
                 # and not others; force year to always be 4 digits
                 if date_portion == "year":
                     date_parts.append("%04d" % undate.earliest.year)
                 else:
-                    date_parts.append(
-                        undate.earliest.strftime(self.iso_format[date_portion])
-                    )
+                    date_parts.append(undate.earliest.strftime(iso_format))
             elif date_portion == "year":
                 # if not known but this is year, add '-' for --MM-DD unknown year format
                 date_parts.append("-")
