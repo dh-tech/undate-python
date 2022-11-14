@@ -21,14 +21,16 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: Set up Python 3.9
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python }}
           cache: 'pip'
           cache-dependency-path: '**/setup.cfg'
       - name: Install package with dependencies
-        run: pip install -e ".[dev]"
+        run: |
+          pip install -e ".[dev]"
+          python -m pip install tox tox-gh-actions
         if: steps.python-cache.outputs.cache-hit != 'true'
       - name: Run unit tests
         run: tox
