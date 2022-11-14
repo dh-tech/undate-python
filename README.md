@@ -55,7 +55,14 @@ pre-commit install
 
 ### Run unit tests
 ```
-pytest
+Tests can be run with either `tox` or `pytest`.  
+
+To run all the tests in a single test file, use pytest and specify the path to the test: `pytest tests/test_dateformat/test_base.py`
+
+To test cases by name, use pytest: `pytest -k test_str`
+### Create documentation
+```
+tox -e docs
 ```
 
 ## Contributors

@@ -26,6 +26,7 @@ wheels/
 MANIFEST
 
 # Environments
+.tox
 .env
 .venv
 env/
