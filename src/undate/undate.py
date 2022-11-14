@@ -13,7 +13,7 @@ from undate.dateformat.base import BaseDateFormat
 ONE_DAY = datetime.timedelta(days=1)
 
 
-class Undate():
+class Undate:
     """Simple object for representing uncertain, fuzzy or partially unknown dates"""
 
     DEFAULT_FORMAT = "ISO8601"
@@ -88,7 +88,7 @@ class Undate():
         return self.latest - self.earliest + ONE_DAY
 
 
-class UndateInterval():
+class UndateInterval:
     """A date range between two uncertain dates.
 
     :param earliest: Earliest undate
@@ -96,6 +96,7 @@ class UndateInterval():
     :param latest: Latest undate
     :type latest:  `undate.Undate`
     """
+
     # date range between two uncertain dates
 
     def __init__(
@@ -115,7 +116,7 @@ class UndateInterval():
 
     def duration(self) -> datetime.timedelta:
         """Calculate the duration between two undates.
-        
+
         :returns: A duration
         :rtype: timedelta
         """
