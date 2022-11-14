@@ -23,4 +23,4 @@ jobs:
         run: pip install -e ".[dev]"
         if: steps.python-cache.outputs.cache-hit != 'true'
       - name: Run black
-        run: black undate --check --diff
+        run: black src --check --diff

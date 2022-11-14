@@ -31,4 +31,4 @@ jobs:
         run: pip install -e ".[dev]"
         if: steps.python-cache.outputs.cache-hit != 'true'
       - name: Run unit tests
-        run: pytest
+        run: tox
