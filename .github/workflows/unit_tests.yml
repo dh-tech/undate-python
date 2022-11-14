@@ -9,6 +9,9 @@ on:
       - 'tests/**'
   pull_request:
 
+env:
+  COV_PYTHON_VERSION: "3.9"
+
 jobs:
   python-unit:
     runs-on: ubuntu-latest
@@ -32,5 +35,17 @@ jobs:
           pip install -e ".[dev]"
           python -m pip install tox tox-gh-actions
         if: steps.python-cache.outputs.cache-hit != 'true'
-      - name: Run unit tests
+
+      # for all versions but the one we use for code coverage, run normally
+      - name: Run unit tests normally
         run: tox
+        if: ${{ matrix.python != env.COV_PYTHON_VERSION }}
+
+      # run code coverage in one version only
+      - name: Run unit tests with code coverage reporting
+        run: tox -e coverage
+        if: ${{ matrix.python == env.COV_PYTHON_VERSION }}
+      - name: Upload test coverage to Codecov
+        uses: codecov/codecov-action@v3
+        if: ${{ matrix.python == env.COV_PYTHON_VERSION }}
+
