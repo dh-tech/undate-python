@@ -1,6 +1,8 @@
 # undate-python
 
-Repository for the DHTech 2022 Hackathon
+`undate` is a python library for working with uncertain or partially known dates.
+
+It was initially created as part of a DH-Tech hackathon in November 2022.
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![unit tests](https://github.com/dh-tech/undate-python/actions/workflows/unit_tests.yml/badge.svg)](https://github.com/dh-tech/undate-python/actions/workflows/unit_tests.yml)
