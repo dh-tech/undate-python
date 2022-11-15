@@ -15,8 +15,9 @@ returned by :meth:`BaseDateFormat.available_formatters`
 import importlib
 import logging
 import pkgutil
-from functools import cache
 from typing import Dict
+from functools import lru_cache  # functools.cache not available until 3.9
+
 
 logger = logging.getLogger(__name__)
 
@@ -37,12 +38,9 @@ class BaseDateFormat:
         # convert an undate or interval to string representation for this format
         raise NotImplementedError
 
-    # combine decorators to make a cached class attribute
-    # per https://stackoverflow.com/a/71887897/9706217
-    # (used to ensure we only import once)
+    # cache import class method to ensure we only import once
     @classmethod
-    @property
-    @cache
+    @lru_cache
     def import_formatters(cls):
         """Import all undate.dateformat formatters
         so that they will be included in available formatters
@@ -69,5 +67,5 @@ class BaseDateFormat:
     @classmethod
     def available_formatters(cls) -> Dict[str, "BaseDateFormat"]:
         # ensure undate formatters are imported
-        cls.import_formatters
+        cls.import_formatters()
         return {c.name: c for c in cls.__subclasses__()}  # type: ignore

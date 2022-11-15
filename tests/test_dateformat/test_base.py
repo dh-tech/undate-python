@@ -35,7 +35,7 @@ class TestBaseDateFormat:
 def test_import_formatters_import_only_once(caplog):
     # run first so we can confirm it runs once
     with caplog.at_level(logging.DEBUG):
-        import_count = BaseDateFormat.import_formatters
+        import_count = BaseDateFormat.import_formatters()
     # should import at least one thing (iso8601)
     assert import_count >= 1
     # should have log entry
@@ -44,7 +44,7 @@ def test_import_formatters_import_only_once(caplog):
     # if we clear the log and run again, should not do anything
     caplog.clear()
     with caplog.at_level(logging.DEBUG):
-        BaseDateFormat.import_formatters
+        BaseDateFormat.import_formatters()
     assert "Loading formatters" not in caplog.text
 
 
