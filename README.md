@@ -34,6 +34,22 @@ $ git clone git@github.com:dh-tech/undate-python.git
 cd undate-python
 ```
 
+## Setup and initialize git flow
+
+This repository uses [git-flow](https://github.com/nvie/gitflow) branching conventions:
+- **main** will always contain the most recent release
+- **develop** branch is the latest version of work in progress
+
+Pull requests should be made against the **develop** branch.
+
+It is recommended to install git flow (on OSX, use brew or ports, e.g.: `brew install git-flow`;
+on Ubuntu/Debian, `apt-get install git-flow`) and then initialize it in this repository
+via `git flow init` and accept the defaults.  Then you can use `git flow feature start`
+to create feature development branches.
+
+Alternately, you can check out the develop branch (`git checkout develop`)
+and create your branches manually based on develop (`git checkout -b feature/xxx-name`).
+
 ### Set up Python environment
 Use a recent version of python 3.x; recommended to use a virtualenv, e.g.
 ```
@@ -55,7 +71,7 @@ pre-commit install
 ```
 
 ### Run unit tests
-Tests can be run with either `tox` or `pytest`.  
+Tests can be run with either `tox` or `pytest`.
 
 To run all the tests in a single test file, use pytest and specify the path to the test: `pytest tests/test_dateformat/test_base.py`
 
