@@ -20,15 +20,6 @@ class TestBaseDateFormat:
             BaseDateFormat.__subclasses__()
         ), "Formatter names have to be unique."
 
-        # TODO: order tests, so this test is run last; otherwise formatter names won't be unique
-        # class ISO8601DateFormat2(BaseDateFormat):
-        #     # NOTE: do we care about validation? could use regex
-        #     # but maybe be permissive, warn if invalid but we can parse
-
-        #     name = "ISO8601"
-
-        # assert len(BaseDateFormat.available_formatters()) != len(BaseDateFormat.__subclasses__())
-
     def test_parse_not_implemented(self):
         with pytest.raises(NotImplementedError):
             BaseDateFormat().parse("foo bar baz")
@@ -36,3 +27,17 @@ class TestBaseDateFormat:
     def test_parse_to_string(self):
         with pytest.raises(NotImplementedError):
             BaseDateFormat().to_string(1991)
+
+
+@pytest.mark.last
+def test_formatters_unique_error():
+    # confirm that our uniqe formatters check fails when it should
+
+    # run this test last because we can't undefine the subclass
+    # once it exists...
+    class ISO8601DateFormat2(BaseDateFormat):
+        name = "ISO8601"  # duplicates existing formatter
+
+    assert len(BaseDateFormat.available_formatters()) != len(
+        BaseDateFormat.__subclasses__()
+    )
