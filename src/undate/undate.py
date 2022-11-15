@@ -94,6 +94,14 @@ class Undate:
 
 
 class UndateInterval:
+    """A date range between two uncertain dates.
+
+    :param earliest: Earliest undate
+    :type earliest: `undate.Undate`
+    :param latest: Latest undate
+    :type latest:  `undate.Undate`
+    """
+
     # date range between two uncertain dates
 
     def __init__(
@@ -121,6 +129,11 @@ class UndateInterval:
         return self.earliest == other.earliest and self.latest == other.latest
 
     def duration(self) -> datetime.timedelta:
+        """Calculate the duration between two undates.
+
+        :returns: A duration
+        :rtype: timedelta
+        """
         # what is the duration of this date range?
 
         # if both years are known, subtract end of range from beginning of start

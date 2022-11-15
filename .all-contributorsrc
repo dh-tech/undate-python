@@ -57,7 +57,8 @@
       "contributions": [
         "code",
         "review",
-        "test"
+        "test",
+        "doc"
       ]
     }
   ],

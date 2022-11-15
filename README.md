@@ -4,6 +4,7 @@ Repository for the DHTech 2022 Hackathon
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![unit tests](https://github.com/dh-tech/hackathon-2022/actions/workflows/unit_tests.yml/badge.svg)](https://github.com/dh-tech/hackathon-2022/actions/workflows/unit_tests.yml)
+[![codecov](https://codecov.io/gh/dh-tech/hackathon-2022/branch/main/graph/badge.svg?token=GE7HZE8C9D)](https://codecov.io/gh/dh-tech/hackathon-2022)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-5-orange.svg?style=flat-square)](#contributors-)
@@ -54,8 +55,16 @@ pre-commit install
 ```
 
 ### Run unit tests
-```
-pytest
+Tests can be run with either `tox` or `pytest`.  
+
+To run all the tests in a single test file, use pytest and specify the path to the test: `pytest tests/test_dateformat/test_base.py`
+
+To test cases by name, use pytest: `pytest -k test_str`
+
+### Create documentation
+
+```sh
+tox -e docs
 ```
 
 ## Contributors
@@ -70,7 +79,7 @@ pytest
       <td align="center"><a href="http://rlskoeser.github.io"><img src="https://avatars.githubusercontent.com/u/691231?v=4?s=100" width="100px;" alt="Rebecca Sutton Koeser"/><br /><sub><b>Rebecca Sutton Koeser</b></sub></a><br /><a href="https://github.com/dh-tech/hackathon-2022/commits?author=rlskoeser" title="Code">💻</a> <a href="https://github.com/dh-tech/hackathon-2022/pulls?q=is%3Apr+reviewed-by%3Arlskoeser" title="Reviewed Pull Requests">👀</a> <a href="https://github.com/dh-tech/hackathon-2022/commits?author=rlskoeser" title="Tests">⚠️</a></td>
       <td align="center"><a href="https://github.com/robcast"><img src="https://avatars.githubusercontent.com/u/1488847?v=4?s=100" width="100px;" alt="Robert Casties"/><br /><sub><b>Robert Casties</b></sub></a><br /><a href="#data-robcast" title="Data">🔣</a></td>
       <td align="center"><a href="https://github.com/jdamerow"><img src="https://avatars.githubusercontent.com/u/8881141?v=4?s=100" width="100px;" alt="Julia Damerow"/><br /><sub><b>Julia Damerow</b></sub></a><br /><a href="https://github.com/dh-tech/hackathon-2022/commits?author=jdamerow" title="Code">💻</a> <a href="https://github.com/dh-tech/hackathon-2022/pulls?q=is%3Apr+reviewed-by%3Ajdamerow" title="Reviewed Pull Requests">👀</a> <a href="https://github.com/dh-tech/hackathon-2022/commits?author=jdamerow" title="Tests">⚠️</a> <a href="#eventOrganizing-jdamerow" title="Event Organizing">📋</a></td>
-      <td align="center"><a href="https://github.com/maltevogl"><img src="https://avatars.githubusercontent.com/u/20907912?v=4?s=100" width="100px;" alt="Malte Vogl"/><br /><sub><b>Malte Vogl</b></sub></a><br /><a href="https://github.com/dh-tech/hackathon-2022/commits?author=maltevogl" title="Code">💻</a> <a href="https://github.com/dh-tech/hackathon-2022/pulls?q=is%3Apr+reviewed-by%3Amaltevogl" title="Reviewed Pull Requests">👀</a> <a href="https://github.com/dh-tech/hackathon-2022/commits?author=maltevogl" title="Tests">⚠️</a></td>
+      <td align="center"><a href="https://github.com/maltevogl"><img src="https://avatars.githubusercontent.com/u/20907912?v=4?s=100" width="100px;" alt="Malte Vogl"/><br /><sub><b>Malte Vogl</b></sub></a><br /><a href="https://github.com/dh-tech/hackathon-2022/commits?author=maltevogl" title="Code">💻</a> <a href="https://github.com/dh-tech/hackathon-2022/pulls?q=is%3Apr+reviewed-by%3Amaltevogl" title="Reviewed Pull Requests">👀</a> <a href="https://github.com/dh-tech/hackathon-2022/commits?author=maltevogl" title="Tests">⚠️</a> <a href="https://github.com/dh-tech/hackathon-2022/commits?author=maltevogl" title="Documentation">📖</a></td>
     </tr>
   </tbody>
 </table>
