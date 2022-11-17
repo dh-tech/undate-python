@@ -24,3 +24,5 @@ jobs:
         if: steps.python-cache.outputs.cache-hit != 'true'
       - name: Run black
         run: black src --check --diff
+      - name: Check that documentation can be built
+        run: tox -e docs
