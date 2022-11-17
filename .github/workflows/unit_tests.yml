@@ -10,7 +10,8 @@ on:
   pull_request:
 
 env:
-  COV_PYTHON_VERSION: "3.9"
+  # python version used to calculate and submit code coverage
+  COV_PYTHON_VERSION: "3.10"
 
 jobs:
   python-unit:
