@@ -20,6 +20,8 @@ class Undate:
 
     earliest: Union[datetime.date, None] = None
     latest: Union[datetime.date, None] = None
+    #: A string to label a specific undate, e.g. "German Unity Date 2022" for Oct. 3, 2022.
+    #: Labels are not taken into account when comparing undate objects.
     label: Union[str, None] = None
     formatter: Union[BaseDateFormat, None] = None
 
@@ -100,6 +102,8 @@ class UndateInterval:
     :type earliest: `undate.Undate`
     :param latest: Latest undate
     :type latest:  `undate.Undate`
+    :param label: A string to label a specific undate interval, similar to labels of `undate.Undate`.
+    :type label: `str`
     """
 
     # date range between two uncertain dates
