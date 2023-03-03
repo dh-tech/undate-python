@@ -25,7 +25,8 @@
       "contributions": [
         "code",
         "review",
-        "test"
+        "test",
+        "blog"
       ]
     },
     {
@@ -66,6 +67,6 @@
   "skipCi": true,
   "repoType": "github",
   "repoHost": "https://github.com",
-  "projectName": "hackathon-2022",
+  "projectName": "undate-python",
   "projectOwner": "dh-tech"
 }
