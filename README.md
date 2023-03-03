@@ -6,7 +6,7 @@ It was initially created as part of a [DH-Tech](https://dh-tech.github.io/) hack
 
 ---
 
-⚠️ **WARNING** this is pre-alpha software and is **NOT** feature complete! Use with caution.
+⚠️ **WARNING:** this is pre-alpha software and is **NOT** feature complete! Use with caution. ⚠️
 
 ---
 
@@ -25,7 +25,7 @@ This software is licensed under the [Apache 2.0 License](LICENSE.md).
 
 ## Installation
 
-To install the most recent released from PyPI:
+To install the most recent release from PyPI:
 ```sh
 pip install undate
 ```
