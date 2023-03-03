@@ -12,6 +12,13 @@ class TestUndate:
         assert str(Undate(2022)) == "2022"
         assert str(Undate(month=11, day=7)) == "--11-07"
 
+    def test_repr(self):
+        assert repr(Undate(2022, 11, 7)) == "<Undate 2022-11-07>"
+        assert (
+            repr(Undate(2022, 11, 7, label="A Special Day"))
+            == "<Undate 'A Special Day' (2022-11-07)>"
+        )
+
     def test_init_str(self):
         assert Undate("2000").earliest.year == 2000
         # single or double digit string month should be ok
@@ -168,6 +175,16 @@ class TestUndateInterval:
         assert (
             str(UndateInterval(Undate(2022, 11, 1), Undate(2023, 11, 7)))
             == "2022-11-01/2023-11-07"
+        )
+
+    def test_repr(self):
+        assert (
+            repr(UndateInterval(Undate(2022), Undate(2023)))
+            == "<UndateInterval 2022/2023>"
+        )
+        assert (
+            repr(UndateInterval(Undate(2022), Undate(2023), label="Fancy Epoch"))
+            == "<UndateInterval 'Fancy Epoch' (2022/2023)>"
         )
 
     def test_str_open_range(self):

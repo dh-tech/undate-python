@@ -4,7 +4,6 @@ from typing import Dict, List, Union
 
 
 class ISO8601DateFormat(BaseDateFormat):
-
     # NOTE: do we care about validation? could use regex
     # but maybe be permissive, warn if invalid but we can parse
 

@@ -1,3 +1,7 @@
+import logging
+
+import pytest
+
 from undate.dateformat.base import BaseDateFormat
 
 
@@ -18,11 +22,41 @@ class TestBaseDateFormat:
             BaseDateFormat.__subclasses__()
         ), "Formatter names have to be unique."
 
-        # TODO: order tests, so this test is run last; otherwise formatter names won't be unique
-        # class ISO8601DateFormat2(BaseDateFormat):
-        #     # NOTE: do we care about validation? could use regex
-        #     # but maybe be permissive, warn if invalid but we can parse
+    def test_parse_not_implemented(self):
+        with pytest.raises(NotImplementedError):
+            BaseDateFormat().parse("foo bar baz")
 
-        #     name = "ISO8601"
+    def test_parse_to_string(self):
+        with pytest.raises(NotImplementedError):
+            BaseDateFormat().to_string(1991)
 
-        # assert len(BaseDateFormat.available_formatters()) != len(BaseDateFormat.__subclasses__())
+
+@pytest.mark.first
+def test_import_formatters_import_only_once(caplog):
+    # run first so we can confirm it runs once
+    with caplog.at_level(logging.DEBUG):
+        import_count = BaseDateFormat.import_formatters()
+    # should import at least one thing (iso8601)
+    assert import_count >= 1
+    # should have log entry
+    assert "Loading formatters" in caplog.text
+
+    # if we clear the log and run again, should not do anything
+    caplog.clear()
+    with caplog.at_level(logging.DEBUG):
+        BaseDateFormat.import_formatters()
+    assert "Loading formatters" not in caplog.text
+
+
+@pytest.mark.last
+def test_formatters_unique_error():
+    # confirm that our uniqe formatters check fails when it should
+
+    # run this test last because we can't undefine the subclass
+    # once it exists...
+    class ISO8601DateFormat2(BaseDateFormat):
+        name = "ISO8601"  # duplicates existing formatter
+
+    assert len(BaseDateFormat.available_formatters()) != len(
+        BaseDateFormat.__subclasses__()
+    )
