@@ -20,6 +20,8 @@ class Undate:
 
     earliest: Union[datetime.date, None] = None
     latest: Union[datetime.date, None] = None
+    #: A string to label a specific undate, e.g. "German Unity Date 2022" for Oct. 3, 2022.
+    #: Labels are not taken into account when comparing undate objects.
     label: Union[str, None] = None
     formatter: Union[BaseDateFormat, None] = None
 
@@ -29,6 +31,7 @@ class Undate:
         month: Optional[int] = None,
         day: Optional[int] = None,
         formatter: Optional[BaseDateFormat] = None,
+        label: Optional[str] = None,
     ):
         # TODO: support initializing for unknown values in each of these
         # e.g., maybe values could be string or int; if string with
@@ -63,10 +66,14 @@ class Undate:
             formatter = BaseDateFormat.available_formatters()[self.DEFAULT_FORMAT]()
         self.formatter = formatter
 
+        self.label = label
+
     def __str__(self) -> str:
         return self.formatter.to_string(self)
 
     def __repr__(self) -> str:
+        if self.label:
+            return "<Undate '%s' (%s)>" % (self.label, self)
         return "<Undate %s>" % self
 
     def __eq__(self, other: "Undate") -> bool:
@@ -95,20 +102,31 @@ class UndateInterval:
     :type earliest: `undate.Undate`
     :param latest: Latest undate
     :type latest:  `undate.Undate`
+    :param label: A string to label a specific undate interval, similar to labels of `undate.Undate`.
+    :type label: `str`
     """
 
     # date range between two uncertain dates
 
     def __init__(
-        self, earliest: Union[Undate, None] = None, latest: Union[Undate, None] = None
+        self,
+        earliest: Union[Undate, None] = None,
+        latest: Union[Undate, None] = None,
+        label: Union[str, None] = None,
     ):
         # for now, assume takes two undate objects
         self.earliest = earliest
         self.latest = latest
+        self.label = label
 
     def __str__(self) -> str:
         # using EDTF syntax for open ranges
         return "%s/%s" % (self.earliest or "..", self.latest or "")
+
+    def __repr__(self) -> str:
+        if self.label:
+            return "<UndateInterval '%s' (%s)>" % (self.label, self)
+        return "<UndateInterval %s>" % self
 
     def __eq__(self, other) -> bool:
         # consider interval equal if both dates are equal

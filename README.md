@@ -1,10 +1,18 @@
 # undate-python
 
-`undate` is a python library for working with uncertain or partially known dates.
+**undate** is a python library for working with uncertain or partially known dates.
 
-It was initially created as part of a DH-Tech hackathon in November 2022.
+It was initially created as part of a [DH-Tech](https://dh-tech.github.io/) hackathon in November 2022.
+
+---
+
+⚠️ **WARNING:** this is pre-alpha software and is **NOT** feature complete! Use with caution. ⚠️
+
+---
+
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Documentation Status](https://readthedocs.org/projects/undate-python/badge/?version=latest)](https://undate-python.readthedocs.io/en/latest/?badge=latest)
 [![unit tests](https://github.com/dh-tech/undate-python/actions/workflows/unit_tests.yml/badge.svg)](https://github.com/dh-tech/undate-python/actions/workflows/unit_tests.yml)
 [![codecov](https://codecov.io/gh/dh-tech/undate-python/branch/main/graph/badge.svg?token=GE7HZE8C9D)](https://codecov.io/gh/dh-tech/undate-python)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
@@ -12,15 +20,24 @@ It was initially created as part of a DH-Tech hackathon in November 2022.
 [![All Contributors](https://img.shields.io/badge/all_contributors-5-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
+## Documentation
+
+Project documentation is available on ReadTheDocs https://undate-python.readthedocs.io/en/latest/
+
 ## License
 
 This software is licensed under the [Apache 2.0 License](LICENSE.md).
 
 ## Installation
 
+To install the most recent release from PyPI:
+```sh
+pip install undate
+```
+
 To install the latest development version from GitHub:
 ```sh
-pip install git+https://github.com/dh-tech/undate-python.git@main#egg=undate
+pip install git+https://github.com/dh-tech/undate-python.git@develop#egg=undate
 ```
 
 To install a specific release or branch, run the following (replace `[tag-name]` with the tag or branch you want to install):
