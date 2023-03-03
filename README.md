@@ -130,3 +130,9 @@ tox -e docs
 <!-- prettier-ignore-end -->
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
+
+
+### Related blog posts
+
+- [@rlskoeser](#blog-rlskoeser)
+  - [Join me for a DHTech hackathon? It’s an un-date!](https://dh-tech.github.io/blog/2023-02-09-hackathon-summary/) 2023-02-09 on DH-Tech blog by Rebecca Sutton Koeser 
