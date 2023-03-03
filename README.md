@@ -1,10 +1,21 @@
 # undate-python
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
 
-`undate` is a python library for working with uncertain or partially known dates.
+**undate** is a python library for working with uncertain or partially known dates.
 
-It was initially created as part of a DH-Tech hackathon in November 2022.
+It was initially created as part of a [DH-Tech](https://dh-tech.github.io/) hackathon in November 2022.
+
+---
+
+⚠️ **WARNING:** this is pre-alpha software and is **NOT** feature complete! Use with caution. ⚠️
+
+---
+
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Documentation Status](https://readthedocs.org/projects/undate-python/badge/?version=latest)](https://undate-python.readthedocs.io/en/latest/?badge=latest)
 [![unit tests](https://github.com/dh-tech/undate-python/actions/workflows/unit_tests.yml/badge.svg)](https://github.com/dh-tech/undate-python/actions/workflows/unit_tests.yml)
 [![codecov](https://codecov.io/gh/dh-tech/undate-python/branch/main/graph/badge.svg?token=GE7HZE8C9D)](https://codecov.io/gh/dh-tech/undate-python)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
@@ -12,15 +23,24 @@ It was initially created as part of a DH-Tech hackathon in November 2022.
 [![All Contributors](https://img.shields.io/badge/all_contributors-5-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
+## Documentation
+
+Project documentation is available on ReadTheDocs https://undate-python.readthedocs.io/en/latest/
+
 ## License
 
 This software is licensed under the [Apache 2.0 License](LICENSE.md).
 
 ## Installation
 
+To install the most recent release from PyPI:
+```sh
+pip install undate
+```
+
 To install the latest development version from GitHub:
 ```sh
-pip install git+https://github.com/dh-tech/undate-python.git@main#egg=undate
+pip install git+https://github.com/dh-tech/undate-python.git@develop#egg=undate
 ```
 
 To install a specific release or branch, run the following (replace `[tag-name]` with the tag or branch you want to install):
@@ -88,6 +108,29 @@ tox -e docs
 ## Contributors
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="http://rlskoeser.github.io/"><img src="https://avatars.githubusercontent.com/u/691231?v=4?s=100" width="100px;" alt="Rebecca Sutton Koeser"/><br /><sub><b>Rebecca Sutton Koeser</b></sub></a><br /><a href="#blog-rlskoeser" title="Blogposts">📝</a></td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <td align="center" size="13px" colspan="7">
+        <img src="https://raw.githubusercontent.com/all-contributors/all-contributors-cli/1b8533af435da9854653492b1327a23a4dbd0a10/assets/logo-small.svg">
+          <a href="https://all-contributors.js.org/docs/en/bot/usage">Add your contributions</a>
+        </img>
+      </td>
+    </tr>
+  </tfoot>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
 <table>
