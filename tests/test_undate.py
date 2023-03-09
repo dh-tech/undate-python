@@ -142,6 +142,19 @@ class TestUndate:
         leapyear_duration = Undate(2024).duration()
         assert leapyear_duration.days == 366
 
+    def test_partiallyknown_duration(self):
+        # day in unknown month/year
+        assert Undate(day=5).duration().days == 1
+        assert Undate(year=1900, month=11, day="2X").duration().days == 1
+
+        # month in unknown year
+        assert Undate(month=6).duration().days == 30
+        # partially known month
+        assert Undate(year=1900, month="1X").duration().days == 31
+        # what about february?
+        # could vary with leap years, but assume non-leapyear
+        assert Undate(month=2).duration().days == 28
+
     def test_known_year(self):
         assert Undate(2022).known_year is True
         assert Undate(month=2, day=5).known_year is False

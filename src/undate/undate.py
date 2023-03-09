@@ -1,5 +1,6 @@
 import datetime
 from calendar import monthrange
+from enum import Enum, auto
 import re
 
 # Pre 3.10 requires Union for multiple types, e.g. Union[int, None] instead of int | None
@@ -10,8 +11,20 @@ from dateutil.relativedelta import relativedelta
 from undate.dateformat.base import BaseDateFormat
 
 
-# duration of a single day
+#: duration of a single day
 ONE_DAY = datetime.timedelta(days=1)
+
+
+class DatePrecision(Enum):
+    """date precision, to indicate date precision independent from how much
+    of the date is known."""
+
+    #: year
+    YEAR = auto()
+    #: month
+    MONTH = auto()
+    #: day
+    DAY = auto()
 
 
 class Undate:
@@ -28,6 +41,8 @@ class Undate:
     #: Labels are not taken into account when comparing undate objects.
     label: Union[str, None] = None
     formatter: Union[BaseDateFormat, None] = None
+    #: precision of the date (day, month, year, etc.)
+    precision: DatePrecision = None
 
     #: known non-leap year
     NON_LEAP_YEAR: int = 2022
@@ -46,6 +61,12 @@ class Undate:
             "month": month,
             "day": day,
         }
+        if day:
+            self.precision = DatePrecision.DAY
+        elif month:
+            self.precision = DatePrecision.MONTH
+        elif year:
+            self.precision = DatePrecision.YEAR
 
         # TODO: refactor partial date min/max calculations
 
@@ -142,7 +163,7 @@ class Undate:
             and self.latest == other.latest
             # NOTE: assumes that partially known values can only be written
             # in one format (i.e. X for missing digits).
-            # If we support other formats, may need to normalize to common
+            # If we support other formats, will need to normalize to common
             # internal format for comparison
             and self.initial_values == other.initial_values
         )
@@ -161,16 +182,38 @@ class Undate:
         return isinstance(self.initial_values[part], int)
 
     def duration(self) -> datetime.timedelta:
-        # what is the duration of this date?
-        # subtract earliest from latest, and add a day to count the starting day
+        """What is the duration of this date?
+        Calculate based on earliest and latest date within range,
+        taking into account the precision of the date even if not all
+        parts of the date are known."""
 
-        # TODO: update to account for partially known values;
-        # can it be based on known granularity somehow?
-        # 1900-11-2X => one day
-        # 1900-1X  => one month ? (30? 31?)
-        # maybe go with the maximum possible value?
-        # if granularity == month but not known month, duration = 31
+        # if precision is a single day, duration is one day
+        # no matter when it is or what else is known
+        if self.precision == DatePrecision.DAY:
+            return ONE_DAY
 
+        # if precision is month and year is unknown,
+        # calculate month duration within a single year (not min/max)
+        if self.precision == DatePrecision.MONTH:
+            latest = self.latest
+            if not self.known_year:
+                # if year is unknown, calculate month duration in
+                # a single year
+                latest = datetime.date(
+                    self.earliest.year, self.latest.month, self.latest.day
+                )
+            delta = latest - self.earliest + ONE_DAY
+            # month duration can't ever be more than 31 days
+            # (could we ever know if it's smaller?)
+
+            # if granularity == month but not known month, duration = 31
+            if delta.days > 31:
+                return datetime.timedelta(days=31)
+            return delta
+
+        # otherwise, calculate based on earliest/latest range
+
+        # subtract earliest from latest and add a day to count start day
         return self.latest - self.earliest + ONE_DAY
 
     def _missing_digit_minmax(
