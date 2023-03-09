@@ -12,6 +12,17 @@ class TestUndate:
         assert str(Undate(2022)) == "2022"
         assert str(Undate(month=11, day=7)) == "--11-07"
 
+    def test_partially_known_str(self):
+        assert str(Undate("19XX")) == "19XX"
+        assert str(Undate(2022, "1X")) == "2022-1X"
+        assert str(Undate(2022, 11, "2X")) == "2022-11-2X"
+        assert str(Undate(month="1X", day=7)) == "--1X-07"
+
+        # TODO: should not allow initializing year/day without month;
+        # should we infer unknown month? or raise an exception?
+        # assert str(Undate(2022, day="2X")) == "2022-XX-2X"  # currently returns 2022-2X
+        # assert str(Undate(2022, day=7)) == "2022-XX-07"   @ currently returns 2022-07
+
     def test_repr(self):
         assert repr(Undate(2022, 11, 7)) == "<Undate 2022-11-07>"
         assert (
@@ -55,7 +66,7 @@ class TestUndate:
         unknown_month = Undate(1900, "XX")
         assert unknown_month.earliest.month == 1
         assert unknown_month.latest.month == 12
-        assert str(unknown_month) == "1900"  # NOT 1900-XX ?
+        assert str(unknown_month) == "1900-XX"
 
     def test_init_partially_known_day(self):
         uncertain_day = Undate(1900, 1, "XX")  # treat as None

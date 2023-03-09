@@ -148,6 +148,24 @@ class Undate:
         self.label = label
 
     def __str__(self) -> str:
+        # if any portion of the date is partially known, construct
+        # pseudo ISO8601 format here, since ISO8601 doesn't support unknown digits
+        # (temporary, should switch to default format that can handle it, e.g. EDTF)
+        if any(self.is_partially_known(part) for part in ["year", "month", "day"]):
+            # initial values could be either string or int
+            year = self.initial_values["year"]
+            month = self.initial_values["month"]
+            day = self.initial_values["day"]
+            # if integer, convert to string with correct number of digits
+            # replace unknown year with - for --MM or --MM-DD format
+            parts = [
+                f"{year:04d}" if isinstance(year, int) else year or "-",
+                f"{month:02d}" if isinstance(month, int) else month,
+                f"{day:02d}" if isinstance(day, int) else day,
+            ]
+            # combine, skipping any values that are None
+            return "-".join([str(p) for p in parts if p != None])
+
         return self.formatter.to_string(self)
 
     def __repr__(self) -> str:
@@ -180,6 +198,9 @@ class Undate:
         # if we have an integer, then consider the date known
         # if we have a string, then it is only partially known; return false
         return isinstance(self.initial_values[part], int)
+
+    def is_partially_known(self, part: str) -> bool:
+        return isinstance(self.initial_values[part], str)
 
     def duration(self) -> datetime.timedelta:
         """What is the duration of this date?

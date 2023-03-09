@@ -48,6 +48,7 @@ class ISO8601DateFormat(BaseDateFormat):
         date_parts: List[Union[str, None]] = []
         # for each part of the date that is known, generate the string format
         # then combine
+        # TODO: should error if we have year and day but no month
         for date_portion, iso_format in self.iso_format.items():
             if undate.is_known(date_portion):
                 # NOTE: datetime strftime for %Y for 3-digit year
