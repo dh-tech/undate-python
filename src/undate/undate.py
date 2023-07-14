@@ -322,12 +322,17 @@ class UndateInterval:
         elif not self.latest.known_year and not self.earliest.known_year:
             # under what circumstances can we assume that if both years
             # are unknown the dates are in the same year or sequential?
-            duration = self.latest.earliest - self.earliest.earliest + ONE_DAY
+            duration = self.latest.earliest - self.earliest.earliest
             # if we get a negative, we've wrapped from end of one year
-            # to the beginning of the next
+            # to the beginning of the next;
+            # recalculate assuming second date is in the subsequent year
             if duration.days < 0:
                 end = self.latest.earliest + relativedelta(years=1)
                 duration = end - self.earliest.earliest
+
+            # add the additional day *after* checking for a negative
+            else:
+                duration += ONE_DAY
 
             return duration
 

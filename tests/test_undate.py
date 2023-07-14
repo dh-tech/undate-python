@@ -265,3 +265,10 @@ class TestUndateInterval:
             Undate(None, 12, 1), Undate(None, 1, 1)
         ).duration()
         assert month_noyear_duration.days == 31
+
+        # real case from Shakespeare and Company Project data;
+        # second date is a year minus one day in the future
+        month_noyear_duration = UndateInterval(
+            Undate(None, 6, 7), Undate(None, 6, 6)
+        ).duration()
+        assert month_noyear_duration.days == 364
