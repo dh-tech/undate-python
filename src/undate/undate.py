@@ -331,8 +331,8 @@ class UndateInterval:
                 duration = end - self.earliest.earliest
 
             # add the additional day *after* checking for a negative
-            else:
-                duration += ONE_DAY
+            # or after recalculating with adjusted year
+            duration += ONE_DAY
 
             return duration
 
