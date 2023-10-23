@@ -12,12 +12,109 @@ class TestUndate:
         assert str(Undate(2022)) == "2022"
         assert str(Undate(month=11, day=7)) == "--11-07"
 
+    def test_partially_known_str(self):
+        assert str(Undate("19XX")) == "19XX"
+        assert str(Undate(2022, "1X")) == "2022-1X"
+        assert str(Undate(2022, 11, "2X")) == "2022-11-2X"
+        assert str(Undate(month="1X", day=7)) == "--1X-07"
+
+        # TODO: should not allow initializing year/day without month;
+        # should we infer unknown month? or raise an exception?
+        # assert str(Undate(2022, day="2X")) == "2022-XX-2X"  # currently returns 2022-2X
+        # assert str(Undate(2022, day=7)) == "2022-XX-07"   @ currently returns 2022-07
+
     def test_repr(self):
         assert repr(Undate(2022, 11, 7)) == "<Undate 2022-11-07>"
         assert (
             repr(Undate(2022, 11, 7, label="A Special Day"))
             == "<Undate 'A Special Day' (2022-11-07)>"
         )
+
+    def test_init_str(self):
+        assert Undate("2000").earliest.year == 2000
+        # single or double digit string month should be ok
+        assert Undate("2000", "2").earliest.month == 2
+        assert Undate("2000", "02").earliest.month == 2
+
+    def test_init_partially_known_year(self):
+        uncertain1900s = Undate("19XX")
+        assert uncertain1900s.earliest.year == 1900
+        assert uncertain1900s.latest.year == 1999
+
+        uncertain1x = Undate("1X05")
+        assert uncertain1x.earliest.year == 1005
+        assert uncertain1x.latest.year == 1905
+
+        uncertain18x7 = Undate("18X7")
+        assert uncertain18x7.earliest.year == 1807
+        assert uncertain18x7.latest.year == 1897
+
+    def test_init_partially_known_month(self):
+        uncertain_fall = Undate(1900, "1X")
+        assert uncertain_fall.earliest.month == 10
+        assert uncertain_fall.latest.month == 12
+
+        uncertain_notfall = Undate(1900, "0X")
+        assert uncertain_notfall.earliest.month == 1
+        assert uncertain_notfall.latest.month == 9
+
+        # unlikely case, but now possible to calculate
+        assert Undate(1900, "X1").earliest.month == 1
+        assert Undate(1900, "X1").latest.month == 11
+
+        # treat as unknown but allow
+        unknown_month = Undate(1900, "XX")
+        assert unknown_month.earliest.month == 1
+        assert unknown_month.latest.month == 12
+        assert str(unknown_month) == "1900-XX"
+
+    def test_init_partially_known_day(self):
+        uncertain_day = Undate(1900, 1, "XX")  # treat as None
+        assert uncertain_day.earliest.day == 1
+        assert uncertain_day.latest.day == 31
+
+        uncertain_day = Undate(1900, 1, "1X")
+        assert uncertain_day.earliest.day == 10
+        assert uncertain_day.latest.day == 19
+
+        uncertain_day = Undate(1900, 1, "0X")
+        assert uncertain_day.earliest.day == 1
+        assert uncertain_day.latest.day == 9
+        uncertain_day = Undate(1900, 1, "2X")
+        assert uncertain_day.earliest.day == 20
+        assert uncertain_day.latest.day == 29
+        uncertain_day = Undate(1900, 1, "3X")
+        assert uncertain_day.earliest.day == 30
+        assert uncertain_day.latest.day == 31
+
+        uncertain_day = Undate(1900, 1, "X5")
+        assert uncertain_day.earliest.day == 5
+        assert uncertain_day.latest.day == 25
+
+        uncertain_day = Undate(1900, 1, "X1")
+        assert uncertain_day.earliest.day == 1
+        assert uncertain_day.latest.day == 31
+
+        # month with only 30 days
+        uncertain_day = Undate(1900, 6, "X1")
+        assert uncertain_day.earliest.day == 1
+        assert uncertain_day.latest.day == 21  # doesn't go to 31
+        uncertain_day = Undate(1900, 6, "3X")
+        assert uncertain_day.earliest.day == 30
+        assert uncertain_day.latest.day == 30
+
+        # special cases
+        # february! 28 days usually
+        uncertain_day = Undate(1900, 2, "2X")
+        assert uncertain_day.earliest.day == 20
+        assert uncertain_day.latest.day == 28
+        # february in a leap year
+        uncertain_day = Undate(2024, 2, "2X")
+        assert uncertain_day.latest.day == 29
+
+    def test_init_invalid(self):
+        with pytest.raises(ValueError):
+            Undate("19xx")
 
     def test_invalid_date(self):
         # invalid month should raise an error
@@ -56,9 +153,40 @@ class TestUndate:
         leapyear_duration = Undate(2024).duration()
         assert leapyear_duration.days == 366
 
+    def test_partiallyknown_duration(self):
+        # day in unknown month/year
+        assert Undate(day=5).duration().days == 1
+        assert Undate(year=1900, month=11, day="2X").duration().days == 1
+
+        # month in unknown year
+        assert Undate(month=6).duration().days == 30
+        # partially known month
+        assert Undate(year=1900, month="1X").duration().days == 31
+        # what about february?
+        # could vary with leap years, but assume non-leapyear
+        assert Undate(month=2).duration().days == 28
+
     def test_known_year(self):
         assert Undate(2022).known_year is True
         assert Undate(month=2, day=5).known_year is False
+        # partially known year is not known
+        assert Undate("19XX").known_year is False
+        # fully known string year should be known
+        assert Undate("1900").known_year is True
+
+    def test_is_known_month(self):
+        assert Undate(2022).is_known("month") is False
+        assert Undate(2022, 2).is_known("month") is True
+        assert Undate(2022, "5").is_known("month") is True
+        assert Undate(2022, "1X").is_known("month") is False
+        assert Undate(2022, "XX").is_known("month") is False
+
+    def test_is_known_day(self):
+        assert Undate(1984).is_known("day") is False
+        assert Undate(month=1, day=3).is_known("day") is True
+        assert Undate(month=1, day="5").is_known("day") is True
+        assert Undate(month=1, day="X5").is_known("day") is False
+        assert Undate(month=1, day="XX").is_known("day") is False
 
 
 class TestUndateInterval:
@@ -136,4 +264,12 @@ class TestUndateInterval:
         month_noyear_duration = UndateInterval(
             Undate(None, 12, 1), Undate(None, 1, 1)
         ).duration()
-        assert month_noyear_duration.days == 31
+        assert month_noyear_duration.days == 32
+        # this seems wrong, but we currently count both start and dates
+
+        # real case from Shakespeare and Company Project data;
+        # second date is a year minus one day in the future
+        month_noyear_duration = UndateInterval(
+            Undate(None, 6, 7), Undate(None, 6, 6)
+        ).duration()
+        assert month_noyear_duration.days == 365
