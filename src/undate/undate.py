@@ -225,6 +225,12 @@ class Undate:
             raise NotImplementedError(
                 "Can't compare when one date falls within the other"
             )
+        # NOTE: unsupported comparisons are supposed to return NotImplemented
+        # However, doing that in this case results in a confusing TypeError!
+        #   TypeError: '<' not supported between instances of 'Undate' and 'Undate'
+        # How to handle when the comparison is ambiguous / indeterminate?
+        # we may need a tribool / ternary type (true, false, unknown),
+        # but not sure what python builtin methods will do with it (unknown = false?)
 
         # for any other case (i.e., self == other), return false
         return False
