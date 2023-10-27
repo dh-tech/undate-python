@@ -41,11 +41,12 @@ class BaseDateFormat:
     # cache import class method to ensure we only import once
     @classmethod
     @lru_cache
-    def import_formatters(cls):
+    def import_formatters(cls) -> int:
         """Import all undate.dateformat formatters
         so that they will be included in available formatters
         even if not explicitly imported. Only import once.
         returns the count of modules imported."""
+
         logger.debug("Loading formatters under undate.dateformat")
         import undate.dateformat
 
