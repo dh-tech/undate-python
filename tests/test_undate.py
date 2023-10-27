@@ -1,8 +1,13 @@
-from datetime import timedelta
+from datetime import timedelta, date
 
 import pytest
 
-from undate.undate import Undate, UndateInterval
+from undate.undate import Undate, UndateInterval, DatePrecision
+
+
+class TestDatePrecision:
+    def test_str(self):
+        assert str(DatePrecision.YEAR) == "YEAR"
 
 
 class TestUndate:
@@ -126,6 +131,19 @@ class TestUndate:
         assert Undate(2022, 10) == Undate(2022, 10)
         assert Undate(2022, 10, 1) == Undate(2022, 10, 1)
         assert Undate(month=2, day=7) == Undate(month=2, day=7)
+
+    def test_eq_datetime_date(self):
+        # support comparisons with datetime objects for full day-precision
+        assert Undate(2022, 10, 1) == date(2022, 10, 1)
+        assert Undate(2022, 10, 1) != date(2022, 10, 2)
+        assert Undate(2022, 10, 1) != date(2021, 10, 1)
+
+        # error on attempt to compare when precision is not known to the day
+        with pytest.raises(
+            NotImplementedError,
+            match="Equality comparision with datetime.date not supported for YEAR precision",
+        ):
+            assert Undate(2022) == date(2022, 10, 1)
 
     def test_not_eq(self):
         assert Undate(2022) != Undate(2023)

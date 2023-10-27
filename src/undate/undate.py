@@ -26,6 +26,9 @@ class DatePrecision(Enum):
     #: day
     DAY = auto()
 
+    def __str__(self):
+        return f"{self.name}"
+
 
 class Undate:
     """Simple object for representing uncertain, fuzzy or partially unknown dates"""
@@ -173,9 +176,20 @@ class Undate:
             return "<Undate '%s' (%s)>" % (self.label, self)
         return "<Undate %s>" % self
 
-    def __eq__(self, other: "Undate") -> bool:
+    def __eq__(self, other: Union["Undate", datetime.date]) -> bool:
         # question: should label be taken into account when checking equality?
         # for now, assuming label differences don't matter for comparing dates
+
+        # support comparison with datetime date ONLY for full day precision
+        if isinstance(other, datetime.date):
+            if self.precision == DatePrecision.DAY:
+                return self.earliest == other
+            else:
+                raise NotImplementedError(
+                    "Equality comparision with datetime.date not supported for %s precision"
+                    % self.precision
+                )
+
         return (
             self.earliest == other.earliest
             and self.latest == other.latest
@@ -185,6 +199,8 @@ class Undate:
             # internal format for comparison
             and self.initial_values == other.initial_values
         )
+
+    # def __lt__(self, other: "")
 
     @property
     def known_year(self) -> bool:
