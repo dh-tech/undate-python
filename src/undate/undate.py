@@ -1,6 +1,6 @@
 import datetime
 from calendar import monthrange
-from enum import Enum, auto
+from enum import IntEnum
 import re
 
 # Pre 3.10 requires Union for multiple types, e.g. Union[int, None] instead of int | None
@@ -15,16 +15,19 @@ from undate.dateformat.base import BaseDateFormat
 ONE_DAY = datetime.timedelta(days=1)
 
 
-class DatePrecision(Enum):
+class DatePrecision(IntEnum):
     """date precision, to indicate date precision independent from how much
     of the date is known."""
 
-    #: year
-    YEAR = auto()
-    #: month
-    MONTH = auto()
+    # numbers should be set to allow logical greater than / less than
+    # comparison, e.g. year precision > month
+
     #: day
-    DAY = auto()
+    DAY = 1
+    #: month
+    MONTH = 2
+    #: year
+    YEAR = 3
 
     def __str__(self):
         return f"{self.name}"
@@ -177,8 +180,7 @@ class Undate:
         return "<Undate %s>" % self
 
     def __eq__(self, other: Union["Undate", datetime.date]) -> bool:
-        # question: should label be taken into account when checking equality?
-        # for now, assuming label differences don't matter for comparing dates
+        # Note: assumes label differences don't matter for comparing dates
 
         # support comparison with datetime date ONLY for full day precision
         if isinstance(other, datetime.date):
@@ -190,17 +192,66 @@ class Undate:
                     % self.precision
                 )
 
-        return (
+        # check for apparent equality
+        looks_equal = (
             self.earliest == other.earliest
             and self.latest == other.latest
-            # NOTE: assumes that partially known values can only be written
-            # in one format (i.e. X for missing digits).
-            # If we support other formats, will need to normalize to common
-            # internal format for comparison
             and self.initial_values == other.initial_values
         )
+        # if everything looks the same, check for any unknowns in initial values
+        # the same unknown date should NOT be considered equal
 
-    # def __lt__(self, other: "")
+        # NOTE: assumes that partially known values can only be written
+        # in one format (i.e. X for missing digits).
+        # If we support other formats, will need to normalize to common
+        # internal format for comparison
+        if looks_equal and any("X" in str(val) for val in self.initial_values.values()):
+            return False
+        return looks_equal
+
+    def __lt__(self, other: "Undate") -> bool:
+        # TODO: support datetime.date (?)
+
+        # if this date ends before the other date starts,
+        # return true (this date is earlier, so it is less)
+        if self.latest < other.earliest:
+            return True
+
+        # if the other one ends before this one starts,
+        # return false (this date is later, so it is not less)
+        if other.latest < self.earliest:
+            return False
+
+        # if it does not, check if one is included within the other
+        # (e.g., single date within the same year)
+        # comparison for those cases is not currently supported
+        elif other in self or self in other:
+            raise NotImplementedError(
+                "Can't compare when one date falls within the other"
+            )
+
+        # for any other case (i.e., self == other), return false
+        return False
+
+    def __le__(self, other: "Undate") -> bool:
+        return self == other or self < other
+
+    def __contains__(self, other: "Undate") -> bool:
+        # if the two dates are strictly equal, don't consider
+        # either one as containing the other
+        if self == other:
+            return False
+
+        # TODO: support datetime.date ?
+
+        return (
+            self.earliest <= other.earliest
+            and self.latest >= other.latest
+            # precision is not sufficient for comparing partially known dates
+            and self.precision > other.precision
+        )
+        # TODO: how to compare partially unknown values
+        # like 19xx and 199x or 1801-XX and 1801-1X
 
     @property
     def known_year(self) -> bool:
