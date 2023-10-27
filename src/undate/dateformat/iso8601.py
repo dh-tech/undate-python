@@ -28,7 +28,12 @@ class ISO8601DateFormat(BaseDateFormat):
         if len(parts) == 1:
             return self._parse_single_date(parts[0])
         elif len(parts) == 2:
-            return UndateInterval(*[self._parse_single_date(p) for p in parts])
+            # date range; parse both parts and initialize an interval
+            start, end = [self._parse_single_date(p) for p in parts]
+            return UndateInterval(start, end)
+        else:
+            # more than two parts = unexpected input
+            raise ValueError
 
     def _parse_single_date(self, value: str) -> Undate:
         # split single iso date into parts; convert to int or None
