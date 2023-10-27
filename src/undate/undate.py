@@ -182,15 +182,9 @@ class Undate:
     def __eq__(self, other: Union["Undate", datetime.date]) -> bool:
         # Note: assumes label differences don't matter for comparing dates
 
-        # support comparison with datetime date ONLY for full day precision
+        # only a day-precision fully known undate can be equal to a datetime.date
         if isinstance(other, datetime.date):
-            if self.precision == DatePrecision.DAY:
-                return self.earliest == other
-            else:
-                raise NotImplementedError(
-                    "Equality comparision with datetime.date not supported for %s precision"
-                    % self.precision
-                )
+            return self.earliest == other and self.latest == other
 
         # check for apparent equality
         looks_equal = (
@@ -209,8 +203,10 @@ class Undate:
             return False
         return looks_equal
 
-    def __lt__(self, other: "Undate") -> bool:
-        # TODO: support datetime.date (?)
+    def __lt__(self, other: Union["Undate", datetime.date]) -> bool:
+        # support datetime.date by converting to undate
+        if isinstance(other, datetime.date):
+            other = Undate.from_datetime_date(other)
 
         # if this date ends before the other date starts,
         # return true (this date is earlier, so it is less)
@@ -233,16 +229,25 @@ class Undate:
         # for any other case (i.e., self == other), return false
         return False
 
-    def __le__(self, other: "Undate") -> bool:
+    def __gt__(self, other: Union["Undate", datetime.date]) -> bool:
+        # define gt ourselves so we can support > comparison with datetime.date,
+        # but rely on existing less than implementation.
+        # strictly greater than must rule out equals
+        return not (self < other or self == other)
+
+    def __le__(self, other: Union["Undate", datetime.date]) -> bool:
         return self == other or self < other
 
-    def __contains__(self, other: "Undate") -> bool:
+    def __contains__(self, other: Union["Undate", datetime.date]) -> bool:
         # if the two dates are strictly equal, don't consider
         # either one as containing the other
+
+        # support comparison with datetime by converting to undate
+        if isinstance(other, datetime.date):
+            other = Undate.from_datetime_date(other)
+
         if self == other:
             return False
-
-        # TODO: support datetime.date ?
 
         return (
             self.earliest <= other.earliest
@@ -250,6 +255,11 @@ class Undate:
             # is precision sufficient for comparing partially known dates?
             and self.precision > other.precision
         )
+
+    @staticmethod
+    def from_datetime_date(dt_date):
+        """Initialize an :class:`Undate` object from a :class:`datetime.date`"""
+        return Undate(dt_date.year, dt_date.month, dt_date.day)
 
     @property
     def known_year(self) -> bool:
