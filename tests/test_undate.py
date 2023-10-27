@@ -214,8 +214,6 @@ class TestUndate:
         (Undate(2022, 1, 1), Undate(2022)),
         (Undate(2022, 12, 31), Undate(2022)),
         (Undate(2022, 6, 15), Undate(2022, 6)),
-        # TODO: support partially known dates that are unambiguously in range
-        # (Undate("199X"), Undate("19XX")),
     ]
 
     @pytest.mark.parametrize("date1,date2", testdata_contains)
@@ -227,25 +225,22 @@ class TestUndate:
         (Undate(1980), Undate(2020)),
         (Undate(1980), Undate(2020, 6)),
         (Undate(1980, 6), Undate(2020, 6)),
+        # partially known dates that are similar but same precision,
+        # so one does not contain the other
+        (Undate("199X"), Undate("19XX")),
+        # - specific month to unknown month
+        (Undate(1980, 6), Undate(1980, "XX")),
+        # some of these might overlap, but we don't have enough
+        # information to determine
+        # - unknown month to unknown month
+        (Undate(1980, "XX"), Undate(1980, "XX")),
+        # - partially unknown month to unknown month
+        (Undate(1801, "1X"), Undate(1801, "XX")),
     ]
 
     @pytest.mark.parametrize("date1,date2", testdata_not_contains)
     def test_not_contains(self, date1, date2):
         assert date1 not in date2
-
-    def test_contains_ambiguous(self):
-        # date not in range due to precision
-        # TODO: can we return an unknown instead of false?
-        # or should this raise a not implemented error?
-
-        # these are cases where dates *might* overlap,
-        #  but we don't have enough information to determine
-        # - specific month to unknown month
-        assert Undate(1980, 6) not in Undate(1980, "XX")
-        # - unknown month to unknown month
-        assert Undate(1980, "XX") not in Undate(1980, "XX")
-        assert Undate(1980, 6) not in Undate(1980, "XX")
-        assert Undate(1801, "1X") not in Undate(1801, "XX")
 
     def test_sorting(self):
         # sorting should be possible based on gt/lt

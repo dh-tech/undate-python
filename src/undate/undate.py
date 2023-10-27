@@ -247,11 +247,9 @@ class Undate:
         return (
             self.earliest <= other.earliest
             and self.latest >= other.latest
-            # precision is not sufficient for comparing partially known dates
+            # is precision sufficient for comparing partially known dates?
             and self.precision > other.precision
         )
-        # TODO: how to compare partially unknown values
-        # like 19xx and 199x or 1801-XX and 1801-1X
 
     @property
     def known_year(self) -> bool:
