@@ -34,7 +34,9 @@ testcases = [
 
 def test_should_parse():
     for testcase in testcases:
-        assert edtf_parser.parse(testcase)
+        tree = edtf_parser.parse(testcase)
+        assert tree
+        print(tree.pretty())
 
 
 error_cases = ["1984-13", "Y1702"]
