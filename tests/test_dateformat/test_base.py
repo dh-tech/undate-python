@@ -31,9 +31,12 @@ class TestBaseDateFormat:
             BaseDateFormat().to_string(1991)
 
 
-@pytest.mark.first
 def test_import_formatters_import_only_once(caplog):
-    # run first so we can confirm it runs once
+    # clear the cache, since any instantiation of an Undate
+    # object anywhere in the test suite will populate it
+    BaseDateFormat.import_formatters.cache_clear()
+
+    # run first, and confirm it runs and loads formatters
     with caplog.at_level(logging.DEBUG):
         import_count = BaseDateFormat.import_formatters()
     # should import at least one thing (iso8601)
