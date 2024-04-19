@@ -36,18 +36,9 @@ testcases = [
 ]
 
 
-def test_transform():
+@pytest.mark.parametrize("date_string,expected", testcases)
+def test_transform(date_string, expected):
     transformer = EDTFTransformer()
-
-    for testinput, output in testcases:
-        parsetree = edtf_parser.parse(testinput)
-        assert transformer.transform(parsetree) == output
-
-
-# error_cases = ["1984-13", "Y1702"]
-
-
-# def test_should_error():
-#     for error_case in error_cases:
-#         with pytest.raises(Exception):
-#             edtf_parser.parse(error_cases)
+    # parse the input string, then transform to undate object
+    parsetree = edtf_parser.parse(date_string)
+    assert transformer.transform(parsetree) == expected

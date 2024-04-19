@@ -32,17 +32,15 @@ testcases = [
 ]
 
 
-def test_should_parse():
-    for testcase in testcases:
-        tree = edtf_parser.parse(testcase)
-        assert tree
-        print(tree.pretty())
+@pytest.mark.parametrize("date_string", testcases)
+def test_should_parse(date_string):
+    assert edtf_parser.parse(date_string)
 
 
 error_cases = ["1984-13", "Y1702"]
 
 
-def test_should_error():
-    for error_case in error_cases:
-        with pytest.raises(Exception):
-            edtf_parser.parse(error_cases)
+@pytest.mark.parametrize("date_string", error_cases)
+def test_should_error(date_string):
+    with pytest.raises(Exception):
+        edtf_parser.parse(date_string)
