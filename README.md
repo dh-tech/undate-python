@@ -62,12 +62,9 @@ This repository uses [git-flow](https://github.com/nvie/gitflow) branching conve
 - **main** will always contain the most recent release
 - **develop** branch is the latest version of work in progress
 
-Pull requests should be made against the **develop** branch.
+Pull requests for new features should be made against the **develop** branch.
 
-It is recommended to install git flow (on OSX, use brew or ports, e.g.: `brew install git-flow`;
-on Ubuntu/Debian, `apt-get install git-flow`) and then initialize it in this repository
-via `git flow init` and accept the defaults.  Then you can use `git flow feature start`
-to create feature development branches.
+It is recommended to install git flow (on OSX, use brew or ports, e.g.: `brew install git-flow`; on Ubuntu/Debian, `apt-get install git-flow`) and then initialize it in this repository via `git flow init` and accept the defaults.  Then you can use `git flow feature start` to create feature development branches.
 
 Alternately, you can check out the develop branch (`git checkout develop`)
 and create your branches manually based on develop (`git checkout -b feature/xxx-name`).
@@ -98,6 +95,18 @@ Tests can be run with either `tox` or `pytest`.
 To run all the tests in a single test file, use pytest and specify the path to the test: `pytest tests/test_dateformat/test_base.py`
 
 To test cases by name, use pytest: `pytest -k test_str`
+
+### Check python types
+
+Python typing is currently only enforced by a CI check action using `mypy`.
+To run mypy locally, first install mypy and the necessary typing libraries:
+```sh
+pip install mypy
+mypy --install-types
+```
+
+Once mypy is installed, run `mypy src/` to check.
+
 
 ### Create documentation
 
