@@ -1,6 +1,6 @@
 import datetime
 from calendar import monthrange
-from enum import Enum, auto
+from enum import IntEnum
 import re
 
 # Pre 3.10 requires Union for multiple types, e.g. Union[int, None] instead of int | None
@@ -15,16 +15,22 @@ from undate.dateformat.base import BaseDateFormat
 ONE_DAY = datetime.timedelta(days=1)
 
 
-class DatePrecision(Enum):
+class DatePrecision(IntEnum):
     """date precision, to indicate date precision independent from how much
     of the date is known."""
 
-    #: year
-    YEAR = auto()
-    #: month
-    MONTH = auto()
+    # numbers should be set to allow logical greater than / less than
+    # comparison, e.g. year precision > month
+
     #: day
-    DAY = auto()
+    DAY = 1
+    #: month
+    MONTH = 2
+    #: year
+    YEAR = 3
+
+    def __str__(self):
+        return f"{self.name}"
 
 
 class Undate:
@@ -174,21 +180,102 @@ class Undate:
         return "<Undate %s>" % self
 
     def __eq__(self, other: object) -> bool:
+        # support datetime.date by converting to undate
+        if isinstance(other, datetime.date):
+            other = Undate.from_datetime_date(other)
+
         # recommended to support comparison with arbitrary objects
         if not isinstance(other, Undate):
             return NotImplemented
 
-        # question: should label be taken into account when checking equality?
-        # for now, assuming label differences don't matter for comparing dates
-        return (
+        # Note: assumes label differences don't matter for comparing dates
+
+        # only a day-precision fully known undate can be equal to a datetime.date
+        if isinstance(other, datetime.date):
+            return self.earliest == other and self.latest == other
+
+        # check for apparent equality
+        looks_equal = (
             self.earliest == other.earliest
             and self.latest == other.latest
-            # NOTE: assumes that partially known values can only be written
-            # in one format (i.e. X for missing digits).
-            # If we support other formats, will need to normalize to common
-            # internal format for comparison
             and self.initial_values == other.initial_values
         )
+        # if everything looks the same, check for any unknowns in initial values
+        # the same unknown date should NOT be considered equal
+        # (but do we need a different equivalence check for this?)
+
+        # NOTE: assumes that partially known values can only be written
+        # in one format (i.e. X for missing digits).
+        # If we support other formats, will need to normalize to common
+        # internal format for comparison
+        if looks_equal and any("X" in str(val) for val in self.initial_values.values()):
+            return False
+
+        return looks_equal
+
+    def __lt__(self, other: Union["Undate", datetime.date]) -> bool:
+        # support datetime.date by converting to undate
+        if isinstance(other, datetime.date):
+            other = Undate.from_datetime_date(other)
+
+        # if this date ends before the other date starts,
+        # return true (this date is earlier, so it is less)
+        if self.latest < other.earliest:
+            return True
+
+        # if the other one ends before this one starts,
+        # return false (this date is later, so it is not less)
+        if other.latest < self.earliest:
+            return False
+
+        # if it does not, check if one is included within the other
+        # (e.g., single date within the same year)
+        # comparison for those cases is not currently supported
+        elif other in self or self in other:
+            raise NotImplementedError(
+                "Can't compare when one date falls within the other"
+            )
+        # NOTE: unsupported comparisons are supposed to return NotImplemented
+        # However, doing that in this case results in a confusing TypeError!
+        #   TypeError: '<' not supported between instances of 'Undate' and 'Undate'
+        # How to handle when the comparison is ambiguous / indeterminate?
+        # we may need a tribool / ternary type (true, false, unknown),
+        # but not sure what python builtin methods will do with it (unknown = false?)
+
+        # for any other case (i.e., self == other), return false
+        return False
+
+    def __gt__(self, other: Union["Undate", datetime.date]) -> bool:
+        # define gt ourselves so we can support > comparison with datetime.date,
+        # but rely on existing less than implementation.
+        # strictly greater than must rule out equals
+        return not (self < other or self == other)
+
+    def __le__(self, other: Union["Undate", datetime.date]) -> bool:
+        return self == other or self < other
+
+    def __contains__(self, other: Union["Undate", datetime.date]) -> bool:
+        # if the two dates are strictly equal, don't consider
+        # either one as containing the other
+
+        # support comparison with datetime by converting to undate
+        if isinstance(other, datetime.date):
+            other = Undate.from_datetime_date(other)
+
+        if self == other:
+            return False
+
+        return (
+            self.earliest <= other.earliest
+            and self.latest >= other.latest
+            # is precision sufficient for comparing partially known dates?
+            and self.precision > other.precision
+        )
+
+    @staticmethod
+    def from_datetime_date(dt_date):
+        """Initialize an :class:`Undate` object from a :class:`datetime.date`"""
+        return Undate(dt_date.year, dt_date.month, dt_date.day)
 
     @property
     def known_year(self) -> bool:
