@@ -122,7 +122,7 @@ tox -e docs
 <table>
   <tbody>
     <tr>
-      <td align="center" valign="top" width="14.28%"><a href="http://rlskoeser.github.io/"><img src="https://avatars.githubusercontent.com/u/691231?v=4?s=100" width="100px;" alt="Rebecca Sutton Koeser"/><br /><sub><b>Rebecca Sutton Koeser</b></sub></a><br /><a href="#blog-rlskoeser" title="Blogposts">📝</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://rlskoeser.github.io/"><img src="https://avatars.githubusercontent.com/u/691231?v=4?s=100" width="100px;" alt="Rebecca Sutton Koeser"/><br /><sub><b>Rebecca Sutton Koeser</b></sub></a><br /><a href="#blog-rlskoeser" title="Blogposts">📝</a> <a href="https://github.com/dh-tech/undate-python/commits?author=rlskoeser" title="Code">💻</a> <a href="https://github.com/dh-tech/undate-python/commits?author=rlskoeser" title="Documentation">📖</a> <a href="#example-rlskoeser" title="Examples">💡</a> <a href="#platform-rlskoeser" title="Packaging/porting to new platform">📦</a> <a href="https://github.com/dh-tech/undate-python/pulls?q=is%3Apr+reviewed-by%3Arlskoeser" title="Reviewed Pull Requests">👀</a> <a href="https://github.com/dh-tech/undate-python/commits?author=rlskoeser" title="Tests">⚠️</a></td>
     </tr>
   </tbody>
   <tfoot>
