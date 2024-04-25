@@ -41,14 +41,14 @@ class Undate:
     #: symbol for unknown digits within a date value
     MISSING_DIGIT: str = "X"
 
-    earliest: Union[datetime.date, None] = None
-    latest: Union[datetime.date, None] = None
+    earliest: datetime.date
+    latest: datetime.date
     #: A string to label a specific undate, e.g. "German Unity Date 2022" for Oct. 3, 2022.
     #: Labels are not taken into account when comparing undate objects.
     label: Union[str, None] = None
-    formatter: Union[BaseDateFormat, None] = None
+    formatter: BaseDateFormat
     #: precision of the date (day, month, year, etc.)
-    precision: DatePrecision = None
+    precision: DatePrecision
 
     #: known non-leap year
     NON_LEAP_YEAR: int = 2022
@@ -62,7 +62,7 @@ class Undate:
         label: Optional[str] = None,
     ):
         # keep track of initial values and which values are known
-        self.initial_values: Dict[str, Union[int, str]] = {
+        self.initial_values: Dict[str, Optional[Union[int, str]]] = {
             "year": year,
             "month": month,
             "day": day,
@@ -85,8 +85,8 @@ class Undate:
                 min_year = max_year = year
             except ValueError:
                 # year is a string that can't be converted to int
-                min_year = int(year.replace(self.MISSING_DIGIT, "0"))
-                max_year = int(year.replace(self.MISSING_DIGIT, "9"))
+                min_year = int(str(year).replace(self.MISSING_DIGIT, "0"))
+                max_year = int(str(year).replace(self.MISSING_DIGIT, "9"))
         else:
             min_year = datetime.MINYEAR
             max_year = datetime.MAXYEAR
@@ -111,7 +111,7 @@ class Undate:
             except ValueError:
                 # if not, calculate min/max for missing digits
                 min_month, max_month = self._missing_digit_minmax(
-                    month, min_month, max_month
+                    str(month), min_month, max_month
                 )
 
         # similar to month above — unknown day, but day-level granularity
@@ -128,14 +128,14 @@ class Undate:
             min_day = 1
             # if we know year and month (or max month), calculate exactly
             if year and month:
-                _, max_day = monthrange(year, max_month)
+                _, max_day = monthrange(int(year), max_month)
             elif year is None and month:
                 # If we don't have year and month,
                 # calculate based on a known non-leap year
                 # (better than just setting 31, but still not great)
                 _, max_day = monthrange(self.NON_LEAP_YEAR, max_month)
             else:
-                max_day: int = 31
+                max_day = 31
 
             # if day is partially specified, narrow min/max further
             if day is not None:
@@ -146,9 +146,10 @@ class Undate:
         self.earliest = datetime.date(min_year, min_month, min_day)
         self.latest = datetime.date(max_year, max_month, max_day)
 
-        if not formatter:
-            # TODO subclass definitions not available unless they are imported where Undate() is called
-            formatter = BaseDateFormat.available_formatters()[self.DEFAULT_FORMAT]()
+        if formatter is None:
+            #  import all subclass definitions; initialize the default
+            formatter_cls = BaseDateFormat.available_formatters()[self.DEFAULT_FORMAT]
+            formatter = formatter_cls()
         self.formatter = formatter
 
         self.label = label
@@ -179,8 +180,27 @@ class Undate:
             return "<Undate '%s' (%s)>" % (self.label, self)
         return "<Undate %s>" % self
 
-    def __eq__(self, other: Union["Undate", datetime.date]) -> bool:
+    def _comparison_type(self, other: object) -> "Undate":
+        """Common logic for type handling in comparison methods.
+        Converts to Undate object if possible, otherwise raises
+        NotImplemented error.  Currently only supports conversion
+        from :class:`datetime.date`
+        """
+
+        # support datetime.date by converting to undate
+        if isinstance(other, datetime.date):
+            other = Undate.from_datetime_date(other)
+
+        # recommended to support comparison with arbitrary objects
+        if not isinstance(other, Undate):
+            return NotImplemented
+
+        return other
+
+    def __eq__(self, other: object) -> bool:
         # Note: assumes label differences don't matter for comparing dates
+
+        other = self._comparison_type(other)
 
         # only a day-precision fully known undate can be equal to a datetime.date
         if isinstance(other, datetime.date):
@@ -194,6 +214,7 @@ class Undate:
         )
         # if everything looks the same, check for any unknowns in initial values
         # the same unknown date should NOT be considered equal
+        # (but do we need a different equivalence check for this?)
 
         # NOTE: assumes that partially known values can only be written
         # in one format (i.e. X for missing digits).
@@ -201,12 +222,11 @@ class Undate:
         # internal format for comparison
         if looks_equal and any("X" in str(val) for val in self.initial_values.values()):
             return False
+
         return looks_equal
 
-    def __lt__(self, other: Union["Undate", datetime.date]) -> bool:
-        # support datetime.date by converting to undate
-        if isinstance(other, datetime.date):
-            other = Undate.from_datetime_date(other)
+    def __lt__(self, other: object) -> bool:
+        other = self._comparison_type(other)
 
         # if this date ends before the other date starts,
         # return true (this date is earlier, so it is less)
@@ -235,7 +255,7 @@ class Undate:
         # for any other case (i.e., self == other), return false
         return False
 
-    def __gt__(self, other: Union["Undate", datetime.date]) -> bool:
+    def __gt__(self, other: object) -> bool:
         # define gt ourselves so we can support > comparison with datetime.date,
         # but rely on existing less than implementation.
         # strictly greater than must rule out equals
@@ -244,13 +264,10 @@ class Undate:
     def __le__(self, other: Union["Undate", datetime.date]) -> bool:
         return self == other or self < other
 
-    def __contains__(self, other: Union["Undate", datetime.date]) -> bool:
+    def __contains__(self, other: object) -> bool:
         # if the two dates are strictly equal, don't consider
         # either one as containing the other
-
-        # support comparison with datetime by converting to undate
-        if isinstance(other, datetime.date):
-            other = Undate.from_datetime_date(other)
+        other = self._comparison_type(other)
 
         if self == other:
             return False
@@ -320,7 +337,7 @@ class Undate:
 
     def _missing_digit_minmax(
         self, value: str, min_val: int, max_val: int
-    ) -> (int, int):
+    ) -> tuple[int, int]:
         # given a possible range, calculate min/max values for a string
         # with a missing digit
 
@@ -336,17 +353,17 @@ class Undate:
         max_match = max(matches)
 
         # split input string into a list so we can update individually
-        min_val = list(value)
-        max_val = list(value)
+        new_min_val = list(value)
+        new_max_val = list(value)
         for i, digit in enumerate(value):
             # replace the corresponding digit with our min and max
             if digit == self.MISSING_DIGIT:
-                min_val[i] = min_match[i]
-                max_val[i] = max_match[i]
+                new_min_val[i] = min_match[i]
+                new_max_val[i] = max_match[i]
 
         # combine the lists of digits back together and convert to int
-        min_val = int("".join(min_val))
-        max_val = int("".join(max_val))
+        min_val = int("".join(new_min_val))
+        max_val = int("".join(new_max_val))
         return (min_val, max_val)
 
 
@@ -362,12 +379,15 @@ class UndateInterval:
     """
 
     # date range between two uncertain dates
+    earliest: Union[Undate, None]
+    latest: Union[Undate, None]
+    label: Union[str, None]
 
     def __init__(
         self,
-        earliest: Union[Undate, None] = None,
-        latest: Union[Undate, None] = None,
-        label: Union[str, None] = None,
+        earliest: Optional[Undate] = None,
+        latest: Optional[Undate] = None,
+        label: Optional[str] = None,
     ):
         # for now, assume takes two undate objects
         self.earliest = earliest
@@ -394,6 +414,10 @@ class UndateInterval:
         :rtype: timedelta
         """
         # what is the duration of this date range?
+
+        # if range is open-ended, can't calculate
+        if self.earliest is None or self.latest is None:
+            return NotImplemented
 
         # if both years are known, subtract end of range from beginning of start
         if self.latest.known_year and self.earliest.known_year:

@@ -15,7 +15,7 @@ returned by :meth:`BaseDateFormat.available_formatters`
 import importlib
 import logging
 import pkgutil
-from typing import Dict
+from typing import Dict, Type
 from functools import lru_cache  # functools.cache not available until 3.9
 
 
@@ -41,11 +41,12 @@ class BaseDateFormat:
     # cache import class method to ensure we only import once
     @classmethod
     @lru_cache
-    def import_formatters(cls):
+    def import_formatters(cls) -> int:
         """Import all undate.dateformat formatters
         so that they will be included in available formatters
         even if not explicitly imported. Only import once.
         returns the count of modules imported."""
+
         logger.debug("Loading formatters under undate.dateformat")
         import undate.dateformat
 
@@ -65,7 +66,7 @@ class BaseDateFormat:
         return import_count
 
     @classmethod
-    def available_formatters(cls) -> Dict[str, "BaseDateFormat"]:
+    def available_formatters(cls) -> Dict[str, Type["BaseDateFormat"]]:
         # ensure undate formatters are imported
         cls.import_formatters()
         return {c.name: c for c in cls.__subclasses__()}  # type: ignore

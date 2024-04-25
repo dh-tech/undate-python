@@ -427,3 +427,6 @@ class TestUndateInterval:
             Undate(None, 6, 7), Undate(None, 6, 6)
         ).duration()
         assert month_noyear_duration.days == 365
+
+        # duration is not supported for open-ended intervals
+        assert UndateInterval(Undate(2000), None).duration() == NotImplemented
