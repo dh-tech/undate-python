@@ -146,9 +146,10 @@ class Undate:
         self.earliest = datetime.date(min_year, min_month, min_day)
         self.latest = datetime.date(max_year, max_month, max_day)
 
-        if not formatter:
+        if formatter is None:
             #  import all subclass definitions; initialize the default
-            formatter = BaseDateFormat.available_formatters()[self.DEFAULT_FORMAT]()
+            formatter_cls = BaseDateFormat.available_formatters()[self.DEFAULT_FORMAT]
+            formatter = formatter_cls()
         self.formatter = formatter
 
         self.label = label
@@ -179,7 +180,13 @@ class Undate:
             return "<Undate '%s' (%s)>" % (self.label, self)
         return "<Undate %s>" % self
 
-    def __eq__(self, other: object) -> bool:
+    def _comparison_type(self, other: object) -> "Undate":
+        """Common logic for type handling in comparison methods.
+        Converts to Undate object if possible, otherwise raises
+        NotImplemented error.  Currently only supports conversion
+        from :class:`datetime.date`
+        """
+
         # support datetime.date by converting to undate
         if isinstance(other, datetime.date):
             other = Undate.from_datetime_date(other)
@@ -188,7 +195,12 @@ class Undate:
         if not isinstance(other, Undate):
             return NotImplemented
 
+        return other
+
+    def __eq__(self, other: object) -> bool:
         # Note: assumes label differences don't matter for comparing dates
+
+        other = self._comparison_type(other)
 
         # only a day-precision fully known undate can be equal to a datetime.date
         if isinstance(other, datetime.date):
@@ -213,10 +225,8 @@ class Undate:
 
         return looks_equal
 
-    def __lt__(self, other: Union["Undate", datetime.date]) -> bool:
-        # support datetime.date by converting to undate
-        if isinstance(other, datetime.date):
-            other = Undate.from_datetime_date(other)
+    def __lt__(self, other: object) -> bool:
+        other = self._comparison_type(other)
 
         # if this date ends before the other date starts,
         # return true (this date is earlier, so it is less)
@@ -245,7 +255,7 @@ class Undate:
         # for any other case (i.e., self == other), return false
         return False
 
-    def __gt__(self, other: Union["Undate", datetime.date]) -> bool:
+    def __gt__(self, other: object) -> bool:
         # define gt ourselves so we can support > comparison with datetime.date,
         # but rely on existing less than implementation.
         # strictly greater than must rule out equals
@@ -254,13 +264,10 @@ class Undate:
     def __le__(self, other: Union["Undate", datetime.date]) -> bool:
         return self == other or self < other
 
-    def __contains__(self, other: Union["Undate", datetime.date]) -> bool:
+    def __contains__(self, other: object) -> bool:
         # if the two dates are strictly equal, don't consider
         # either one as containing the other
-
-        # support comparison with datetime by converting to undate
-        if isinstance(other, datetime.date):
-            other = Undate.from_datetime_date(other)
+        other = self._comparison_type(other)
 
         if self == other:
             return False
@@ -330,7 +337,7 @@ class Undate:
 
     def _missing_digit_minmax(
         self, value: str, min_val: int, max_val: int
-    ) -> (int, int):
+    ) -> tuple[int, int]:
         # given a possible range, calculate min/max values for a string
         # with a missing digit
 
