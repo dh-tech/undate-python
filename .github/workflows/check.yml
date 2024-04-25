@@ -29,5 +29,5 @@ jobs:
       - name: Check python types with mypy
         run: |
           pip install mypy
-          mypy --install-types
+          mypy --install-types --non-interactive
           mypy src/
