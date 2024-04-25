@@ -41,4 +41,6 @@ def test_transform(date_string, expected):
     transformer = EDTFTransformer()
     # parse the input string, then transform to undate object
     parsetree = edtf_parser.parse(date_string)
-    assert transformer.transform(parsetree) == expected
+    # since the same unknown date is not considered strictly equal,
+    # compare object representations
+    assert repr(transformer.transform(parsetree)) == repr(expected)
