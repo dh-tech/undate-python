@@ -3,7 +3,7 @@
     "README.md"
   ],
   "imageSize": 100,
-  "commit": false,
+  "commit": true,
   "commitConvention": "angular",
   "contributors": [
     {
@@ -26,7 +26,10 @@
         "code",
         "review",
         "test",
-        "blog"
+        "blog",
+        "example",
+        "doc",
+        "platform"
       ]
     },
     {
@@ -64,6 +67,7 @@
     }
   ],
   "contributorsPerLine": 7,
+  "linkToUsage": true,
   "skipCi": true,
   "repoType": "github",
   "repoHost": "https://github.com",

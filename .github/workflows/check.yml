@@ -1,4 +1,4 @@
-name: style + docs check
+name: Check style + docs + types
 
 on:
   pull_request:
@@ -12,9 +12,9 @@ jobs:
         working-directory: .
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Python 3.10
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: "3.10"
           cache: 'pip'
@@ -22,7 +22,17 @@ jobs:
       - name: Install package with dependencies
         run: pip install -e ".[dev]"
         if: steps.python-cache.outputs.cache-hit != 'true'
+
+      # check code style
       - name: Run black
         run: black src --check --diff
+
+      # check docs
       - name: Check that documentation can be built
         run: tox -e docs
+
+      # check types with mypy
+      - name: Install mypy
+        run: pip install mypy
+      - name: Check types in python src directory; install needed types
+        run: mypy --install-types --non-interactive src
