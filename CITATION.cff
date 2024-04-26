@@ -14,7 +14,8 @@ authors:
   affiliation:
 - given-names: Julia
   family-names: Damerow
-  affiliation:
+  affiliation: Arizona State University
+  orcid: https://orcid.org/0000-0002-0874-0092
 - given-names: Malte
   family-names: Vogl
   affiliation:
