@@ -23,7 +23,8 @@ authors:
   orcid: https://orcid.org/0000-0002-2683-6610  
 - given-names: Robert
   family-names: Casties
-  affiliation: MPIWG
+  affiliation: Max Planck Institute for the History of Science
+  orcid: https://orcid.org/0009-0008-9370-1303
 version: '0.2'
 date-released: 2024-04-25
 repository-code: https://github.com/dh-tech/undate-python
