@@ -20,7 +20,7 @@ It was initially created as part of a [DH-Tech](https://dh-tech.github.io/) hack
 [![All Contributors](https://img.shields.io/badge/all_contributors-5-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
-Read [Contributors](CONTRIBUTORS.md) for contribution information.
+Read [Contributors](CONTRIBUTORS.md) for detailed contribution information.
 
 ## Documentation
 
