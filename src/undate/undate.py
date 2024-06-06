@@ -5,14 +5,62 @@ import re
 
 # Pre 3.10 requires Union for multiple types, e.g. Union[int, None] instead of int | None
 from typing import Optional, Dict, Union
-
+import numpy as np
 from dateutil.relativedelta import relativedelta
 
 from undate.dateformat.base import BaseDateFormat
 
 
 #: duration of a single day
-ONE_DAY = datetime.timedelta(days=1)
+# ONE_DAY = datetime.timedelta(days=1)
+ONE_DAY = np.timedelta64(1, "D")
+
+
+class LocalDate(np.ndarray):
+    # shim to make np.datetime64 act more like datetime.date
+
+    # extend np.datetime64 datatype
+    # adapted from https://stackoverflow.com/a/27129510/9706217
+
+    def __new__(cls, year: str, month: str = None, day: str = None):
+        if isinstance(year, np.datetime64):
+            data = year
+        else:
+            datestr = year
+            if month is not None:
+                datestr = f"{year}-{month:02d}"
+                if day is not None:
+                    datestr = f"{datestr}-{day:02d}"
+            data = np.datetime64(datestr)
+
+        data = np.asarray(data, dtype="datetime64")
+        if data.dtype != "datetime64[D]":
+            raise Exception(
+                "Unable to parse dates adequately to datetime64[D]: %s" % data
+            )
+        obj = data.view(cls)
+        return obj
+
+    def Export(self):
+        return self
+
+    def __array_finalize__(self, obj):
+        if obj is None:
+            return
+
+    # custom properties to access year, month, day
+
+    @property
+    def year(self):
+        return int(str(self.astype("datetime64[Y]")))
+
+    @property
+    def month(self):
+        return int(str(self.astype("datetime64[M]")).split("-")[-1])
+
+    @property
+    def day(self):
+        return int(str(self.astype("datetime64[D]")).split("-")[-1])
 
 
 class DatePrecision(IntEnum):
@@ -31,6 +79,8 @@ class DatePrecision(IntEnum):
 
     def __str__(self):
         return f"{self.name}"
+
+    # numpy date units are years (‘Y’), months (‘M’), weeks (‘W’), and days (‘D’)
 
 
 class Undate:
@@ -88,8 +138,13 @@ class Undate:
                 min_year = int(str(year).replace(self.MISSING_DIGIT, "0"))
                 max_year = int(str(year).replace(self.MISSING_DIGIT, "9"))
         else:
-            min_year = datetime.MINYEAR
-            max_year = datetime.MAXYEAR
+            # min_year = datetime.MINYEAR
+            # max_year = datetime.MAXYEAR
+            # numpy datetime is stored as 64-bit integer, so length
+            # depends on the span; assume days for now
+
+            max_year = int(2.5e16)
+            min_year = int(-2.5e16)
 
         # if month is passed in as a string but completely unknown,
         # treat as none
@@ -143,8 +198,11 @@ class Undate:
 
         # for unknowns, assume smallest possible value for earliest and
         # largest valid for latest
-        self.earliest = datetime.date(min_year, min_month, min_day)
-        self.latest = datetime.date(max_year, max_month, max_day)
+        # self.earliest = datetime.date(min_year, min_month, min_day)
+        # self.latest = datetime.date(max_year, max_month, max_day)
+
+        self.earliest = LocalDate(min_year, min_month, min_day)
+        self.latest = LocalDate(max_year, max_month, max_day)
 
         if formatter is None:
             #  import all subclass definitions; initialize the default
@@ -318,16 +376,21 @@ class Undate:
             if not self.known_year:
                 # if year is unknown, calculate month duration in
                 # a single year
-                latest = datetime.date(
+                latest = LocalDate(
                     self.earliest.year, self.latest.month, self.latest.day
                 )
+
+                # latest = datetime.date(
+                #     self.earliest.year, self.latest.month, self.latest.day
+                # )
             delta = latest - self.earliest + ONE_DAY
             # month duration can't ever be more than 31 days
             # (could we ever know if it's smaller?)
 
             # if granularity == month but not known month, duration = 31
-            if delta.days > 31:
-                return datetime.timedelta(days=31)
+            if delta.astype(int) > 31:
+                # return datetime.timedelta(days=31)
+                return np.timedelta64(31, "D")
             return delta
 
         # otherwise, calculate based on earliest/latest range
@@ -431,8 +494,9 @@ class UndateInterval:
             # if we get a negative, we've wrapped from end of one year
             # to the beginning of the next;
             # recalculate assuming second date is in the subsequent year
-            if duration.days < 0:
-                end = self.latest.earliest + relativedelta(years=1)
+            if duration.astype("int") < 0:
+                # end = self.latest.earliest + relativedelta(years=1)
+                end = self.latest.earliest + np.timedelta64(365, "D")
                 duration = end - self.earliest.earliest
 
             # add the additional day *after* checking for a negative
