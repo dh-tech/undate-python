@@ -140,8 +140,13 @@ class Undate:
                 min_year = int(str(year).replace(self.MISSING_DIGIT, "0"))
                 max_year = int(str(year).replace(self.MISSING_DIGIT, "9"))
         else:
-            min_year = datetime.MINYEAR
-            max_year = datetime.MAXYEAR
+            # min_year = datetime.MINYEAR
+            # max_year = datetime.MAXYEAR
+            # numpy datetime is stored as 64-bit integer, so length
+            # depends on the span; assume days for now
+
+            max_year = int(2.5e16)
+            min_year = int(-2.5e16)
 
         # if month is passed in as a string but completely unknown,
         # treat as none
