@@ -20,7 +20,7 @@ class DatePrecision(IntEnum):
     of the date is known."""
 
     # numbers should be set to allow logical greater than / less than
-    # comparison, e.g. year precision > month
+    # comparison, e.g. year precision < month
 
     #: day
     DAY = 1
