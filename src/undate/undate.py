@@ -16,53 +16,51 @@ from undate.dateformat.base import BaseDateFormat
 ONE_DAY = np.timedelta64(1, "D")
 
 
-class LocalDate:
-    def __init__(self, year: str, month: str = None, day: str = None):
+class LocalDate(np.ndarray):
+    # shim to make np.datetime64 act more like datetime.date
+
+    # extend np.datetime64 datatype
+    # adapted from https://stackoverflow.com/a/27129510/9706217
+
+    def __new__(cls, year: str, month: str = None, day: str = None):
         if isinstance(year, np.datetime64):
-            self._date = year
+            data = year
         else:
             datestr = year
             if month is not None:
                 datestr = f"{year}-{month:02d}"
                 if day is not None:
                     datestr = f"{datestr}-{day:02d}"
-            self._date = np.datetime64(datestr)
+            data = np.datetime64(datestr)
 
-    def __str__(self):
-        return str(self._date)
+        data = np.asarray(data, dtype="datetime64")
+        if data.dtype != "datetime64[D]":
+            raise Exception(
+                "Unable to parse dates adequately to datetime64[D]: %s" % data
+            )
+        obj = data.view(cls)
+        return obj
+
+    def Export(self):
+        return self
+
+    def __array_finalize__(self, obj):
+        if obj is None:
+            return
+
+    # custom properties to access year, month, day
 
     @property
     def year(self):
-        return int(str(self._date.astype("datetime64[Y]")))
+        return int(str(self.astype("datetime64[Y]")))
 
     @property
     def month(self):
-        return int(str(self._date.astype("datetime64[M]")).split("-")[-1])
+        return int(str(self.astype("datetime64[M]")).split("-")[-1])
 
     @property
     def day(self):
-        return int(str(self._date.astype("datetime64[D]")).split("-")[-1])
-
-    def __eq__(self, other: object) -> bool:
-        return self._date == other._date
-
-    def __gt__(self, other: object) -> bool:
-        # define gt ourselves so we can support > comparison with datetime.date,
-        # but rely on existing less than implementation.
-        # strictly greater than must rule out equals
-        return not (self._date < other._date or self._date == other._date)
-
-    def __le__(self, other: Union["Undate", datetime.date]) -> bool:
-        return self._date == other._date or self._date < other._date
-
-    def __add__(self, other):
-        if isinstance(other, LocalDate):
-            return LocalDate(self._date + other._date)
-        if isinstance(other, np.timedelta64):
-            return LocalDate(self._date + other)
-
-    def __sub__(self, other) -> np.timedelta64:
-        return self._date - other._date
+        return int(str(self.astype("datetime64[D]")).split("-")[-1])
 
 
 class DatePrecision(IntEnum):
@@ -82,7 +80,7 @@ class DatePrecision(IntEnum):
     def __str__(self):
         return f"{self.name}"
 
-    # numpy date units are years (‘Y’), months (‘M’), weeks (‘W’), and days (‘D’),
+    # numpy date units are years (‘Y’), months (‘M’), weeks (‘W’), and days (‘D’)
 
 
 class Undate:
