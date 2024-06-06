@@ -6,7 +6,7 @@ Hey there!
 If you found your way here that probably means you are curious about how to contribute to this project. This is great! We are always looking for new contributors. If you can't find the information you are looking for in this document or anywhere else in the repo, please consider [opening a ticket](https://github.com/dh-tech/undate-python/issues) so we know there is something we need to address.
 
 ## Project Setup
-Instructions on how to set up the project locally and how to run the tests can be found [in the Readme file](README.md).
+Instructions on how to set up the project locally and how to run the tests can be found in [Developer Notes](DEVELOPER_NOTES.md).
 
 ## Submitting Changes
 If you would like to contribute by submitting bug fixes, improvements, or new features, please fork the repository and then make a pull request to our main branch when you are ready. For details see [this description of the Forking Workflow](https://www.atlassian.com/git/tutorials/comparing-workflows/forking-workflow).
