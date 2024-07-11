@@ -82,7 +82,7 @@ False
 False
 ```
 
-For dates that are imprecise are partially known, `undate` calculates earliest and latest possible dates for comparison purposes so you can sort dates and compare with equals, greater than, and less than. You can also compare with python `datetime.date` objects. 
+For dates that are imprecise or partially known, `undate` calculates earliest and latest possible dates for comparison purposes so you can sort dates and compare with equals, greater than, and less than. You can also compare with python `datetime.date` objects. 
 
 ```python
 >>> november7_2020 = Undate(2020, 11, 7)
