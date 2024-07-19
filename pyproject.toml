@@ -41,7 +41,7 @@ classifiers = [
 
 [project.optional-dependencies]
 docs = [
-  "sphinx<=7.0.0",
+  "sphinx>=7.0.0,<7.3",
   "alabaster",
   "m2r2",
   "setuptools"  # required for sphinx to load m2r2 as an extension
