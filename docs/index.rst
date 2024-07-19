@@ -1,4 +1,4 @@
-Undate documentation
+undate documentation
 ====================
 
 **undate** is a python library for working with uncertain or partially known dates.

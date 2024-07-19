@@ -17,8 +17,8 @@
 
 # -- Project information -----------------------------------------------------
 
-project = "Undate"
-copyright = "2022, DHtech"
+project = "undate"
+copyright = "2024, DHtech"
 author = "DHtech Community"
 
 # The full version, including alpha/beta/rc tags
