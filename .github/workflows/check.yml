@@ -29,7 +29,7 @@ jobs:
 
       # check docs
       - name: Check that documentation can be built
-        run: sphinx-build docs docs/_build
+        run: sphinx-build docs docs/_build   # --fail-on-warning
 
       # check types with mypy
       - name: Check types in python src directory; install needed types

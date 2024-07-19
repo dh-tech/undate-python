@@ -45,7 +45,7 @@ Install an editable version of the local package along with python dependencies 
 pip install -e ".[dev]"
 ```
 
-## Install pre-commit hooks
+### Install pre-commit hooks
 
 ```sh
 pre-commit install
@@ -55,7 +55,7 @@ We use [pre-commit](https://pre-commit.com/) for automated checks and consistent
 
 ## Tests, documentation, and other checks
 
-## Running unit tests
+### Running unit tests
 
 Tests can be run with `pytest`.
 
@@ -63,7 +63,7 @@ To run all the tests in a single test file, specify the path, e.g.: `pytest test
 
 To test cases by method name, use `-k`: `pytest -k test_str`
 
-## Check python types
+### Check python types
 
 Python typing is currently enforced on pull requests as part of a GitHub Actions Continuous Integration check using `mypy`.
 

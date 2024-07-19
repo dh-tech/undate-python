@@ -63,5 +63,5 @@ html_static_path = ["_static"]
 # use dhtech logo for now
 html_logo = "_static/dhtech-logo.png"
 
-# TODO: can we get both github and sphinx links working?
+# NOTE: can we get both github and sphinx links working?
 m2r_parse_relative_links = True

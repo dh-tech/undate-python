@@ -10,10 +10,10 @@ Undate documentation
 
    readme
    undate
-   contributing
-   devnotes
-   contributors
-   license
+   CONTRIBUTING
+   DEVELOPER_NOTES
+   CONTRIBUTORS
+   LICENSE
 
 Indices and tables
 ==================
