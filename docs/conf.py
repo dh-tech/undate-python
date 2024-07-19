@@ -60,8 +60,27 @@ html_theme = "alabaster"
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
 
-# use dhtech logo for now
-html_logo = "_static/dhtech-logo.png"
+# preliminary undate logo
+# html_logo = "_static/undate_logo.png"
 
-# NOTE: can we get both github and sphinx links working?
+html_theme_options = {
+    "logo": "undate_logo.png",
+    "logo_name": False,
+    "github_user": "dh-tech",
+    "github_repo": "undate-python",
+    "github_button": False,
+    "github_banner": True,
+}
+
+html_sidebars = {
+    "**": [
+        "about.html",
+        "navigation.html",
+        "localtoc.html",
+        "searchbox.html",
+        "sidebar_dhtech.html",
+    ],
+}
+
+# turn on relative links; make sure both github and sphinx links work
 m2r_parse_relative_links = True
