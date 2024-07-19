@@ -32,7 +32,11 @@ master_doc = "index"
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ["sphinx.ext.autodoc", "sphinx.ext.intersphinx", "m2r2"]
+extensions = [
+    "sphinx.ext.autodoc",
+    "sphinx.ext.intersphinx",
+    "m2r2",
+]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -56,4 +60,8 @@ html_theme = "sphinx_rtd_theme"
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
 
-html_logo = "_static/logo.png"
+# use dhtech logo for now
+html_logo = "_static/dhtech-logo.png"
+
+# TODO: can we get both github and sphinx links working?
+m2r_parse_relative_links = True

@@ -1,4 +1,4 @@
-# Contributing to undate - a python library for working with uncertain or partially known dates
+# Contributing to undate
 
 Hey there!
 

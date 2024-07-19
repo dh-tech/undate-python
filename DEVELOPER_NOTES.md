@@ -20,7 +20,7 @@ Pull requests for new features should be made against the **develop** branch.
 
 We recommended installing git-flow.
 1. On OSX, use brew or ports, e.g.: `brew install git-flow`; on Ubuntu/Debian, `apt-get install git-flow`
-2. Initialize it in your local copy of this repository: run `git flow init` and accept all the defaults.  
+2. Initialize it in your local copy of this repository: run `git flow init` and accept all the defaults.
 3. Use `git flow feature start feature-name` to create a new feature development branch.
 4. Feature branches can be merged locally with git flow or by GitHub pull request.
 4. Use git flow for releases with `git flow release start x.x.x` and `git flow release finish x.x.x`, where x.x.x is the version number for the new release.
@@ -74,8 +74,16 @@ mypy --install-types
 ```
 2. Run `mypy src/` to check types.
 
-### Documentation can be built with tox
+### Documentation
+
+Documentation can be built with sphinx. Make sure you have the dependencies installed:
 
 ```sh
-tox -e docs
+pip install -e ".[docs]"
 ```
+
+```sh
+sphinx-build docs docs/_build
+```
+
+HTML documentation will be generated in `docs/_build/html`
