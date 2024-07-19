@@ -33,7 +33,7 @@ jobs:
           cache-dependency-path: '**/pyproject.toml'
       - name: Install package with dependencies
         run: |
-          pip install -e ".[dev]"
+          pip install -e ".[test]"
         if: steps.python-cache.outputs.cache-hit != 'true'
 
       # for all versions but the one we use for code coverage, run normally
