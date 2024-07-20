@@ -35,7 +35,7 @@ master_doc = "index"
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.intersphinx",
-    "m2r2",
+    "myst_parser",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -46,7 +46,10 @@ templates_path = ["_templates"]
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
-source_suffix = [".rst", ".md"]
+source_suffix = {
+    ".rst": "restructuredtext",
+    ".md": "markdown",
+}
 
 # -- Options for HTML output -------------------------------------------------
 

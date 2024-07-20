@@ -1,8 +1,12 @@
-# Contributors
+# All Contributors
+
+We use [All Contributors](https://allcontributors.org/) because we recognize that all kinds of contributions are valuable and important.
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-5-orange.svg?style=flat-square)](#contributors-)
+![All Contributors](https://img.shields.io/github/all-contributors/dh-tech/undate-python?color=ee8449&style=flat-square)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
+
+## Contributors 
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
