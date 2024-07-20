@@ -41,10 +41,9 @@ classifiers = [
 
 [project.optional-dependencies]
 docs = [
-  "sphinx>=7.0.0,<7.3",  # 7.3+ causes error with m2r2
+  "sphinx>=7.0.0",
   "alabaster",
-  "m2r2>=0.3.3",
-  "setuptools"  # required for sphinx to load m2r2 as an extension
+  "myst-parser"
 ]
 dev = [
   "black>=22.10.0",
@@ -54,7 +53,7 @@ dev = [
   "build",
   "mypy",
   "treon",
-  "nbconvert>=7.1.0",
+  "undate",
   "undate[docs]",
 ]
 test = [
@@ -83,4 +82,11 @@ include = [
   "src/undate/**/*.py",
   "src/undate/**/*.lark",
   "/tests",
+]
+
+[tool.pytest.ini_options]
+pythonpath = "src/"
+markers = [
+    "last : run marked tests after all others",
+    "first : run marked tests before all others"
 ]
