@@ -2,12 +2,7 @@ from datetime import timedelta, date
 
 import pytest
 
-from undate.undate import Undate, UndateInterval, DatePrecision
-
-
-class TestDatePrecision:
-    def test_str(self):
-        assert str(DatePrecision.YEAR) == "YEAR"
+from undate.undate import Undate, UndateInterval
 
 
 class TestUndate:

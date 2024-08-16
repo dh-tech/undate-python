@@ -17,11 +17,11 @@ class Date(np.ndarray):
     # extend np.datetime64 datatype
     # adapted from https://stackoverflow.com/a/27129510/9706217
 
-    def __new__(cls, year: str, month: str = None, day: str = None):
+    def __new__(cls, year: int, month: int = None, day: int = None):
         if isinstance(year, np.datetime64):
             data = year
         else:
-            datestr = year
+            datestr = str(year)
             if month is not None:
                 datestr = f"{year}-{month:02d}"
                 if day is not None:
@@ -29,9 +29,18 @@ class Date(np.ndarray):
             data = np.datetime64(datestr)
 
         data = np.asarray(data, dtype="datetime64")
-        if data.dtype != "datetime64[D]":
+
+        # expected format depends on granularity / how much of date is known
+        expected_granularity = "Y"
+        if day is not None and month is not None:
+            expected_granularity = "D"
+        elif month:
+            expected_granularity = "M"
+        expected_dtype = f"datetime64[{expected_granularity}]"
+
+        if data.dtype != expected_dtype:
             raise Exception(
-                "Unable to parse dates adequately to datetime64[D]: %s" % data
+                f"Unable to parse dates adequately as {expected_dtype}: {data}"
             )
         obj = data.view(cls)
         return obj
@@ -51,11 +60,15 @@ class Date(np.ndarray):
 
     @property
     def month(self):
-        return int(str(self.astype("datetime64[M]")).split("-")[-1])
+        # if date unit is year, don't return a month (only M/D)
+        if not self.dtype == "datetime64[Y]":
+            return int(str(self.astype("datetime64[M]")).split("-")[-1])
 
     @property
     def day(self):
-        return int(str(self.astype("datetime64[D]")).split("-")[-1])
+        # only return a day if date unit is in days
+        if self.dtype == "datetime64[D]":
+            return int(str(self.astype("datetime64[D]")).split("-")[-1])
 
 
 class DatePrecision(IntEnum):
@@ -75,5 +88,5 @@ class DatePrecision(IntEnum):
     def __str__(self):
         return f"{self.name}"
 
-    # NOTE: consider harmonizing / using numpy units
-    # numpy date units are years (‘Y’), months (‘M’), weeks (‘W’), and days (‘D’)
+    # NOTE: consider harmonizing / using numpy date units:
+    # years (‘Y’), months (‘M’), weeks (‘W’), and days (‘D’)
