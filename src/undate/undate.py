@@ -3,7 +3,10 @@ import re
 from calendar import monthrange
 
 # Pre 3.10 requires Union for multiple types, e.g. Union[int, None] instead of int | None
-from typing import Optional, Dict, Union
+from typing import Optional, Dict, Union, Any
+
+import numpy as np
+from numpy.typing import ArrayLike, DTypeLike
 
 from undate.date import Date, DatePrecision, ONE_DAY, ONE_YEAR, ONE_MONTH_MAX
 from undate.dateformat.base import BaseDateFormat
@@ -17,8 +20,8 @@ class Undate:
     #: symbol for unknown digits within a date value
     MISSING_DIGIT: str = "X"
 
-    earliest: datetime.date
-    latest: datetime.date
+    earliest: Date
+    latest: Date
     #: A string to label a specific undate, e.g. "German Unity Date 2022" for Oct. 3, 2022.
     #: Labels are not taken into account when comparing undate objects.
     label: Union[str, None] = None
@@ -64,11 +67,9 @@ class Undate:
                 min_year = int(str(year).replace(self.MISSING_DIGIT, "0"))
                 max_year = int(str(year).replace(self.MISSING_DIGIT, "9"))
         else:
-            # min_year = datetime.MINYEAR
-            # max_year = datetime.MAXYEAR
-            # numpy datetime is stored as 64-bit integer, so length
-            # depends on the span; assume days for now
-
+            # numpy datetime is stored as 64-bit integer, so min/max
+            # depends on the time unit; assume days for now
+            # See https://numpy.org/doc/stable/reference/arrays.datetime.html#datetime-units
             max_year = int(2.5e16)
             min_year = int(-2.5e16)
 
@@ -76,7 +77,7 @@ class Undate:
         # treat as none
         # TODO: we should preserve this information somehow;
         # difference between just a year and and an unknown month within a year
-        # maybe in terms of granularity / size ?
+        # maybe in terms of date precision ?
         if month == "XX":
             month = None
 
@@ -124,9 +125,6 @@ class Undate:
 
         # for unknowns, assume smallest possible value for earliest and
         # largest valid for latest
-        # self.earliest = datetime.date(min_year, min_month, min_day)
-        # self.latest = datetime.date(max_year, max_month, max_day)
-
         self.earliest = Date(min_year, min_month, min_day)
         self.latest = Date(max_year, max_month, max_day)
 
@@ -245,7 +243,7 @@ class Undate:
         # strictly greater than must rule out equals
         return not (self < other or self == other)
 
-    def __le__(self, other: Union["Undate", datetime.date]) -> bool:
+    def __le__(self, other: object) -> bool:
         return self == other or self < other
 
     def __contains__(self, other: object) -> bool:
@@ -256,15 +254,17 @@ class Undate:
         if self == other:
             return False
 
-        return (
-            self.earliest <= other.earliest
-            and self.latest >= other.latest
-            # is precision sufficient for comparing partially known dates?
-            and self.precision > other.precision
+        return all(
+            [
+                self.earliest <= other.earliest,
+                self.latest >= other.latest,
+                # is precision sufficient for comparing partially known dates?
+                self.precision > other.precision,
+            ]
         )
 
     @staticmethod
-    def from_datetime_date(dt_date):
+    def from_datetime_date(dt_date: datetime.date):
         """Initialize an :class:`Undate` object from a :class:`datetime.date`"""
         return Undate(dt_date.year, dt_date.month, dt_date.day)
 
@@ -284,7 +284,7 @@ class Undate:
     def is_partially_known(self, part: str) -> bool:
         return isinstance(self.initial_values[part], str)
 
-    def duration(self) -> datetime.timedelta:
+    def duration(self):  # -> np.timedelta64:
         """What is the duration of this date?
         Calculate based on earliest and latest date within range,
         taking into account the precision of the date even if not all
@@ -313,7 +313,6 @@ class Undate:
 
             # if granularity == month but not known month, duration = 31
             if delta.astype(int) > 31:
-                # return datetime.timedelta(days=31)
                 return ONE_MONTH_MAX
             return delta
 
@@ -394,11 +393,11 @@ class UndateInterval:
         # consider interval equal if both dates are equal
         return self.earliest == other.earliest and self.latest == other.latest
 
-    def duration(self) -> datetime.timedelta:
+    def duration(self):  #  -> np.timedelta64:
         """Calculate the duration between two undates.
 
         :returns: A duration
-        :rtype: timedelta
+        :rtype: numpy.timedelta64
         """
         # what is the duration of this date range?
 

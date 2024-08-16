@@ -1,5 +1,9 @@
 from enum import IntEnum
 
+# Pre 3.10 requires Union for multiple types, e.g. Union[int, None] instead of int | None
+from typing import Optional, Dict, Union
+
+
 import numpy as np
 
 #: timedelta for single day
@@ -17,26 +21,26 @@ class Date(np.ndarray):
     # extend np.datetime64 datatype
     # adapted from https://stackoverflow.com/a/27129510/9706217
 
-    def __new__(cls, year: int, month: int = None, day: int = None):
+    def __new__(cls, year: int, month: Optional[int] = None, day: Optional[int] = None):
         if isinstance(year, np.datetime64):
-            data = year
+            _data = year
         else:
             datestr = str(year)
             if month is not None:
                 datestr = f"{year}-{month:02d}"
                 if day is not None:
                     datestr = f"{datestr}-{day:02d}"
-            data = np.datetime64(datestr)
+            _data = np.datetime64(datestr)
 
-        data = np.asarray(data, dtype="datetime64")
+        data = np.asarray(_data, dtype="datetime64")
 
-        # expected format depends on granularity / how much of date is known
-        expected_granularity = "Y"
+        # expected dtype depends on date unit / how much of date is known
+        expected_unit = "Y"
         if day is not None and month is not None:
-            expected_granularity = "D"
+            expected_unit = "D"
         elif month:
-            expected_granularity = "M"
-        expected_dtype = f"datetime64[{expected_granularity}]"
+            expected_unit = "M"
+        expected_dtype = f"datetime64[{expected_unit}]"
 
         if data.dtype != expected_dtype:
             raise Exception(
