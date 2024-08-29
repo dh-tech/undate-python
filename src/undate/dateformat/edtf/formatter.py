@@ -35,7 +35,17 @@ class EDTFDateFormat(BaseDateFormat):
             return value.replace(old_missing_digit, EDTF_UNSPECIFIED_DIGIT)
         return None
 
-    def to_string(self, undate: Undate) -> str:
+    def to_string(self, undate: Union[Undate, UndateInterval]) -> str:
+        if isinstance(undate, Undate):
+            return self._undate_to_string(undate)
+        elif isinstance(undate, UndateInterval):
+            # NOTE: what is the difference between an open interval and unknown start/end?
+            # spec distinguishes between these, open is ".." but unknown is ""
+            start = self._undate_to_string(undate.earliest) if undate.earliest else ".."
+            end = self._undate_to_string(undate.latest) if undate.latest else ".."
+            return f"{start}/{end}"
+
+    def _undate_to_string(self, undate: Undate) -> str:
         # in theory it's possible to use the parser and reconstruct using a tree,
         # but that seems much more complicated and would be harder to read
         parts = []
