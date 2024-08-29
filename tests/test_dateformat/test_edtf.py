@@ -32,8 +32,18 @@ class TestEDTFDateFormat:
             Undate(1800), Undate(1900)
         )
 
-    # def test_to_string(self):
-    #     # NOTE: iso8601 to_string currently tested more thoroughly
-    #     # in undate str tests; may want to move those tests here
-    #     assert EDTFDateFormat().to_string(Undate(900)) == "0900"
-    #     assert EDTFDateFormat().to_string(Undate(33)) == "0033"
+    def test_to_string(self):
+        assert EDTFDateFormat().to_string(Undate(900)) == "0900"
+        assert EDTFDateFormat().to_string(Undate("80")) == "0080"
+        assert EDTFDateFormat().to_string(Undate(33)) == "0033"
+        assert EDTFDateFormat().to_string(Undate("20XX")) == "20XX"
+        assert EDTFDateFormat().to_string(Undate(17000002)) == "Y17000002"
+
+        assert EDTFDateFormat().to_string(Undate(1991, 6)) == "1991-06"
+        assert EDTFDateFormat().to_string(Undate(1991, 5, 3)) == "1991-05-03"
+
+        assert EDTFDateFormat().to_string(Undate(1991, "0X")) == "1991-0X"
+        # TODO: is this/should this be a valid undate? None == XX?
+        # assert EDTFDateFormat().to_string(Undate(1991, None, 3)) == "1991-XX-03"
+
+        # TODO: override missing digit and confirm replacement
