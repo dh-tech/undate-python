@@ -260,7 +260,7 @@ class Undate:
                 self.earliest <= other.earliest,
                 self.latest >= other.latest,
                 # is precision sufficient for comparing partially known dates?
-                self.precision > other.precision,
+                self.precision < other.precision,
             ]
         )
 
