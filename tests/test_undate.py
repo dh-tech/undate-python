@@ -379,6 +379,46 @@ class TestUndate:
         assert Undate(month=1, day="X5").is_known("day") is False
         assert Undate(month=1, day="XX").is_known("day") is False
 
+    def test_parse(self):
+        assert Undate.parse("1984", "EDTF") == Undate(1984)
+        assert Undate.parse("1984-04", "EDTF") == Undate(1984, 4)
+        assert Undate.parse("1984-04", "EDTF") == Undate(1984, 4)
+        assert Undate.parse("2000/2001", "EDTF") == UndateInterval(
+            Undate(2000), Undate(2001)
+        )
+
+        assert Undate.parse("1984", "ISO8601") == Undate(1984)
+        assert Undate.parse("1984-04", "ISO8601") == Undate(1984, 4)
+        assert Undate.parse("--12-31", "ISO8601") == Undate(month=12, day=31)
+
+        # unsupported format
+        with pytest.raises(ValueError, match="Unsupported format"):
+            Undate.parse("1984", "foobar")
+        with pytest.raises(ValueError, match="Unsupported format"):
+            Undate.parse("1984", "%Y-%m")
+
+    def test_format(self):
+        # EDTF format
+        assert Undate(1984).format("EDTF") == "1984"
+        assert Undate(1984, 4).format("EDTF") == "1984-04"
+        assert Undate(1984, 4, 15).format("EDTF") == "1984-04-15"
+        assert Undate("19XX").format("EDTF") == "19XX"
+        assert Undate(1984, "XX").format("EDTF") == "1984-XX"
+        assert Undate(1984, 4, "XX").format("EDTF") == "1984-04-XX"
+        assert Undate(month=12, day=31).format("EDTF") == "XXXX-12-31"
+
+        # ISO8601 format
+        assert Undate(1984).format("ISO8601") == "1984"
+        assert Undate(1984, 4).format("ISO8601") == "1984-04"
+        assert Undate(1984, 4, 15).format("ISO8601") == "1984-04-15"
+        assert Undate(month=12, day=31).format("ISO8601") == "--12-31"
+
+        # unsupported format
+        with pytest.raises(ValueError, match="Unsupported format"):
+            Undate(1984).format("foobar")
+        with pytest.raises(ValueError, match="Unsupported format"):
+            Undate(1984).format("%Y-%m")
+
 
 class TestUndateInterval:
     def test_str(self):
@@ -391,6 +431,20 @@ class TestUndateInterval:
             str(UndateInterval(Undate(2022, 11, 1), Undate(2023, 11, 7)))
             == "2022-11-01/2023-11-07"
         )
+
+    def test_format(self):
+        interval = UndateInterval(Undate(2000), Undate(2001))
+        assert interval.format("EDTF") == "2000/2001"
+        assert interval.format("ISO8601") == "2000/2001"
+
+        # Open-ended intervals
+        open_start = UndateInterval(latest=Undate(2000))
+        assert open_start.format("EDTF") == "../2000"
+        assert open_start.format("ISO8601") == "/2000"
+
+        open_end = UndateInterval(earliest=Undate(2000))
+        assert open_end.format("EDTF") == "2000/.."
+        assert open_end.format("ISO8601") == "2000/"
 
     def test_repr(self):
         assert (

@@ -49,12 +49,25 @@ class ISO8601DateFormat(BaseDateFormat):
         # Argument of type "int | None" cannot be assigned to parameter "formatter" of type "BaseDateFormat | None" in function "__init__"
         return Undate(*date_parts)  # type: ignore
 
-    def to_string(self, undate: Undate) -> str:
+    def to_string(self, undate: Union[Undate, UndateInterval]) -> str:
+        if isinstance(undate, Undate):
+            return self._undate_to_string(undate)
+        elif isinstance(undate, UndateInterval):
+            # strictly speaking I don't think ISO8601 supports open-ended ranges
+            # should we add an exception for dates that can't be represented by a particular format?
+            # (we'll likely need it for uncertain/approx, which ISO8601 doesn't handle')
+            start = self._undate_to_string(undate.earliest) if undate.earliest else ""
+            end = self._undate_to_string(undate.latest) if undate.latest else ""
+            return f"{start}/{end}"
+
+    def _undate_to_string(self, undate: Undate) -> str:
         # serialize to iso format for simplicity, for now
         date_parts: List[Union[str, None]] = []
         # for each part of the date that is known, generate the string format
         # then combine
         # TODO: should error if we have year and day but no month
+        # TODO: may want to refactor and take advantage of the year/month/day properties
+        # added for use in EDTF formatter code
         for date_portion, iso_format in self.iso_format.items():
             if undate.is_known(date_portion):
                 # NOTE: datetime strftime for %Y for 3-digit year
