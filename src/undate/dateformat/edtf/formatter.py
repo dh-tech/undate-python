@@ -39,13 +39,14 @@ class EDTFDateFormat(BaseDateFormat):
         # in theory it's possible to use the parser and reconstruct using a tree,
         # but that seems much more complicated and would be harder to read
         parts = []
+
         if undate.precision >= DatePrecision.YEAR:
             year = self._convert_missing_digits(undate.year, undate.MISSING_DIGIT)
             # years with more than 4 digits should be prefixed with Y
             if year and len(year) > 4:
                 year = f"Y{year}"
             # TODO: handle uncertain / approximate
-            parts.append(year)
+            parts.append(year or EDTF_UNSPECIFIED_DIGIT * 4)
 
         # beware when we add more date precisions,
         # week-level won't necessarily mean we know the month
@@ -54,11 +55,18 @@ class EDTFDateFormat(BaseDateFormat):
             # TODO: handle uncertain / approximate
             parts.append(
                 self._convert_missing_digits(undate.month, undate.MISSING_DIGIT)
+                or EDTF_UNSPECIFIED_DIGIT * 2
             )
 
         if undate.precision >= DatePrecision.DAY:
             # TODO: handle uncertain / approximate
-            parts.append(self._convert_missing_digits(undate.day, undate.MISSING_DIGIT))
+            parts.append(
+                self._convert_missing_digits(undate.day, undate.MISSING_DIGIT)
+                or EDTF_UNSPECIFIED_DIGIT * 2
+            )
 
         if parts:
             return "-".join(parts)
+
+        # how can we have an empty string? probably shouldn't get here
+        return ""
