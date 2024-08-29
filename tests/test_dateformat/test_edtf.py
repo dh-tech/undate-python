@@ -43,7 +43,6 @@ class TestEDTFDateFormat:
         assert EDTFDateFormat().to_string(Undate(1991, 5, 3)) == "1991-05-03"
 
         assert EDTFDateFormat().to_string(Undate(1991, "0X")) == "1991-0X"
-        # TODO: is this/should this be a valid undate? None == XX?
-        # assert EDTFDateFormat().to_string(Undate(1991, None, 3)) == "1991-XX-03"
+        assert EDTFDateFormat().to_string(Undate(1991, None, 3)) == "1991-XX-03"
 
         # TODO: override missing digit and confirm replacement

@@ -1,7 +1,10 @@
-from typing import Dict, List, Union
+from typing import Dict, List, Union, Optional
 
+from lark import Tree, Token
 from lark.exceptions import UnexpectedCharacters
+from lark.reconstruct import Reconstructor
 
+from undate.date import DatePrecision
 from undate.undate import Undate, UndateInterval
 from undate.dateformat.base import BaseDateFormat
 from undate.dateformat.edtf.parser import edtf_parser
@@ -25,47 +28,37 @@ class EDTFDateFormat(BaseDateFormat):
         except UnexpectedCharacters as err:
             raise ValueError("Parsing failed due to UnexpectedCharacters: %s" % err)
 
+    def _convert_missing_digits(
+        self, value: Optional[str], old_missing_digit: str
+    ) -> Optional[str]:
+        if value:
+            return value.replace(old_missing_digit, EDTF_UNSPECIFIED_DIGIT)
+        return None
+
     def to_string(self, undate: Undate) -> str:
-        # get year, month day - could be str, int, or None
-        year, month, day = [
-            # replace undate missing digit with EDTF missing digit
-            # (currently the same but not guaranteed to be)
-            val.replace(Undate.MISSING_DIGIT, EDTF_UNSPECIFIED_DIGIT)
-            if isinstance(val, str)
-            else val
-            for val in (undate.year, undate.month, undate.day)
-        ]
+        # in theory it's possible to use the parser and reconstruct using a tree,
+        # but that seems much more complicated and would be harder to read
         parts = []
+        if undate.precision >= DatePrecision.YEAR:
+            year = self._convert_missing_digits(undate.year, undate.MISSING_DIGIT)
+            # years with more than 4 digits should be prefixed with Y
+            if year and len(year) > 4:
+                year = f"Y{year}"
+            # TODO: handle uncertain / approximate
+            parts.append(year)
 
-        if year:
-            value = year  # None
-            if isinstance(year, int):
-                value = f"{year:04d}"
-            # elif isinstance(year, str):
-            # parts.append(year)  # TODO: ensure min 4 chars
+        # beware when we add more date precisions,
+        # week-level won't necessarily mean we know the month
 
-            # handle years with more than 4 digits
-            if value and len(value) > 4:
-                value = f"Y{value}"
-                # maybe here pad with zeroes if too short?
-            if value:
-                parts.append(value)
-        if month:
-            if isinstance(month, int):
-                parts.append(f"{month:02d}")
-            elif isinstance(month, str):
-                parts.append(month)  # TODO ensure 2 chars
-        if day:
-            # TODO; not if month is None
-            if isinstance(day, int):
-                parts.append(f"{day:02d}")
-            elif isinstance(day, str):
-                parts.append(day)  # TODO ensure 2 chars
+        if undate.precision >= DatePrecision.MONTH:
+            # TODO: handle uncertain / approximate
+            parts.append(
+                self._convert_missing_digits(undate.month, undate.MISSING_DIGIT)
+            )
 
-        return "-".join(parts)
+        if undate.precision >= DatePrecision.DAY:
+            # TODO: handle uncertain / approximate
+            parts.append(self._convert_missing_digits(undate.day, undate.MISSING_DIGIT))
 
-    # TODO: can we leverage the parser for this?
-    # turn into a tree and use reconstruct?
-    # Tree for just a year looks like:
-    # Tree(Token('RULE', 'date'), [Tree(Token('RULE', 'year'), [Token('INT', '2002')])])
-    # ... let's not do that
+        if parts:
+            return "-".join(parts)

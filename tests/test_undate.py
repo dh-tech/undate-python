@@ -136,7 +136,7 @@ class TestUndate:
         # partially known year
         assert Undate("19XX").year == "19XX"
         # unset year
-        assert Undate(month=12, day=31).year == None
+        assert Undate(month=12, day=31).year == "XXXX"
 
     def test_month_property(self):
         # one, two digit month
@@ -147,9 +147,10 @@ class TestUndate:
         assert Undate(2023, "X2").month == "X2"
         # fully unknown month
         assert Undate(2023, "XX").month is "XX"
-        # unset month
+        # unset month, year precision
         assert Undate(2023).month is None
-        assert Undate(day=15).month is None
+        # unset month, day precision (= some unknown month, not no month)
+        assert Undate(day=15).month == "XX"
 
     def test_day_property(self):
         # one, two digit day

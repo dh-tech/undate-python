@@ -291,6 +291,9 @@ class Undate:
         year = self._get_date_part("year")
         if year:
             return f"{year:>04}"
+        # if value is unset but date precision is month or greater, return unknown month
+        elif self.precision >= DatePrecision.YEAR:
+            return self.MISSING_DIGIT * 4
         return None
 
     @property
@@ -301,6 +304,9 @@ class Undate:
         month = self._get_date_part("month")
         if month:
             return f"{month:>02}"
+        # if value is unset but date precision is month or greater, return unknown month
+        elif self.precision >= DatePrecision.MONTH:
+            return self.MISSING_DIGIT * 2
         return None
 
     @property
@@ -309,6 +315,9 @@ class Undate:
         day = self._get_date_part("day")
         if day:
             return f"{day:>02}"
+        # if value is unset but date precision is day, return unknown day
+        elif self.precision == DatePrecision.DAY:
+            return self.MISSING_DIGIT * 2
         return None
 
     def _get_date_part(self, part: str) -> Optional[str]:
