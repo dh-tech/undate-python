@@ -163,6 +163,27 @@ class Undate:
             return "<Undate '%s' (%s)>" % (self.label, self)
         return "<Undate %s>" % self
 
+    @classmethod
+    def parse(cls, date_string, format) -> Union["Undate", "UndateInterval"]:
+        """parse a string to an undate or undate interval using the specified format;
+        for now, only supports named formatters"""
+        formatter_cls = BaseDateFormat.available_formatters().get(format, None)
+        if formatter_cls:
+            # NOTE: some parsers may return intervals; is that ok here?
+            return formatter_cls().parse(date_string)
+
+        raise ValueError(f"Unsupported format '{format}'")
+
+    def format(self, format) -> str:
+        """format this undate as a string using the specified format;
+        for now, only supports named formatters"""
+        formatter_cls = BaseDateFormat.available_formatters().get(format, None)
+        if formatter_cls:
+            # NOTE: some parsers may return intervals; is that ok here?
+            return formatter_cls().to_string(self)
+
+        raise ValueError(f"Unsupported format '{format}'")
+
     def _comparison_type(self, other: object) -> "Undate":
         """Common logic for type handling in comparison methods.
         Converts to Undate object if possible, otherwise raises
@@ -423,6 +444,15 @@ class UndateInterval:
     def __str__(self) -> str:
         # using EDTF syntax for open ranges
         return "%s/%s" % (self.earliest or "..", self.latest or "")
+
+    def format(self, format) -> str:
+        """format this undate interval as a string using the specified format;
+        for now, only supports named formatters"""
+        formatter_cls = BaseDateFormat.available_formatters().get(format, None)
+        if formatter_cls:
+            return formatter_cls().to_string(self)
+
+        raise ValueError(f"Unsupported format '{format}'")
 
     def __repr__(self) -> str:
         if self.label:
