@@ -1,3 +1,4 @@
+from types import DynamicClassAttribute
 import numpy as np
 
 from undate.date import Date, DatePrecision, ONE_DAY, ONE_YEAR, ONE_MONTH_MAX
@@ -6,6 +7,10 @@ from undate.date import Date, DatePrecision, ONE_DAY, ONE_YEAR, ONE_MONTH_MAX
 class TestDatePrecision:
     def test_str(self):
         assert str(DatePrecision.YEAR) == "YEAR"
+
+    def test_comparison(self):
+        assert DatePrecision.DAY > DatePrecision.MONTH
+        assert DatePrecision.MONTH > DatePrecision.YEAR
 
 
 class TestDate:
@@ -21,7 +26,7 @@ class TestDate:
         assert d.dtype == "datetime64[M]"
         assert str(d) == "2010-05"
 
-    def test_init_year_month(self):
+    def test_init_year_month_day(self):
         d = Date(2021, 6, 15)
         assert isinstance(d, Date)
         assert d.dtype == "datetime64[D]"

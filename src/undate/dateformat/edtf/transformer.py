@@ -63,8 +63,8 @@ class EDTFTransformer(Transformer):
     def date_level1(self, items):
         return self.date(items)
 
-    def year_fivedigitsplus(self, token):
+    def year_fivedigitsplus(self, items):
         # strip off the leading Y and convert to integer
-        # TODO: undate is currently limited to 4-digit years
-        # (datetime max year of 9999)
-        return tok.update(int(token[:1]))
+        token = items[0]
+        year = int(token.value.lstrip("Y"))
+        return Tree(data="year", children=[year])

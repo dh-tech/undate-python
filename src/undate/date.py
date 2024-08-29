@@ -80,14 +80,17 @@ class DatePrecision(IntEnum):
     of the date is known."""
 
     # numbers should be set to allow logical greater than / less than
-    # comparison, e.g. year precision > month
+    # comparison, e.g. year is LESS precise than month
 
-    #: day
-    DAY = 1
+    # TBD: decade, century, ... ?
+    #: year
+    YEAR = 1
+    # TBD: season ?
     #: month
     MONTH = 2
-    #: year
-    YEAR = 3
+    # TBD: week?
+    #: day
+    DAY = 3
 
     def __str__(self):
         return f"{self.name}"
