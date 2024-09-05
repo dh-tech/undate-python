@@ -17,8 +17,8 @@
 
 # -- Project information -----------------------------------------------------
 
-project = "Undate"
-copyright = "2022, DHtech"
+project = "undate"
+copyright = "2024, DHtech"
 author = "DHtech Community"
 
 # The full version, including alpha/beta/rc tags
@@ -32,7 +32,11 @@ master_doc = "index"
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ["sphinx.ext.autodoc", "sphinx.ext.intersphinx", "m2r2"]
+extensions = [
+    "sphinx.ext.autodoc",
+    "sphinx.ext.intersphinx",
+    "myst_parser",
+]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -42,18 +46,44 @@ templates_path = ["_templates"]
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
-source_suffix = [".rst", ".md"]
+source_suffix = {
+    ".rst": "restructuredtext",
+    ".md": "markdown",
+}
 
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "sphinx_rtd_theme"
+html_theme = "alabaster"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
 
-html_logo = "_static/logo.png"
+# preliminary undate logo
+# html_logo = "_static/undate_logo.png"
+
+html_theme_options = {
+    "logo": "undate_logo.png",
+    "logo_name": False,
+    "github_user": "dh-tech",
+    "github_repo": "undate-python",
+    "github_button": False,
+    "github_banner": True,
+}
+
+html_sidebars = {
+    "**": [
+        "about.html",
+        "navigation.html",
+        "localtoc.html",
+        "searchbox.html",
+        "sidebar_dhtech.html",
+    ],
+}
+
+# turn on relative links; make sure both github and sphinx links work
+m2r_parse_relative_links = True

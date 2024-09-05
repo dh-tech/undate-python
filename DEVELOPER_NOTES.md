@@ -20,7 +20,7 @@ Pull requests for new features should be made against the **develop** branch.
 
 We recommended installing git-flow.
 1. On OSX, use brew or ports, e.g.: `brew install git-flow`; on Ubuntu/Debian, `apt-get install git-flow`
-2. Initialize it in your local copy of this repository: run `git flow init` and accept all the defaults.  
+2. Initialize it in your local copy of this repository: run `git flow init` and accept all the defaults.
 3. Use `git flow feature start feature-name` to create a new feature development branch.
 4. Feature branches can be merged locally with git flow or by GitHub pull request.
 4. Use git flow for releases with `git flow release start x.x.x` and `git flow release finish x.x.x`, where x.x.x is the version number for the new release.
@@ -45,7 +45,7 @@ Install an editable version of the local package along with python dependencies 
 pip install -e ".[dev]"
 ```
 
-## Install pre-commit hooks
+### Install pre-commit hooks
 
 ```sh
 pre-commit install
@@ -55,15 +55,15 @@ We use [pre-commit](https://pre-commit.com/) for automated checks and consistent
 
 ## Tests, documentation, and other checks
 
-## Running unit tests
+### Running unit tests
 
-Tests can be run with either `tox` or `pytest`.
+Tests can be run with `pytest`.
 
-To run all the tests in a single test file, use pytest and specify the path to the test: `pytest tests/test_dateformat/test_base.py`
+To run all the tests in a single test file, specify the path, e.g.: `pytest tests/test_dateformat/test_base.py`
 
-To test cases by name, use pytest: `pytest -k test_str`
+To test cases by method name, use `-k`: `pytest -k test_str`
 
-## Check python types
+### Check python types
 
 Python typing is currently enforced on pull requests as part of a GitHub Actions Continuous Integration check using `mypy`.
 
@@ -74,8 +74,16 @@ mypy --install-types
 ```
 2. Run `mypy src/` to check types.
 
-### Documentation can be built with tox
+### Documentation
+
+Documentation can be built with sphinx. Make sure you have the dependencies installed:
 
 ```sh
-tox -e docs
+pip install -e ".[docs]"
 ```
+
+```sh
+sphinx-build docs docs/_build
+```
+
+HTML documentation will be generated in `docs/_build/html`

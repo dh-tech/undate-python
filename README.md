@@ -1,4 +1,6 @@
-# undate-python
+# undate overview
+
+![undate](_static/undate_logo.png)
 
 **undate** is a python library for working with uncertain or partially known dates.
 
@@ -17,7 +19,7 @@ It was initially created as part of a [DH-Tech](https://dh-tech.github.io/) hack
 [![codecov](https://codecov.io/gh/dh-tech/undate-python/branch/main/graph/badge.svg?token=GE7HZE8C9D)](https://codecov.io/gh/dh-tech/undate-python)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-5-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-5-orange.svg?style=flat-square)](CONTRIBUTORS.md)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Read [Contributors](CONTRIBUTORS.md) for detailed contribution information.
@@ -26,7 +28,8 @@ Read [Contributors](CONTRIBUTORS.md) for detailed contribution information.
 
 Often humanities and cultural data include imprecise or uncertain temporal information. We want to store that information but also work with it in a structured way, not just treat it as text for display.  Different projects may need to work with or convert between different date formats or even different calendars.
 
-An `undate.Undate` is analogous to python's builtin `datetime.date` object, but with support for varying degrees of precision and unknown information.  You can initialize an undate with either strings or numbers for whichever parts of the date are known or partially known.  An `Undate` can take an optional label.
+An `undate.Undate` is analogous to python’s builtin `datetime.date` object, but with support for varying degrees of precision and unknown information.  You can initialize an undate with either strings or numbers for whichever parts of the date are known or partially known.  An `Undate` can take an optional label.
+
 ```python
 from undate.undate import Undate
 
@@ -153,7 +156,7 @@ You can initialize `Undate` or `UndateInterval` objects by parsing a date string
 
 ## Documentation
 
-Project documentation is available on ReadTheDocs https://undate-python.readthedocs.io/en/latest/
+Project documentation is [available on ReadTheDocs](https://undate-python.readthedocs.io/en/latest/).
 
 For instructions on setting up for local development, see [Developer Notes](DEVELOPER_NOTES.md).
 

@@ -1,4 +1,4 @@
-# Contributing to undate - a python library for working with uncertain or partially known dates
+# Contributing to undate
 
 Hey there!
 
@@ -20,7 +20,7 @@ If you report a bug, please include any error messages you get and a full descri
 ## Submitting Use Cases and Example Data
 We are particularly interested in collecting more use cases and example data where undate would be helpful!
 
-Example data can be added to the [examples/use-cases](examples/use-cases) folder by a pull request. 
+Example data can be added to the [examples/](https://github.com/dh-tech/undate-python/tree/main/examples/) folder by a pull request. 
 
 ## Getting Help
 The best and recommended way to get help is to join the [DHTech Slack](https://dh-tech.github.io/join/) and ask for help there. Only in cases when this is not feasible at all, you can open a new issue and tag it with "Help Request".

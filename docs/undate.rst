@@ -1,5 +1,5 @@
-Undate
-======
+API documentation
+=================
 
 .. autoclass:: undate.undate.Undate
    :members:
