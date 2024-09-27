@@ -1,3 +1,4 @@
+import calendar
 from datetime import date, timedelta
 
 import numpy as np
@@ -112,6 +113,10 @@ class TestUndate:
         # february in a leap year
         uncertain_day = Undate(2024, 2, "2X")
         assert uncertain_day.latest.day == 29
+
+        # TODO: handle leap day in an unknown year
+        # (currently causes an exception because min/max years are not leap years)
+        # Undate(None, 2, 29)
 
     def test_init_invalid(self):
         with pytest.raises(ValueError):
@@ -294,7 +299,7 @@ class TestUndate:
         assert january_duration.days == 31
         feb_duration = Undate(2022, 2).duration()
         assert feb_duration.days == 28
-        # next leap year will be 2024
+        # 2024 is a known leap year
         leapyear_feb_duration = Undate(2024, 2).duration()
         assert leapyear_feb_duration.days == 29
 
@@ -391,6 +396,9 @@ class TestUndateInterval:
         )
         assert UndateInterval(Undate(2022, 5)) != UndateInterval(Undate(2022, 6))
 
+    def test_min_year_non_leapyear(self):
+        assert not calendar.isleap(Undate.MIN_ALLOWABLE_YEAR)
+
     def test_duration(self):
         week_duration = UndateInterval(
             Undate(2022, 11, 1), Undate(2022, 11, 7)
@@ -415,14 +423,21 @@ class TestUndateInterval:
         month_noyear_duration = UndateInterval(
             Undate(None, 12, 1), Undate(None, 1, 1)
         ).duration()
-        assert month_noyear_duration.days == 31
+        assert month_noyear_duration.days == 32
 
-        # real case from Shakespeare and Company Project data;
+        # real world test cases from Shakespeare and Company Project data;
         # second date is a year minus one day in the future
         month_noyear_duration = UndateInterval(
             Undate(None, 6, 7), Undate(None, 6, 6)
         ).duration()
         assert month_noyear_duration.days == 365
+
+        # durations that span february in unknown years should assume
+        # non-leap years
+        jan_march_duration = UndateInterval(
+            Undate(None, 2, 28), Undate(None, 3, 1)
+        ).duration()
+        assert jan_march_duration.days == 2
 
         # duration is not supported for open-ended intervals
         assert UndateInterval(Undate(2000), None).duration() == NotImplemented
