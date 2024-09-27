@@ -1,7 +1,6 @@
-from datetime import timedelta, date
+from datetime import date, timedelta
 
 import pytest
-
 from undate.undate import Undate, UndateInterval
 
 

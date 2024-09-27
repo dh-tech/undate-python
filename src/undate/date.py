@@ -1,8 +1,7 @@
 from enum import IntEnum
 
 # Pre 3.10 requires Union for multiple types, e.g. Union[int, None] instead of int | None
-from typing import Optional, Dict, Union
-
+from typing import Dict, Optional, Union
 
 import numpy as np
 

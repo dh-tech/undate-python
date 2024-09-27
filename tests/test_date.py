@@ -1,6 +1,5 @@
 import numpy as np
-
-from undate.date import Date, DatePrecision, ONE_DAY, ONE_YEAR, ONE_MONTH_MAX
+from undate.date import ONE_DAY, ONE_MONTH_MAX, ONE_YEAR, Date, DatePrecision
 
 
 class TestDatePrecision:
@@ -21,7 +20,7 @@ class TestDate:
         assert d.dtype == "datetime64[M]"
         assert str(d) == "2010-05"
 
-    def test_init_year_month(self):
+    def test_init_year_month_day(self):
         d = Date(2021, 6, 15)
         assert isinstance(d, Date)
         assert d.dtype == "datetime64[D]"

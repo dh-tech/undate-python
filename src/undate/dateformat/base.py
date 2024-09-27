@@ -15,9 +15,8 @@ returned by :meth:`BaseDateFormat.available_formatters`
 import importlib
 import logging
 import pkgutil
-from typing import Dict, Type
 from functools import lru_cache  # functools.cache not available until 3.9
-
+from typing import Dict, Type
 
 logger = logging.getLogger(__name__)
 

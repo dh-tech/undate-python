@@ -3,12 +3,12 @@ import re
 from calendar import monthrange
 
 # Pre 3.10 requires Union for multiple types, e.g. Union[int, None] instead of int | None
-from typing import Optional, Dict, Union, Any
+from typing import Any, Dict, Optional, Union
 
 import numpy as np
 from numpy.typing import ArrayLike, DTypeLike
 
-from undate.date import Date, DatePrecision, ONE_DAY, ONE_YEAR, ONE_MONTH_MAX
+from undate.date import ONE_DAY, ONE_MONTH_MAX, ONE_YEAR, Date, DatePrecision
 from undate.dateformat.base import BaseDateFormat
 
 
