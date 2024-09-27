@@ -67,12 +67,6 @@ class ISO8601DateFormat(BaseDateFormat):
                 elif date_portion == "day":
                     date_parts.append("%02d" % undate.earliest.day)
 
-                # else:
-                #     # date_parts.append(undate.earliest.strftime(iso_format))
-                #     e = undate.earliest
-                #     # isoformat defined above per field
-                #     date_parts.append(f"{e.year:04d}")  # -{e.month:02d}-{e.day:02d}")
-                # date_parts.append(undate.earliest.strftime(iso_format))
             elif date_portion == "year":
                 # if not known but this is year, add '-' for --MM-DD unknown year format
                 date_parts.append("-")

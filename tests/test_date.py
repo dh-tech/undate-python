@@ -1,10 +1,14 @@
 import numpy as np
-from undate.date import ONE_DAY, ONE_MONTH_MAX, ONE_YEAR, Date, DatePrecision
+from undate.date import Date, DatePrecision
 
 
 class TestDatePrecision:
     def test_str(self):
         assert str(DatePrecision.YEAR) == "YEAR"
+
+    def test_precision_comparison(self):
+        assert DatePrecision.DAY > DatePrecision.MONTH
+        assert DatePrecision.MONTH > DatePrecision.YEAR
 
 
 class TestDate:
@@ -13,6 +17,12 @@ class TestDate:
         assert isinstance(d, Date)
         assert d.dtype == "datetime64[Y]"
         assert str(d) == "2001"
+
+    def test_init_year_np_datetime64(self):
+        d = Date(np.datetime64("2024"))
+        assert isinstance(d, Date)
+        assert d.dtype == "datetime64[Y]"
+        assert str(d) == "2024"
 
     def test_init_year_month(self):
         d = Date(2010, 5)
@@ -38,5 +48,5 @@ class TestDate:
 
     def test_properties_day(self):
         assert Date(2001).day is None
-        assert Date(2010, 5).day == None
+        assert Date(2010, 5).day is None
         assert Date(2021, 6, 15).day == 15

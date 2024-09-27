@@ -1,7 +1,7 @@
 from enum import IntEnum
 
 # Pre 3.10 requires Union for multiple types, e.g. Union[int, None] instead of int | None
-from typing import Dict, Optional, Union
+from typing import Optional, Union
 
 import numpy as np
 
@@ -20,7 +20,12 @@ class Date(np.ndarray):
     # extend np.datetime64 datatype
     # adapted from https://stackoverflow.com/a/27129510/9706217
 
-    def __new__(cls, year: int, month: Optional[int] = None, day: Optional[int] = None):
+    def __new__(
+        cls,
+        year: Union[int, np.datetime64],
+        month: Optional[int] = None,
+        day: Optional[int] = None,
+    ):
         if isinstance(year, np.datetime64):
             _data = year
         else:
@@ -42,7 +47,7 @@ class Date(np.ndarray):
         expected_dtype = f"datetime64[{expected_unit}]"
 
         if data.dtype != expected_dtype:
-            raise Exception(
+            raise ValueError(
                 f"Unable to parse dates adequately as {expected_dtype}: {data}"
             )
         obj = data.view(cls)
@@ -64,7 +69,7 @@ class Date(np.ndarray):
     @property
     def month(self):
         # if date unit is year, don't return a month (only M/D)
-        if not self.dtype == "datetime64[Y]":
+        if self.dtype != "datetime64[Y]":
             return int(str(self.astype("datetime64[M]")).split("-")[-1])
 
     @property
@@ -78,15 +83,17 @@ class DatePrecision(IntEnum):
     """date precision, to indicate date precision independent from how much
     of the date is known."""
 
-    # numbers should be set to allow logical greater than / less than
-    # comparison, e.g. year precision > month
+    # NOTE: values MUST be ordered based on the relative size or
+    # precison of the time unit. That is, the smaller the unit, the more precise
+    # it is: a day is more precise than a month, a month is more precise than a year,
+    # (DatePrecision.year < DatePrecision.month)
 
-    #: day
-    DAY = 1
+    #: year
+    YEAR = 1
     #: month
     MONTH = 2
-    #: year
-    YEAR = 3
+    #: day
+    DAY = 3
 
     def __str__(self):
         return f"{self.name}"

@@ -3,10 +3,7 @@ import re
 from calendar import monthrange
 
 # Pre 3.10 requires Union for multiple types, e.g. Union[int, None] instead of int | None
-from typing import Any, Dict, Optional, Union
-
-import numpy as np
-from numpy.typing import ArrayLike, DTypeLike
+from typing import Dict, Optional, Union
 
 from undate.date import ONE_DAY, ONE_MONTH_MAX, ONE_YEAR, Date, DatePrecision
 from undate.dateformat.base import BaseDateFormat
@@ -259,7 +256,10 @@ class Undate:
                 self.earliest <= other.earliest,
                 self.latest >= other.latest,
                 # is precision sufficient for comparing partially known dates?
-                self.precision > other.precision,
+                # checking based on less precise /less granular time unit,
+                # e.g. a day or month could be contained in a year
+                # but not the reverse
+                self.precision < other.precision,
             ]
         )
 
