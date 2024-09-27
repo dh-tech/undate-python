@@ -1,7 +1,6 @@
 import logging
 
 import pytest
-
 from undate.dateformat.base import BaseDateFormat
 
 

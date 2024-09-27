@@ -39,3 +39,6 @@ venv.bak/
 # code coverage
 .coverage
 coverage.xml
+
+# jupyter
+.ipynb_checkpoints/

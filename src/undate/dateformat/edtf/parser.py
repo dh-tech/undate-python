@@ -2,7 +2,6 @@ import os.path
 
 from lark import Lark
 
-
 grammar_path = os.path.join(os.path.dirname(__file__), "edtf.lark")
 
 with open(grammar_path) as grammar:
