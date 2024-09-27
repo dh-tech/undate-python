@@ -1,5 +1,5 @@
 import numpy as np
-from undate.date import Date, DatePrecision
+from undate.date import ONE_YEAR, Date, DatePrecision, Timedelta
 
 
 class TestDatePrecision:
@@ -50,3 +50,30 @@ class TestDate:
         assert Date(2001).day is None
         assert Date(2010, 5).day is None
         assert Date(2021, 6, 15).day == 15
+
+    def test_substract(self):
+        # date - date = timedelta
+        date_difference = Date(2024, 1, 2) - Date(2024, 1, 1)
+        assert isinstance(date_difference, Timedelta)
+        assert date_difference.days == 1
+
+        # date - timedelta = date
+        year_prior = Date(2024, 1, 2) - ONE_YEAR
+        assert isinstance(year_prior, Date)
+
+
+class TestTimeDelta:
+    def test_init_from_int(self):
+        td = Timedelta(31)
+        assert isinstance(td, Timedelta)
+        assert td.dtype == "timedelta64[D]"
+        assert td.astype("int") == 31
+
+    def test_init_from_np_timedelta64(self):
+        td = Timedelta(np.timedelta64(12, "D"))
+        assert isinstance(td, Timedelta)
+        assert td.dtype == "timedelta64[D]"
+        assert td.astype("int") == 12
+
+    def test_days(self):
+        assert Timedelta(10).days == 10

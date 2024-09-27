@@ -28,6 +28,13 @@ class Undate:
 
     #: known non-leap year
     NON_LEAP_YEAR: int = 2022
+    # numpy datetime is stored as 64-bit integer, so min/max
+    # depends on the time unit; assume days for now
+    # See https://numpy.org/doc/stable/reference/arrays.datetime.html#datetime-units
+    # It just so happens that int(2.5e16) is a leap year, which is a weird default,
+    # so let's increase our lower bound by one year.
+    MIN_ALLOWABLE_YEAR = int(2.5e16) + 1
+    MAX_ALLOWABLE_YEAR = int(-2.5e16)
 
     def __init__(
         self,
@@ -64,11 +71,10 @@ class Undate:
                 min_year = int(str(year).replace(self.MISSING_DIGIT, "0"))
                 max_year = int(str(year).replace(self.MISSING_DIGIT, "9"))
         else:
-            # numpy datetime is stored as 64-bit integer, so min/max
-            # depends on the time unit; assume days for now
-            # See https://numpy.org/doc/stable/reference/arrays.datetime.html#datetime-units
-            max_year = int(2.5e16)
-            min_year = int(-2.5e16)
+            # use the configured min/max allowable years if we
+            # don't have any other bounds
+            max_year = self.MIN_ALLOWABLE_YEAR
+            min_year = self.MAX_ALLOWABLE_YEAR
 
         # if month is passed in as a string but completely unknown,
         # treat as none

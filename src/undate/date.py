@@ -5,16 +5,40 @@ from typing import Optional, Union
 
 import numpy as np
 
+
+class Timedelta(np.ndarray):
+    """Convenience class to make :class:`numpy.timedelta64` act
+    more like the built-in python :class:`datetime.timedelta`."""
+
+    def __new__(cls, deltadays: Union[np.timedelta64, int]):
+        if isinstance(deltadays, int):
+            deltadays = np.timedelta64(deltadays, "D")
+        data = np.asarray(deltadays, dtype="timedelta64")
+        return data.view(cls)
+
+    def Export(self):
+        return self
+
+    def __array_finalize__(self, obj):
+        if obj is None:
+            return
+
+    @property
+    def days(self) -> int:
+        """number of days, as an integer"""
+        return int(self.astype("datetime64[D]").astype("int"))
+
+
 #: timedelta for single day
-ONE_DAY = np.timedelta64(1, "D")  # ~ equivalent to datetime.timedelta(days=1)
+ONE_DAY = Timedelta(1)  # ~ equivalent to datetime.timedelta(days=1)
 #: timedelta for a single  year (non-leap year)
-ONE_YEAR = np.timedelta64(365, "D")  # ~ relativedelta(years=1)
+ONE_YEAR = Timedelta(365)  # ~ relativedelta(years=1)
 #: timedelta for a month, assuming maximum month length (31 days)
-ONE_MONTH_MAX = np.timedelta64(31, "D")
+ONE_MONTH_MAX = Timedelta(31)
 
 
 class Date(np.ndarray):
-    """This class is a shim to make :class:`numpy.datetime64` act
+    """Convenience class to make :class:`numpy.datetime64` act
     more like the built-in python :class:`datetime.date`."""
 
     # extend np.datetime64 datatype
@@ -77,6 +101,20 @@ class Date(np.ndarray):
         # only return a day if date unit is in days
         if self.dtype == "datetime64[D]":
             return int(str(self.astype("datetime64[D]")).split("-")[-1])
+
+    def __sub__(self, other):
+        # modify to conditionally return a timedelta object instead of a
+        # Date object with dtype timedelta64[D] (default behavior)
+
+        result = super().__sub__(other)
+        # if the result has a timedelta type (i.e., date minus date = timedelta),
+        # cast to local Timedelta object; otherwise, leave as is
+        # (i.e., date minus timedelta = date)
+        if result.dtype == "timedelta64[D]":
+            result = Timedelta(result)
+        return result
+
+    # NOTE: add should not be subclassed because we want to return a Date, not a delta
 
 
 class DatePrecision(IntEnum):
