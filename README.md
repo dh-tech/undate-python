@@ -6,9 +6,8 @@
 
 It was initially created as part of a [DH-Tech](https://dh-tech.github.io/) hackathon in November 2022.
 
----
-
-⚠️ **WARNING:** this is pre-alpha software and is **NOT** feature complete! Use with caution. ⚠️
+> [!WARNING]
+> This is pre-alpha software and is **NOT** feature complete! Use with caution. 
 
 ---
 
