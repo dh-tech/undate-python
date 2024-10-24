@@ -15,6 +15,7 @@ testcases = [
     ("1000-01/2000-05-01", UndateInterval(Undate(1000, 1), Undate(2000, 5, 1))),
     # level 1
     ("Y17000002", Undate(17000002)),
+    ("-Y17000002", Undate(-17000002)),
     # "2001-21",  # spring 2001
     # qualifiers TODO - not yet supported by undate
     # "1984?",

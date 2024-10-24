@@ -38,6 +38,7 @@ class TestEDTFDateFormat:
         assert EDTFDateFormat().to_string(Undate(33)) == "0033"
         assert EDTFDateFormat().to_string(Undate("20XX")) == "20XX"
         assert EDTFDateFormat().to_string(Undate(17000002)) == "Y17000002"
+        assert EDTFDateFormat().to_string(Undate(-17000002)) == "-Y17000002"
 
         assert EDTFDateFormat().to_string(Undate(1991, 6)) == "1991-06"
         assert EDTFDateFormat().to_string(Undate(1991, 5, 3)) == "1991-05-03"
