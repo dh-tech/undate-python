@@ -53,12 +53,14 @@ class EDTFDateFormat(BaseDateFormat):
         if undate.precision >= DatePrecision.YEAR:
             year = self._convert_missing_digits(undate.year, undate.MISSING_DIGIT)
             # years with more than 4 digits should be prefixed with Y
-            negative_year = ""
-            if year.startswith("-"):
-                negative_year = "-"
-                year = year[1:]
-            if year and len(year) > 4:
+            # (don't count minus sign when checking digits)
+            if year and len(year.lstrip("-")) > 4:
+                negative_year = ""
+                if year.startswith("-"):
+                    negative_year = "-"
+                    year = year[1:]
                 year = f"{negative_year}Y{year}"
+
             # TODO: handle uncertain / approximate
             parts.append(year or EDTF_UNSPECIFIED_DIGIT * 4)
 

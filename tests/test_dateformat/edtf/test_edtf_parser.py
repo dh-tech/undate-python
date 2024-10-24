@@ -15,6 +15,8 @@ testcases = [
     "Y170000002",
     "-Y170000002",
     "2001-21",  # spring 2001
+    # negative year
+    "-1985",
     # qualifiers
     "1984?",
     "2004-06~",

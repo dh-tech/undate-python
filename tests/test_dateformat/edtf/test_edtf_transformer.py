@@ -16,6 +16,8 @@ testcases = [
     # level 1
     ("Y17000002", Undate(17000002)),
     ("-Y17000002", Undate(-17000002)),
+    # negative year
+    ("-1985", Undate(-1985)),
     # "2001-21",  # spring 2001
     # qualifiers TODO - not yet supported by undate
     # "1984?",
