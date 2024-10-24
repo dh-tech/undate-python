@@ -13,15 +13,18 @@ class TestEDTFDateFormat:
         assert str(EDTFDateFormat().parse("201X")) == str(Undate("201X"))
         assert str(EDTFDateFormat().parse("2004-XX")) == str(Undate(2004, "XX"))
         # missing year but month/day known
-        # assert EDTFDateFormat().parse("--05-03") == Undate(month=5, day=3)
+        # comparison doesn't work because undate knows unknown dates aren't
+        # necessarily the same, so use string comparison
+        assert str(EDTFDateFormat().parse("XXXX-05-03")) == Undate(
+            month=5, day=3
+        ).format("EDTF")
 
     def test_parse_singledate_unequal(self):
         assert EDTFDateFormat().parse("2002") != Undate(2003)
         assert EDTFDateFormat().parse("1991-05") != Undate(1991, 6)
         assert EDTFDateFormat().parse("1991-05-03") != Undate(1991, 5, 4)
         # missing year but month/day known
-        # - does EDTF not support this or is parsing logic incorrect?
-        # assert EDTFDateFormat().parse("XXXX-05-03") != Undate(month=5, day=4)
+        assert EDTFDateFormat().parse("XXXX-05-03") != Undate(month=5, day=4)
 
     def test_parse_invalid(self):
         with pytest.raises(ValueError):
@@ -47,4 +50,8 @@ class TestEDTFDateFormat:
         assert EDTFDateFormat().to_string(Undate(1991, "0X")) == "1991-0X"
         assert EDTFDateFormat().to_string(Undate(1991, None, 3)) == "1991-XX-03"
 
-        # TODO: override missing digit and confirm replacement
+        # level 2 unspecified digits
+        assert EDTFDateFormat().to_string(Undate("156X", 12, 25)) == "156X-12-25"
+        assert EDTFDateFormat().to_string(Undate("XXXX", 12, "XX")) == "XXXX-12-XX"
+        assert EDTFDateFormat().to_string(Undate("1XXX", "XX")) == "1XXX-XX"
+        assert EDTFDateFormat().to_string(Undate(1984, "1X")) == "1984-1X"

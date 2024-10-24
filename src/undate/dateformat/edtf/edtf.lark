@@ -35,8 +35,9 @@ uncertain_approximate: "%"
 
 // The character 'X' may be used in place of one or more rightmost
 // digits to indicate that the value of that digit is unspecified
+// In Level 2, year may be completely unspecified.
 unspecified: /X/
-?year_unspecified: /\d+/ unspecified+
+?year_unspecified: /\d+/ unspecified+ | unspecified ~ 4
 ?month_unspecified: "0".."1"? unspecified ~ 1..2
 //?year_month_unspecified: year_l1 "-" month_unspecified
 ?day_unspecified: "0".."3"? unspecified ~ 1..2

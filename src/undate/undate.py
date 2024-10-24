@@ -54,9 +54,12 @@ class Undate:
         elif year:
             self.precision = DatePrecision.YEAR
 
-        # TODO: refactor partial date min/max calculations
+        # special case: treat year = XXXX as unknown/none
+        if year == "XXXX":
+            year = None
 
         if year is not None:
+            # could we / should we use str.isnumeric here?
             try:
                 year = int(year)
                 # update initial value since it is used to determine
@@ -110,7 +113,7 @@ class Undate:
             # if we have no day or partial day, calculate min / max
             min_day = 1
             # if we know year and month (or max month), calculate exactly
-            if year and month:
+            if year and month and isinstance(year, int):
                 _, max_day = monthrange(int(year), max_month)
             elif year is None and month:
                 # If we don't have year and month,

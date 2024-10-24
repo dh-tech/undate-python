@@ -34,6 +34,11 @@ testcases = [
     ("1985-04/..", UndateInterval(Undate(1985, 4), None)),
     ("../1985-04-12", UndateInterval(None, Undate(1985, 4, 12))),
     ("/1985-04-12", UndateInterval(None, Undate(1985, 4, 12))),
+    # level 2 unspecified digits
+    ("156X-12-25", Undate("156X", 12, 25)),
+    ("XXXX-12-XX", Undate("XXXX", 12, "XX")),
+    ("1XXX-XX", Undate("1XXX", "XX")),
+    ("1984-1X", Undate(1984, "1X")),
 ]
 
 
