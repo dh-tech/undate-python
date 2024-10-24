@@ -55,15 +55,12 @@ dev = [
   "treon",
   "undate",
   "undate[docs]",
+  "undate[test]",
 ]
 test = [
   "pytest>=7.2",
   "pytest-ordering",
   "pytest-cov",
-]
-all = [
-  "undate[dev]",
-  "undate[test]",
 ]
 
 [project.urls]
