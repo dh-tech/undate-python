@@ -2,7 +2,7 @@ import calendar
 from datetime import date
 
 import pytest
-from undate.date import Timedelta
+from undate.date import DatePrecision, Timedelta
 from undate.undate import Undate, UndateInterval
 
 
@@ -143,6 +143,11 @@ class TestUndate:
         # unset year
         assert Undate(month=12, day=31).year == "XXXX"
 
+        # force method to hit conditional for date precision
+        some_century = Undate()
+        some_century.precision = DatePrecision.CENTURY
+        assert some_century.year is None
+
     def test_month_property(self):
         # one, two digit month
         assert Undate(2023, 1).month == "01"
@@ -172,11 +177,19 @@ class TestUndate:
         # Day without year or month
         assert Undate(day=15).day == "15"
 
+        # force str based on date precision without day part set
+        someday = Undate(2023)
+        someday.precision = DatePrecision.DAY
+        assert someday.day == "XX"
+
     def test_eq(self):
         assert Undate(2022) == Undate(2022)
         assert Undate(2022, 10) == Undate(2022, 10)
         assert Undate(2022, 10, 1) == Undate(2022, 10, 1)
         assert Undate(month=2, day=7) == Undate(month=2, day=7)
+
+        # something we can't convert for comparison should return NotImplemented
+        assert Undate(2022).__eq__("not a date") == NotImplemented
 
     def test_eq_datetime_date(self):
         # support comparisons with datetime objects for full day-precision
@@ -535,3 +548,7 @@ class TestUndateInterval:
 
         # duration is not supported for open-ended intervals
         assert UndateInterval(Undate(2000), None).duration() == NotImplemented
+
+        # one year set and the other not currently raises not implemented error
+        with pytest.raises(NotImplementedError):
+            UndateInterval(Undate(2000), Undate()).duration()

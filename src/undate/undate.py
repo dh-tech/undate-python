@@ -210,11 +210,13 @@ class Undate:
     def __eq__(self, other: object) -> bool:
         # Note: assumes label differences don't matter for comparing dates
 
-        other = self._comparison_type(other)
-
         # only a day-precision fully known undate can be equal to a datetime.date
         if isinstance(other, datetime.date):
             return self.earliest == other and self.latest == other
+
+        other = self._comparison_type(other)
+        if other is NotImplemented:
+            return NotImplemented
 
         # check for apparent equality
         looks_equal = (
@@ -346,6 +348,7 @@ class Undate:
         if day:
             return f"{day:>02}"
         # if value is unset but date precision is day, return unknown day
+        # (may not be possible to have day precision with day part set in normal use)
         elif self.precision == DatePrecision.DAY:
             return self.MISSING_DIGIT * 2
         return None
