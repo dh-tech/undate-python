@@ -1,6 +1,6 @@
 {
   "files": [
-    "README.md"
+    "CONTRIBUTORS.md"
   ],
   "imageSize": 100,
   "commit": true,
@@ -14,7 +14,8 @@
       "contributions": [
         "code",
         "review",
-        "test"
+        "test",
+        "ideas"
       ]
     },
     {
@@ -38,7 +39,9 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/1488847?v=4",
       "profile": "https://github.com/robcast",
       "contributions": [
-        "data"
+        "data",
+        "ideas",
+        "review"
       ]
     },
     {
@@ -50,7 +53,8 @@
         "code",
         "review",
         "test",
-        "eventOrganizing"
+        "eventOrganizing",
+        "ideas"
       ]
     },
     {
@@ -72,5 +76,6 @@
   "repoType": "github",
   "repoHost": "https://github.com",
   "projectName": "undate-python",
-  "projectOwner": "dh-tech"
+  "projectOwner": "dh-tech",
+  "badgeTemplate": "![All Contributors](https://img.shields.io/github/all-contributors/dh-tech/undate-python?color=ee8449&style=flat-square)"
 }

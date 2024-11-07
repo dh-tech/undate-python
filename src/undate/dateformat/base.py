@@ -15,9 +15,8 @@ returned by :meth:`BaseDateFormat.available_formatters`
 import importlib
 import logging
 import pkgutil
-from typing import Dict, Type, Union
-from functools import lru_cache
-
+from functools import cache
+from typing import Dict, Type
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +39,7 @@ class BaseDateFormat:
 
     # cache import class method to ensure we only import once
     @classmethod
-    @lru_cache
+    @cache
     def import_formatters(cls) -> int:
         """Import all undate.dateformat formatters
         so that they will be included in available formatters

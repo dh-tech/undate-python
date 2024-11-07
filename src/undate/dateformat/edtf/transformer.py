@@ -1,4 +1,5 @@
-from lark import Transformer, Tree, Token
+from lark import Token, Transformer, Tree
+
 from undate.undate import Undate, UndateInterval
 
 
