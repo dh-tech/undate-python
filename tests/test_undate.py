@@ -1,7 +1,6 @@
 import calendar
-from datetime import date, timedelta
+from datetime import date
 
-import numpy as np
 import pytest
 from undate.date import Timedelta
 from undate.undate import Undate, UndateInterval

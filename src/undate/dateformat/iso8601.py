@@ -62,10 +62,10 @@ class ISO8601DateFormat(BaseDateFormat):
                 # and not others; force year to always be 4 digits
                 if date_portion == "year":
                     date_parts.append("%04d" % undate.earliest.year)
-                elif date_portion == "month":
+                elif date_portion == "month" and undate.earliest.month:
                     date_parts.append("%02d" % undate.earliest.month)
-                elif date_portion == "day":
-                    date_parts.append("%02d" % undate.earliest.day)
+                elif date_portion == "day" and undate.earliest.day:
+                    date_parts.append("%02d" % undate.earliest.day)  # type: ignore
 
             elif date_portion == "year":
                 # if not known but this is year, add '-' for --MM-DD unknown year format

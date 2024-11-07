@@ -7,7 +7,7 @@ from undate.dateformat.base import BaseDateFormat
 class TestBaseDateFormat:
     def test_available_formatters(self):
         available_formatters = BaseDateFormat.available_formatters()
-        assert type(available_formatters) == dict
+        assert isinstance(available_formatters, dict)
 
         # NOTE: import _after_ generating available formatters
         # so we can confirm it gets loaded

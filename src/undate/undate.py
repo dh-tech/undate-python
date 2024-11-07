@@ -159,7 +159,7 @@ class Undate:
                 f"{day:02d}" if isinstance(day, int) else day,
             ]
             # combine, skipping any values that are None
-            return "-".join([str(p) for p in parts if p != None])
+            return "-".join([str(p) for p in parts if p is not None])
 
         return self.formatter.to_string(self)
 

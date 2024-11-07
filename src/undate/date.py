@@ -91,14 +91,14 @@ class Date(np.ndarray):
         return int(str(self.astype("datetime64[Y]")))
 
     @property
-    def month(self) -> Union[int, None]:
+    def month(self) -> Optional[int]:
         # if date unit is year, don't return a month (only M/D)
         if self.dtype != "datetime64[Y]":
             return int(str(self.astype("datetime64[M]")).split("-")[-1])
         return None
 
     @property
-    def day(self) -> Union[int, None]:
+    def day(self) -> Optional[int]:
         # only return a day if date unit is in days
         if self.dtype == "datetime64[D]":
             return int(str(self.astype("datetime64[D]")).split("-")[-1])
