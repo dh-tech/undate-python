@@ -11,14 +11,14 @@ on:
 
 env:
   # python version used to calculate and submit code coverage
-  COV_PYTHON_VERSION: "3.11"
+  COV_PYTHON_VERSION: "3.12"
 
 jobs:
   python-unit:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: ["3.9", "3.10", "3.11", "3.12"]
+        python: ["3.9", "3.10", "3.11", "3.12", "3.13"]
     defaults:
       run:
         working-directory: .
@@ -30,21 +30,20 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
           cache: 'pip'
-          cache-dependency-path: '**/setup.cfg'
+          cache-dependency-path: '**/pyproject.toml'
       - name: Install package with dependencies
         run: |
-          pip install -e ".[dev]"
-          python -m pip install tox tox-gh-actions
+          pip install -e ".[test]"
         if: steps.python-cache.outputs.cache-hit != 'true'
 
       # for all versions but the one we use for code coverage, run normally
       - name: Run unit tests normally
-        run: tox
+        run: pytest
         if: ${{ matrix.python != env.COV_PYTHON_VERSION }}
 
       # run code coverage in one version only
       - name: Run unit tests with code coverage reporting
-        run: tox -e coverage
+        run: pytest --cov=undate
         if: ${{ matrix.python == env.COV_PYTHON_VERSION }}
       - name: Upload test coverage to Codecov
         uses: codecov/codecov-action@v3

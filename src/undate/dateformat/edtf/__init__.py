@@ -1,1 +1,1 @@
-from undate.dateformat.edtf.formatter import EDTFDateFormat
+from undate.dateformat.edtf.formatter import EDTFDateFormat as EDTFDateFormat

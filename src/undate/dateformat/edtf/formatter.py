@@ -1,15 +1,12 @@
-from typing import Dict, List, Union, Optional
+from typing import Optional, Union
 
-from lark import Tree, Token
 from lark.exceptions import UnexpectedCharacters
-from lark.reconstruct import Reconstructor
 
 from undate.date import DatePrecision
-from undate.undate import Undate, UndateInterval
 from undate.dateformat.base import BaseDateFormat
 from undate.dateformat.edtf.parser import edtf_parser
 from undate.dateformat.edtf.transformer import EDTFTransformer
-
+from undate.undate import Undate, UndateInterval
 
 EDTF_UNSPECIFIED_DIGIT: str = "X"
 
