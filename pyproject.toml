@@ -55,6 +55,7 @@ dev = [
   "mypy",
   "treon",
   "undate",
+  "uv", # required for marimo sandbox
   "undate[docs]",
   "undate[test]",
 ]

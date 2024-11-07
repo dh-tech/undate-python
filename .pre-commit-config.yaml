@@ -18,3 +18,4 @@ repos:
     hooks:
       - id: mypy
         additional_dependencies: [types-python-dateutil]
+        exclude: examples/notebooks/.*
