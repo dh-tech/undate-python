@@ -31,10 +31,12 @@ If you cannot or prefer not to install git flow, you can do the equivalent manua
 
 ### Create a Python virtual environment
 
-Use a recent version of python 3. We highly recommend using a python virtualenv, e.g.
+Use a recent version of python 3 (we recommend 3.12).  If you use [pyenv](https://github.com/pyenv/pyenv), run `pyenv install` to get the current recommended python version for development (specified in `.pythonversion`).
+
+We highly recommend using a python virtualenv to isolate dependencies, e.g.
 ```
-python3 -m venv undate
-source undate/bin/activate
+python3 -m venv .venv
+source .venv/bin/activate
 ```
 
 ### Install local version of undate with development python dependencies
@@ -47,11 +49,11 @@ pip install -e ".[dev]"
 
 ### Install pre-commit hooks
 
+We use [pre-commit](https://pre-commit.com/) for automated checks and consistent formatting.  If you're planning to contribute, please install these when you set up your local development.
+
 ```sh
 pre-commit install
 ```
-
-We use [pre-commit](https://pre-commit.com/) for automated checks and consistent formatting.  If you're planning to contribute, please install these when you set up your local development.
 
 ## Tests, documentation, and other checks
 
@@ -65,7 +67,7 @@ To test cases by method name, use `-k`: `pytest -k test_str`
 
 ### Check python types
 
-Python typing is currently enforced on pull requests as part of a GitHub Actions Continuous Integration check using `mypy`.
+Python typing is currently enforced on pull requests as part of a GitHub Actions Continuous Integration check using `mypy` and via pre-commit hook.
 
 To check types locally:
 1. Install the necessary typing libraries (first run only):

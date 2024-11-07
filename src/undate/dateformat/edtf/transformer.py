@@ -1,4 +1,5 @@
-from lark import Transformer, Tree, Token
+from lark import Token, Transformer, Tree
+
 from undate.undate import Undate, UndateInterval
 
 
@@ -67,4 +68,4 @@ class EDTFTransformer(Transformer):
         # strip off the leading Y and convert to integer
         # TODO: undate is currently limited to 4-digit years
         # (datetime max year of 9999)
-        return tok.update(int(token[:1]))
+        return token.update(int(token[:1]))

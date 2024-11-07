@@ -1,6 +1,7 @@
+from typing import Dict, List, Union
+
 from undate.dateformat.base import BaseDateFormat
 from undate.undate import Undate, UndateInterval
-from typing import Dict, List, Union
 
 
 class ISO8601DateFormat(BaseDateFormat):
@@ -61,8 +62,11 @@ class ISO8601DateFormat(BaseDateFormat):
                 # and not others; force year to always be 4 digits
                 if date_portion == "year":
                     date_parts.append("%04d" % undate.earliest.year)
-                else:
-                    date_parts.append(undate.earliest.strftime(iso_format))
+                elif date_portion == "month" and undate.earliest.month:
+                    date_parts.append("%02d" % undate.earliest.month)
+                elif date_portion == "day" and undate.earliest.day:
+                    date_parts.append("%02d" % undate.earliest.day)  # type: ignore
+
             elif date_portion == "year":
                 # if not known but this is year, add '-' for --MM-DD unknown year format
                 date_parts.append("-")

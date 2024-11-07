@@ -23,9 +23,9 @@ jobs:
         run: pip install -e ".[dev]"
         if: steps.python-cache.outputs.cache-hit != 'true'
 
-      # check code style
-      - name: Run black
-        run: black src --check --diff
+      # check with ruff
+      - name: Run ruff
+        run: ruff check
 
       # check docs
       - name: Check that documentation can be built

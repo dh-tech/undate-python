@@ -46,5 +46,6 @@ We use [All Contributors](https://allcontributors.org/) because we recognize tha
 
 ### Related blog posts
 
-- [by Rebecca Sutton Koeser](#blog-rlskoeser)
+(blog-rlskoeser)=
+#### [by Rebecca Sutton Koeser](#blog-rlskoeser)
   - [Join me for a DHTech hackathon? It’s an un-date!](https://dh-tech.github.io/blog/2023-02-09-hackathon-summary/) 2023-02-09 on DHTech blog 

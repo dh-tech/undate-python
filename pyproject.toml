@@ -6,24 +6,28 @@ build-backend = "hatchling.build"
 name = "undate"
 description = "library for working with uncertain, fuzzy, or partially unknown dates and date intervals"
 readme = "README.md"
-license = {text = "Apache-2"}
+license = { text = "Apache-2" }
 requires-python = ">= 3.9"
 dynamic = ["version"]
-dependencies = [
-    "python-dateutil",
-    "lark"
-]
+dependencies = ["python-dateutil", "lark", "numpy"]
 authors = [
-  {name = "Rebecca Sutton Koeser"},
-  {name = "Cole Crawford"},
-  {name = "Julia Damerow"},
-  {name = "Robert Casties"},
-  {name = "Malte Vogl"},
-#  {name = "DHTech", email="dhtech.community@gmail.com"}  ?
+    { name = "Rebecca Sutton Koeser" },
+    { name = "Cole Crawford" },
+    { name = "Julia Damerow" },
+    { name = "Robert Casties" },
+    { name = "Malte Vogl" },
 ]
 # currently no maintainers separate from authors
 
-keywords = ["dates", "dating", "uncertainty", "uncertain-dates", "unknown", "partially-known", "digital-humanities"]
+keywords = [
+    "dates",
+    "dating",
+    "uncertainty",
+    "uncertain-dates",
+    "unknown",
+    "partially-known",
+    "digital-humanities",
+]
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
     "Programming Language :: Python :: 3",
@@ -33,36 +37,32 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
     "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
     "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Scientific/Engineering",
     "Topic :: Utilities",
-    "Typing :: Typed"
+    "Typing :: Typed",
+
 ]
 
 [project.optional-dependencies]
-docs = [
-  "sphinx>=7.0.0",
-  "alabaster",
-  "myst-parser"
-]
+docs = ["sphinx>=7.0.0", "alabaster", "myst-parser", "myst-parser[linkify]"]
 dev = [
-  "black>=22.10.0",
-  "pre-commit>=2.20.0",
-  "twine",
-  "wheel",
-  "build",
-  "mypy",
-  "treon",
-  "undate",
-  "undate[docs]",
-  "undate[test]",
+    "ruff",
+    "pre-commit>=2.20.0",
+    "twine",
+    "wheel",
+    "build",
+    "mypy",
+    "treon",
+    "undate",
+    "undate[docs]",
+    "undate[test]",
 ]
-test = [
-  "pytest>=7.2",
-  "pytest-ordering",
-  "pytest-cov",
-]
+test = ["pytest>=7.2", "pytest-ordering", "pytest-cov"]
+all = ["undate[dev]", "undate[test]"]
 
 [project.urls]
 Homepage = "https://github.com/dh-tech/undate-python"
@@ -76,15 +76,14 @@ Changelog = "https://github.com/dh-tech/undate/main/master/CHANGELOG.md"
 path = "src/undate/__init__.py"
 
 [tool.hatch.build.targets.sdist]
-include = [
-  "src/undate/**/*.py",
-  "src/undate/**/*.lark",
-  "/tests",
-]
+include = ["src/undate/**/*.py", "src/undate/**/*.lark", "/tests"]
 
 [tool.pytest.ini_options]
 pythonpath = "src/"
 markers = [
     "last : run marked tests after all others",
-    "first : run marked tests before all others"
+    "first : run marked tests efore all others",
 ]
+
+[tool.mypy]
+plugins = ["numpy.typing.mypy_plugin"]
