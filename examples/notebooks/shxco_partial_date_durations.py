@@ -18,7 +18,7 @@ def __(mo):
 
         Subscription durations in S&co are sometimes known to be for a particular term (e.g. a year or six months) but without specific dates, perhaps only a year or year and month; Undate calculates durations based on the earliest and latest days in the range, so it overestimates these durations.
 
-        *Notebook authored by Rebecca Sutton Koeser, 2023.*
+        *Notebook authored by Rebecca Sutton Koeser, 2023. Converted to Marimo, November 2024.*
         """
     )
     return
