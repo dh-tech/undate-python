@@ -16,7 +16,6 @@ authors = [
     { name = "Julia Damerow" },
     { name = "Robert Casties" },
     { name = "Malte Vogl" },
-    #  {name = "DHTech", email="dhtech.community@gmail.com"}  ?
 ]
 # currently no maintainers separate from authors
 
@@ -47,7 +46,7 @@ classifiers = [
 [project.optional-dependencies]
 docs = ["sphinx>=7.0.0", "alabaster", "myst-parser", "myst-parser[linkify]"]
 dev = [
-    "black>=22.10.0",
+    "ruff",
     "pre-commit>=2.20.0",
     "twine",
     "wheel",
@@ -79,7 +78,7 @@ include = ["src/undate/**/*.py", "src/undate/**/*.lark", "/tests"]
 pythonpath = "src/"
 markers = [
     "last : run marked tests after all others",
-    "first : run marked tests before all others",
+    "first : run marked tests efore all others",
 ]
 
 [tool.mypy]

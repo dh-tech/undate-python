@@ -87,20 +87,22 @@ class Date(np.ndarray):
     # custom properties to access year, month, day
 
     @property
-    def year(self):
+    def year(self) -> int:
         return int(str(self.astype("datetime64[Y]")))
 
     @property
-    def month(self):
+    def month(self) -> int | None:
         # if date unit is year, don't return a month (only M/D)
         if self.dtype != "datetime64[Y]":
             return int(str(self.astype("datetime64[M]")).split("-")[-1])
+        return None
 
     @property
-    def day(self):
+    def day(self) -> int | None:
         # only return a day if date unit is in days
         if self.dtype == "datetime64[D]":
             return int(str(self.astype("datetime64[D]")).split("-")[-1])
+        return None
 
     def __sub__(self, other):
         # modify to conditionally return a timedelta object instead of a
@@ -126,12 +128,16 @@ class DatePrecision(IntEnum):
     # it is: a day is more precise than a month, a month is more precise than a year,
     # (DatePrecision.year < DatePrecision.month)
 
+    #: century
+    CENTURY = 1
+    #: decade
+    DECADE = 2
     #: year
-    YEAR = 1
+    YEAR = 3
     #: month
-    MONTH = 2
+    MONTH = 4
     #: day
-    DAY = 3
+    DAY = 5
 
     def __str__(self):
         return f"{self.name}"
