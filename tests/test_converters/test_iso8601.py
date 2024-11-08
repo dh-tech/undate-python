@@ -1,4 +1,4 @@
-from undate.dateformat.iso8601 import ISO8601DateFormat
+from undate.converters.iso8601 import ISO8601DateFormat
 from undate.undate import Undate, UndateInterval
 
 

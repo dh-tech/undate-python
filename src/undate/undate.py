@@ -5,8 +5,8 @@ from calendar import monthrange
 # Pre 3.10 requires Union for multiple types, e.g. Union[int, None] instead of int | None
 from typing import Dict, Optional, Union
 
+from undate.converters.base import BaseDateConverter
 from undate.date import ONE_DAY, ONE_MONTH_MAX, ONE_YEAR, Date, DatePrecision, Timedelta
-from undate.dateformat.base import BaseDateFormat
 
 
 class Undate:
@@ -22,7 +22,7 @@ class Undate:
     #: A string to label a specific undate, e.g. "German Unity Date 2022" for Oct. 3, 2022.
     #: Labels are not taken into account when comparing undate objects.
     label: Union[str, None] = None
-    formatter: BaseDateFormat
+    converter: BaseDateConverter
     #: precision of the date (day, month, year, etc.)
     precision: DatePrecision
 
@@ -41,7 +41,7 @@ class Undate:
         year: Optional[Union[int, str]] = None,
         month: Optional[Union[int, str]] = None,
         day: Optional[Union[int, str]] = None,
-        formatter: Optional[BaseDateFormat] = None,
+        converter: Optional[BaseDateConverter] = None,
         label: Optional[str] = None,
     ):
         # keep track of initial values and which values are known
@@ -135,11 +135,13 @@ class Undate:
         self.earliest = Date(min_year, min_month, min_day)
         self.latest = Date(max_year, max_month, max_day)
 
-        if formatter is None:
+        if converter is None:
             #  import all subclass definitions; initialize the default
-            formatter_cls = BaseDateFormat.available_formatters()[self.DEFAULT_FORMAT]
-            formatter = formatter_cls()
-        self.formatter = formatter
+            converter_cls = BaseDateConverter.available_converters()[
+                self.DEFAULT_FORMAT
+            ]
+            converter = converter_cls()
+        self.converter = converter
 
         self.label = label
 
@@ -162,7 +164,7 @@ class Undate:
             # combine, skipping any values that are None
             return "-".join([str(p) for p in parts if p is not None])
 
-        return self.formatter.to_string(self)
+        return self.converter.to_string(self)
 
     def __repr__(self) -> str:
         if self.label:
@@ -172,21 +174,21 @@ class Undate:
     @classmethod
     def parse(cls, date_string, format) -> Union["Undate", "UndateInterval"]:
         """parse a string to an undate or undate interval using the specified format;
-        for now, only supports named formatters"""
-        formatter_cls = BaseDateFormat.available_formatters().get(format, None)
-        if formatter_cls:
+        for now, only supports named converters"""
+        converter_cls = BaseDateConverter.available_converters().get(format, None)
+        if converter_cls:
             # NOTE: some parsers may return intervals; is that ok here?
-            return formatter_cls().parse(date_string)
+            return converter_cls().parse(date_string)
 
         raise ValueError(f"Unsupported format '{format}'")
 
     def format(self, format) -> str:
         """format this undate as a string using the specified format;
-        for now, only supports named formatters"""
-        formatter_cls = BaseDateFormat.available_formatters().get(format, None)
-        if formatter_cls:
+        for now, only supports named converters"""
+        converter_cls = BaseDateConverter.available_converters().get(format, None)
+        if converter_cls:
             # NOTE: some parsers may return intervals; is that ok here?
-            return formatter_cls().to_string(self)
+            return converter_cls().to_string(self)
 
         raise ValueError(f"Unsupported format '{format}'")
 
@@ -459,10 +461,10 @@ class UndateInterval:
 
     def format(self, format) -> str:
         """format this undate interval as a string using the specified format;
-        for now, only supports named formatters"""
-        formatter_cls = BaseDateFormat.available_formatters().get(format, None)
-        if formatter_cls:
-            return formatter_cls().to_string(self)
+        for now, only supports named converters"""
+        converter_cls = BaseDateConverter.available_converters().get(format, None)
+        if converter_cls:
+            return converter_cls().to_string(self)
 
         raise ValueError(f"Unsupported format '{format}'")
 

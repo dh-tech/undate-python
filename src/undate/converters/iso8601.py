@@ -1,10 +1,10 @@
 from typing import Dict, List, Union
 
-from undate.dateformat.base import BaseDateFormat
+from undate.converters.base import BaseDateConverter
 from undate.undate import Undate, UndateInterval
 
 
-class ISO8601DateFormat(BaseDateFormat):
+class ISO8601DateFormat(BaseDateConverter):
     # NOTE: do we care about validation? could use regex
     # but maybe be permissive, warn if invalid but we can parse
 

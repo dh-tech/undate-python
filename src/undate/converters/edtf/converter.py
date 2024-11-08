@@ -2,16 +2,16 @@ from typing import Optional, Union
 
 from lark.exceptions import UnexpectedCharacters
 
+from undate.converters.base import BaseDateConverter
+from undate.converters.edtf.parser import edtf_parser
+from undate.converters.edtf.transformer import EDTFTransformer
 from undate.date import DatePrecision
-from undate.dateformat.base import BaseDateFormat
-from undate.dateformat.edtf.parser import edtf_parser
-from undate.dateformat.edtf.transformer import EDTFTransformer
 from undate.undate import Undate, UndateInterval
 
 EDTF_UNSPECIFIED_DIGIT: str = "X"
 
 
-class EDTFDateFormat(BaseDateFormat):
+class EDTFDateConverter(BaseDateConverter):
     name: str = "EDTF"
 
     def __init__(self):

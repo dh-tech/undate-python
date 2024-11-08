@@ -1,5 +1,5 @@
 import pytest
-from undate.dateformat.edtf.parser import edtf_parser
+from undate.converters.edtf.parser import edtf_parser
 
 # for now, just test that valid dates can be parsed
 

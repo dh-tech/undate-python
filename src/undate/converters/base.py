@@ -1,14 +1,14 @@
 """
-Base class for date format parsing and serializing
+Base class for converting date between different formats and calendars.
 
-To add support for a new date format:
+To add support for a new date format or conversion:
 
-- create a new file under undate/dateformat
-- extend BaseDateFormat and implement parse and to_string methods
+- create a new file or module under undate/converters
+- extend BaseDateConverter and implement parse and to_string methods
   as desired/appropriate
 
-It should be loaded automatically and included in the formatters
-returned by :meth:`BaseDateFormat.available_formatters`
+The new subclass should be loaded automatically and included in the converters
+returned by :meth:`BaseDateConverter.available_converters`
 
 """
 
@@ -21,11 +21,12 @@ from typing import Dict, Type
 logger = logging.getLogger(__name__)
 
 
-class BaseDateFormat:
-    """Base class for parsing and formatting dates for specific formats."""
+class BaseDateConverter:
+    """Base class for parsing, formatting, and converting dates to handle
+    specific formats and different calendars."""
 
     # Subclasses should define a unique name.
-    name: str = "Base Formatter"
+    name: str = "Base Converter"
 
     def parse(self, value: str):
         # can't add type hint here because of circular import
@@ -40,22 +41,22 @@ class BaseDateFormat:
     # cache import class method to ensure we only import once
     @classmethod
     @cache
-    def import_formatters(cls) -> int:
-        """Import all undate.dateformat formatters
-        so that they will be included in available formatters
+    def import_converters(cls) -> int:
+        """Import all undate converters
+        so that they will be included in available converters
         even if not explicitly imported. Only import once.
         returns the count of modules imported."""
 
-        logger.debug("Loading formatters under undate.dateformat")
-        import undate.dateformat
+        logger.debug("Loading converters under undate.converters")
+        import undate.converters
 
         # load packages under this path with curent package prefix
-        formatter_path = undate.dateformat.__path__
-        formatter_prefix = f"{undate.dateformat.__name__}."
+        converter_path = undate.converters.__path__
+        converter_prefix = f"{undate.converters.__name__}."
 
         import_count = 0
         for importer, modname, ispkg in pkgutil.iter_modules(
-            formatter_path, formatter_prefix
+            converter_path, converter_prefix
         ):
             # import everything except the current file
             if not modname.endswith(".base"):
@@ -65,7 +66,7 @@ class BaseDateFormat:
         return import_count
 
     @classmethod
-    def available_formatters(cls) -> Dict[str, Type["BaseDateFormat"]]:
-        # ensure undate formatters are imported
-        cls.import_formatters()
+    def available_converters(cls) -> Dict[str, Type["BaseDateConverter"]]:
+        # ensure undate converters are imported
+        cls.import_converters()
         return {c.name: c for c in cls.__subclasses__()}  # type: ignore
