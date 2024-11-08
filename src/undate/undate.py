@@ -169,6 +169,27 @@ class Undate:
             return "<Undate '%s' (%s)>" % (self.label, self)
         return "<Undate %s>" % self
 
+    @classmethod
+    def parse(cls, date_string, format) -> Union["Undate", "UndateInterval"]:
+        """parse a string to an undate or undate interval using the specified format;
+        for now, only supports named formatters"""
+        formatter_cls = BaseDateFormat.available_formatters().get(format, None)
+        if formatter_cls:
+            # NOTE: some parsers may return intervals; is that ok here?
+            return formatter_cls().parse(date_string)
+
+        raise ValueError(f"Unsupported format '{format}'")
+
+    def format(self, format) -> str:
+        """format this undate as a string using the specified format;
+        for now, only supports named formatters"""
+        formatter_cls = BaseDateFormat.available_formatters().get(format, None)
+        if formatter_cls:
+            # NOTE: some parsers may return intervals; is that ok here?
+            return formatter_cls().to_string(self)
+
+        raise ValueError(f"Unsupported format '{format}'")
+
     def _comparison_type(self, other: object) -> "Undate":
         """Common logic for type handling in comparison methods.
         Converts to Undate object if possible, otherwise raises
@@ -189,11 +210,13 @@ class Undate:
     def __eq__(self, other: object) -> bool:
         # Note: assumes label differences don't matter for comparing dates
 
-        other = self._comparison_type(other)
-
         # only a day-precision fully known undate can be equal to a datetime.date
         if isinstance(other, datetime.date):
             return self.earliest == other and self.latest == other
+
+        other = self._comparison_type(other)
+        if other is NotImplemented:
+            return NotImplemented
 
         # check for apparent equality
         looks_equal = (
@@ -325,6 +348,7 @@ class Undate:
         if day:
             return f"{day:>02}"
         # if value is unset but date precision is day, return unknown day
+        # (may not be possible to have day precision with day part set in normal use)
         elif self.precision == DatePrecision.DAY:
             return self.MISSING_DIGIT * 2
         return None
@@ -432,6 +456,15 @@ class UndateInterval:
     def __str__(self) -> str:
         # using EDTF syntax for open ranges
         return "%s/%s" % (self.earliest or "..", self.latest or "")
+
+    def format(self, format) -> str:
+        """format this undate interval as a string using the specified format;
+        for now, only supports named formatters"""
+        formatter_cls = BaseDateFormat.available_formatters().get(format, None)
+        if formatter_cls:
+            return formatter_cls().to_string(self)
+
+        raise ValueError(f"Unsupported format '{format}'")
 
     def __repr__(self) -> str:
         if self.label:

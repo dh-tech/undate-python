@@ -1,5 +1,4 @@
 import pytest
-
 from undate.dateformat.edtf import EDTFDateFormat
 from undate.undate import Undate, UndateInterval
 
@@ -25,7 +24,7 @@ class TestEDTFDateFormat:
 
     def test_parse_invalid(self):
         with pytest.raises(ValueError):
-            assert EDTFDateFormat().parse("1991-5") == Undate(1991, 5)
+            EDTFDateFormat().parse("1991-5")
 
     def test_parse_range(self):
         assert EDTFDateFormat().parse("1800/1900") == UndateInterval(
