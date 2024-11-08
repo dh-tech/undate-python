@@ -103,4 +103,4 @@ class EDTFDateConverter(BaseDateConverter):
             return "-".join(parts)
 
         # how can we have an empty string? probably shouldn't get here
-        return ""
+        raise ValueError("Failed to generate an EDTF string from %r", undate)

@@ -1,5 +1,6 @@
 import pytest
 from undate.converters.edtf import EDTFDateConverter
+from undate.date import DatePrecision
 from undate.undate import Undate, UndateInterval
 
 
@@ -52,5 +53,12 @@ class TestEDTFDateConverter:
 
         assert EDTFDateConverter().to_string(Undate(1991, "0X")) == "1991-0X"
         assert EDTFDateConverter().to_string(Undate(1991, None, 3)) == "1991-XX-03"
+        assert EDTFDateConverter().to_string(Undate(-1984)) == "-1984"
 
+        # if converter can't generate a string for the date,
+        # it should return a value error
+        empty_undate = Undate()
+        empty_undate.precision = DatePrecision.DECADE
+        with pytest.raises(ValueError):
+            EDTFDateConverter().to_string(empty_undate)
         # TODO: override missing digit and confirm replacement
