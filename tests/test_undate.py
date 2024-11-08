@@ -131,6 +131,47 @@ class TestUndate:
         assert isinstance(undate_from_date, Undate)
         assert undate_from_date == Undate(2001, 3, 5)
 
+    # test properties for accessing parts of date
+    def test_year_property(self):
+        # two, three, four five digit years; numeric and string
+        assert Undate(33).year == "0033"
+        assert Undate(567).year == "0567"
+        assert Undate("1984").year == "1984"
+        assert Undate(23055).year == "23055"
+        # partially known year
+        assert Undate("19XX").year == "19XX"
+        # unset year
+        assert Undate(month=12, day=31).year == "XXXX"
+
+    def test_month_property(self):
+        # one, two digit month
+        assert Undate(2023, 1).month == "01"
+        assert Undate(2023, 12).month == "12"
+        # partially unknown month (first/second digit unknown)
+        assert Undate(2023, "1X").month == "1X"
+        assert Undate(2023, "X2").month == "X2"
+        # fully unknown month
+        assert Undate(2023, "XX").month == "XX"
+        # unset month, year precision
+        assert Undate(2023).month is None
+        # unset month, day precision (= some unknown month, not no month)
+        assert Undate(day=15).month == "XX"
+
+    def test_day_property(self):
+        # one, two digit day
+        assert Undate(2023, 1, 9).day == "09"
+        assert Undate(2023, 1, 31).day == "31"
+        # partially unknown day
+        assert Undate(2023, 1, "1X").day == "1X"
+        assert Undate(2023, 1, "X5").day == "X5"
+        # fully unknown day
+        assert Undate(2023, 1, "XX").day == "XX"
+        # unset day
+        assert Undate(2023).day is None
+        assert Undate(2023, 1).day is None
+        # Day without year or month
+        assert Undate(day=15).day == "15"
+
     def test_eq(self):
         assert Undate(2022) == Undate(2022)
         assert Undate(2022, 10) == Undate(2022, 10)

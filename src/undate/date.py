@@ -134,6 +134,7 @@ class DatePrecision(IntEnum):
     DECADE = 2
     #: year
     YEAR = 3
+    # TBD: season ?
     #: month
     MONTH = 4
     #: day

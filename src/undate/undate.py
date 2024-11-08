@@ -45,6 +45,7 @@ class Undate:
         label: Optional[str] = None,
     ):
         # keep track of initial values and which values are known
+        # TODO: add validation: if str, must be expected length
         self.initial_values: Dict[str, Optional[Union[int, str]]] = {
             "year": year,
             "month": month,
@@ -292,6 +293,45 @@ class Undate:
 
     def is_partially_known(self, part: str) -> bool:
         return isinstance(self.initial_values[part], str)
+
+    @property
+    def year(self) -> Optional[str]:
+        "year as string (minimum 4 characters), if year is known"
+        year = self._get_date_part("year")
+        if year:
+            return f"{year:>04}"
+        # if value is unset but date precision is month or greater, return unknown month
+        elif self.precision >= DatePrecision.YEAR:
+            return self.MISSING_DIGIT * 4
+        return None
+
+    @property
+    def month(self) -> Optional[str]:
+        "month as 2-character string, or None if unknown/unset"
+        # TODO: do we allow None for unknown month with day-level granularity?
+        # TODO: need to distinguish between unknown (XX) and unset/not part of the date due to granularity
+        month = self._get_date_part("month")
+        if month:
+            return f"{month:>02}"
+        # if value is unset but date precision is month or greater, return unknown month
+        elif self.precision >= DatePrecision.MONTH:
+            return self.MISSING_DIGIT * 2
+        return None
+
+    @property
+    def day(self) -> Optional[str]:
+        "day as 2-character string or None if unset"
+        day = self._get_date_part("day")
+        if day:
+            return f"{day:>02}"
+        # if value is unset but date precision is day, return unknown day
+        elif self.precision == DatePrecision.DAY:
+            return self.MISSING_DIGIT * 2
+        return None
+
+    def _get_date_part(self, part: str) -> Optional[str]:
+        value = self.initial_values.get(part)
+        return str(value) if value else None
 
     def duration(self) -> Timedelta:
         """What is the duration of this date?

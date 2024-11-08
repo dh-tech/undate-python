@@ -12,12 +12,10 @@ testcases = [
     ("1001-03-30", Undate(1001, 3, 30)),
     ("1000/2000", UndateInterval(Undate(1000), Undate(2000))),
     ("1000-01/2000-05-01", UndateInterval(Undate(1000, 1), Undate(2000, 5, 1))),
-    # # level 1
-    # NOTE: undate currently doesn't most of the level 1 functionality
-    # NOTE: undate currently doesn't support years beyond 9999 (datetime.MAXYEAR)
-    # ("Y17000002", Undate(17000002)),
+    # level 1
+    ("Y17000002", Undate(17000002)),
     # "2001-21",  # spring 2001
-    # # qualifiers
+    # qualifiers TODO - not yet supported by undate
     # "1984?",
     # "2004-06~",
     # "2004-06-11%",
