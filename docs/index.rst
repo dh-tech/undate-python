@@ -9,7 +9,7 @@ undate documentation
    :caption: Contents:
 
    readme
-   undate
+   undate/index
    CONTRIBUTING
    DEVELOPER_NOTES
    CONTRIBUTORS

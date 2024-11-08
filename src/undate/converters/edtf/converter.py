@@ -8,16 +8,23 @@ from undate.converters.edtf.transformer import EDTFTransformer
 from undate.date import DatePrecision
 from undate.undate import Undate, UndateInterval
 
+#: character for unspecified digits
 EDTF_UNSPECIFIED_DIGIT: str = "X"
 
 
 class EDTFDateConverter(BaseDateConverter):
+    #: converter name: EDTF
     name: str = "EDTF"
 
     def __init__(self):
         self.transformer = EDTFTransformer()
 
     def parse(self, value: str) -> Union[Undate, UndateInterval]:
+        """
+        Parse a string in a supported EDTF date or date interval format and
+        return an :class:`~undate.undate.Undate` or
+        :class:`~undate.undate.UndateInterval`.
+        """
         # parse the input string, then transform to undate object
         try:
             parsetree = edtf_parser.parse(value)
@@ -33,6 +40,10 @@ class EDTFDateConverter(BaseDateConverter):
         return None
 
     def to_string(self, undate: Union[Undate, UndateInterval]) -> str:
+        """
+        Convert an :class:`~undate.undate.Undate` or
+        :class:`~undate.undate.UndateInterval` to EDTF format.
+        """
         if isinstance(undate, Undate):
             return self._undate_to_string(undate)
         elif isinstance(undate, UndateInterval):
