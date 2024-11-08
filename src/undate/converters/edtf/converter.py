@@ -25,6 +25,9 @@ class EDTFDateConverter(BaseDateConverter):
         return an :class:`~undate.undate.Undate` or
         :class:`~undate.undate.UndateInterval`.
         """
+        if not value:
+            raise ValueError("Parsing empty/unset string is not supported")
+
         # parse the input string, then transform to undate object
         try:
             parsetree = edtf_parser.parse(value)

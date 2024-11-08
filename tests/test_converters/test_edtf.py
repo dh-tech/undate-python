@@ -22,9 +22,18 @@ class TestEDTFDateConverter:
         # - does EDTF not support this or is parsing logic incorrect?
         # assert EDTFDateConverter().parse("XXXX-05-03") != Undate(month=5, day=4)
 
-    def test_parse_invalid(self):
+    invalid_inputs = [
+        "1991-13",  # invalid month
+        "1991-12-32",  # invalid day
+        "199A",  # invalid year format
+        "",  # empty string
+        None,  # None input
+    ]
+
+    @pytest.mark.parametrize("invalid_input", invalid_inputs)
+    def test_parse_invalid(self, invalid_input):
         with pytest.raises(ValueError):
-            EDTFDateConverter().parse("1991-5")
+            EDTFDateConverter().parse(invalid_input)
 
     def test_parse_range(self):
         assert EDTFDateConverter().parse("1800/1900") == UndateInterval(
