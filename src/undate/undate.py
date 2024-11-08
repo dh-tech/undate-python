@@ -3,19 +3,16 @@ import re
 from calendar import monthrange
 
 # Pre 3.10 requires Union for multiple types, e.g. Union[int, None] instead of int | None
-from typing import Optional, Dict, Union, Any
+from typing import Dict, Optional, Union
 
-import numpy as np
-from numpy.typing import ArrayLike, DTypeLike
-
-from undate.date import Date, DatePrecision, ONE_DAY, ONE_YEAR, ONE_MONTH_MAX
-from undate.dateformat.base import BaseDateFormat
+from undate.converters.base import BaseDateConverter
+from undate.date import ONE_DAY, ONE_MONTH_MAX, ONE_YEAR, Date, DatePrecision, Timedelta
 
 
 class Undate:
     """object for representing uncertain, fuzzy or partially unknown dates"""
 
-    DEFAULT_FORMAT: str = "ISO8601"
+    DEFAULT_CONVERTER: str = "ISO8601"
 
     #: symbol for unknown digits within a date value
     MISSING_DIGIT: str = "X"
@@ -25,19 +22,26 @@ class Undate:
     #: A string to label a specific undate, e.g. "German Unity Date 2022" for Oct. 3, 2022.
     #: Labels are not taken into account when comparing undate objects.
     label: Union[str, None] = None
-    formatter: BaseDateFormat
+    converter: BaseDateConverter
     #: precision of the date (day, month, year, etc.)
     precision: DatePrecision
 
     #: known non-leap year
     NON_LEAP_YEAR: int = 2022
+    # numpy datetime is stored as 64-bit integer, so min/max
+    # depends on the time unit; assume days for now
+    # See https://numpy.org/doc/stable/reference/arrays.datetime.html#datetime-units
+    # It just so happens that int(2.5e16) is a leap year, which is a weird default,
+    # so let's increase our lower bound by one year.
+    MIN_ALLOWABLE_YEAR = int(-2.5e16) + 1
+    MAX_ALLOWABLE_YEAR = int(2.5e16)
 
     def __init__(
         self,
         year: Optional[Union[int, str]] = None,
         month: Optional[Union[int, str]] = None,
         day: Optional[Union[int, str]] = None,
-        formatter: Optional[BaseDateFormat] = None,
+        converter: Optional[BaseDateConverter] = None,
         label: Optional[str] = None,
     ):
         # keep track of initial values and which values are known
@@ -71,11 +75,10 @@ class Undate:
                 min_year = int(str(year).replace(self.MISSING_DIGIT, "0"))
                 max_year = int(str(year).replace(self.MISSING_DIGIT, "9"))
         else:
-            # numpy datetime is stored as 64-bit integer, so min/max
-            # depends on the time unit; assume days for now
-            # See https://numpy.org/doc/stable/reference/arrays.datetime.html#datetime-units
-            max_year = int(2.5e16)
-            min_year = int(-2.5e16)
+            # use the configured min/max allowable years if we
+            # don't have any other bounds
+            min_year = self.MIN_ALLOWABLE_YEAR
+            max_year = self.MAX_ALLOWABLE_YEAR
 
         # if month is passed in as a string but completely unknown,
         # treat as none
@@ -127,16 +130,21 @@ class Undate:
             if day is not None:
                 min_day, max_day = self._missing_digit_minmax(day, min_day, max_day)
 
+        # TODO: special case, if we get a Feb 29 date with unknown year,
+        # must switch the min/max years to known leap years!
+
         # for unknowns, assume smallest possible value for earliest and
         # largest valid for latest
         self.earliest = Date(min_year, min_month, min_day)
         self.latest = Date(max_year, max_month, max_day)
 
-        if formatter is None:
+        if converter is None:
             #  import all subclass definitions; initialize the default
-            formatter_cls = BaseDateFormat.available_formatters()[self.DEFAULT_FORMAT]
-            formatter = formatter_cls()
-        self.formatter = formatter
+            converter_cls = BaseDateConverter.available_converters()[
+                self.DEFAULT_CONVERTER
+            ]
+            converter = converter_cls()
+        self.converter = converter
 
         self.label = label
 
@@ -157,9 +165,9 @@ class Undate:
                 f"{day:02d}" if isinstance(day, int) else day,
             ]
             # combine, skipping any values that are None
-            return "-".join([str(p) for p in parts if p != None])
+            return "-".join([str(p) for p in parts if p is not None])
 
-        return self.formatter.to_string(self)
+        return self.converter.to_string(self)
 
     def __repr__(self) -> str:
         if self.label:
@@ -169,21 +177,21 @@ class Undate:
     @classmethod
     def parse(cls, date_string, format) -> Union["Undate", "UndateInterval"]:
         """parse a string to an undate or undate interval using the specified format;
-        for now, only supports named formatters"""
-        formatter_cls = BaseDateFormat.available_formatters().get(format, None)
-        if formatter_cls:
+        for now, only supports named converters"""
+        converter_cls = BaseDateConverter.available_converters().get(format, None)
+        if converter_cls:
             # NOTE: some parsers may return intervals; is that ok here?
-            return formatter_cls().parse(date_string)
+            return converter_cls().parse(date_string)
 
         raise ValueError(f"Unsupported format '{format}'")
 
     def format(self, format) -> str:
         """format this undate as a string using the specified format;
-        for now, only supports named formatters"""
-        formatter_cls = BaseDateFormat.available_formatters().get(format, None)
-        if formatter_cls:
+        for now, only supports named converters"""
+        converter_cls = BaseDateConverter.available_converters().get(format, None)
+        if converter_cls:
             # NOTE: some parsers may return intervals; is that ok here?
-            return formatter_cls().to_string(self)
+            return converter_cls().to_string(self)
 
         raise ValueError(f"Unsupported format '{format}'")
 
@@ -207,11 +215,13 @@ class Undate:
     def __eq__(self, other: object) -> bool:
         # Note: assumes label differences don't matter for comparing dates
 
-        other = self._comparison_type(other)
-
         # only a day-precision fully known undate can be equal to a datetime.date
         if isinstance(other, datetime.date):
             return self.earliest == other and self.latest == other
+
+        other = self._comparison_type(other)
+        if other is NotImplemented:
+            return NotImplemented
 
         # check for apparent equality
         looks_equal = (
@@ -284,6 +294,9 @@ class Undate:
                 self.earliest <= other.earliest,
                 self.latest >= other.latest,
                 # is precision sufficient for comparing partially known dates?
+                # checking based on less precise /less granular time unit,
+                # e.g. a day or month could be contained in a year
+                # but not the reverse
                 self.precision < other.precision,
             ]
         )
@@ -340,6 +353,7 @@ class Undate:
         if day:
             return f"{day:>02}"
         # if value is unset but date precision is day, return unknown day
+        # (may not be possible to have day precision with day part set in normal use)
         elif self.precision == DatePrecision.DAY:
             return self.MISSING_DIGIT * 2
         return None
@@ -348,7 +362,7 @@ class Undate:
         value = self.initial_values.get(part)
         return str(value) if value else None
 
-    def duration(self):  # -> np.timedelta64:
+    def duration(self) -> Timedelta:
         """What is the duration of this date?
         Calculate based on earliest and latest date within range,
         taking into account the precision of the date even if not all
@@ -450,10 +464,10 @@ class UndateInterval:
 
     def format(self, format) -> str:
         """format this undate interval as a string using the specified format;
-        for now, only supports named formatters"""
-        formatter_cls = BaseDateFormat.available_formatters().get(format, None)
-        if formatter_cls:
-            return formatter_cls().to_string(self)
+        for now, only supports named converters"""
+        converter_cls = BaseDateConverter.available_converters().get(format, None)
+        if converter_cls:
+            return converter_cls().to_string(self)
 
         raise ValueError(f"Unsupported format '{format}'")
 
@@ -466,11 +480,11 @@ class UndateInterval:
         # consider interval equal if both dates are equal
         return self.earliest == other.earliest and self.latest == other.latest
 
-    def duration(self):  #  -> np.timedelta64:
+    def duration(self) -> Timedelta:
         """Calculate the duration between two undates.
 
         :returns: A duration
-        :rtype: numpy.timedelta64
+        :rtype: Timedelta
         """
         # what is the duration of this date range?
 
@@ -490,7 +504,7 @@ class UndateInterval:
             # if we get a negative, we've wrapped from end of one year
             # to the beginning of the next;
             # recalculate assuming second date is in the subsequent year
-            if duration.astype("int") < 0:
+            if duration.days < 0:
                 end = self.latest.earliest + ONE_YEAR
                 duration = end - self.earliest.earliest
 

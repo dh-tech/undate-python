@@ -1,7 +1,8 @@
-from datetime import timedelta, date
+import calendar
+from datetime import date
 
 import pytest
-
+from undate.date import DatePrecision, Timedelta
 from undate.undate import Undate, UndateInterval
 
 
@@ -112,6 +113,10 @@ class TestUndate:
         uncertain_day = Undate(2024, 2, "2X")
         assert uncertain_day.latest.day == 29
 
+        # TODO: handle leap day in an unknown year
+        # (currently causes an exception because min/max years are not leap years)
+        # Undate(None, 2, 29)
+
     def test_init_invalid(self):
         with pytest.raises(ValueError):
             Undate("19xx")
@@ -138,6 +143,11 @@ class TestUndate:
         # unset year
         assert Undate(month=12, day=31).year == "XXXX"
 
+        # force method to hit conditional for date precision
+        some_century = Undate()
+        some_century.precision = DatePrecision.CENTURY
+        assert some_century.year is None
+
     def test_month_property(self):
         # one, two digit month
         assert Undate(2023, 1).month == "01"
@@ -146,7 +156,7 @@ class TestUndate:
         assert Undate(2023, "1X").month == "1X"
         assert Undate(2023, "X2").month == "X2"
         # fully unknown month
-        assert Undate(2023, "XX").month is "XX"
+        assert Undate(2023, "XX").month == "XX"
         # unset month, year precision
         assert Undate(2023).month is None
         # unset month, day precision (= some unknown month, not no month)
@@ -167,11 +177,19 @@ class TestUndate:
         # Day without year or month
         assert Undate(day=15).day == "15"
 
+        # force str based on date precision without day part set
+        someday = Undate(2023)
+        someday.precision = DatePrecision.DAY
+        assert someday.day == "XX"
+
     def test_eq(self):
         assert Undate(2022) == Undate(2022)
         assert Undate(2022, 10) == Undate(2022, 10)
         assert Undate(2022, 10, 1) == Undate(2022, 10, 1)
         assert Undate(month=2, day=7) == Undate(month=2, day=7)
+
+        # something we can't convert for comparison should return NotImplemented
+        assert Undate(2022).__eq__("not a date") == NotImplemented
 
     def test_eq_datetime_date(self):
         # support comparisons with datetime objects for full day-precision
@@ -327,35 +345,35 @@ class TestUndate:
 
     def test_duration(self):
         day_duration = Undate(2022, 11, 7).duration()
-        # assert isinstance(day_duration, timedelta)
-        assert day_duration.astype("int") == 1
+        assert isinstance(day_duration, Timedelta)
+        assert day_duration.days == 1
 
         january_duration = Undate(2022, 1).duration()
-        assert january_duration.astype("int") == 31
+        assert january_duration.days == 31
         feb_duration = Undate(2022, 2).duration()
-        assert feb_duration.astype("int") == 28
-        # next leap year will be 2024
+        assert feb_duration.days == 28
+        # 2024 is a known leap year
         leapyear_feb_duration = Undate(2024, 2).duration()
-        assert leapyear_feb_duration.astype("int") == 29
+        assert leapyear_feb_duration.days == 29
 
         year_duration = Undate(2022).duration()
-        assert year_duration.astype("int") == 365
+        assert year_duration.days == 365
         leapyear_duration = Undate(2024).duration()
-        assert leapyear_duration.astype("int") == 366
+        assert leapyear_duration.days == 366
 
     def test_partiallyknown_duration(self):
         # day in unknown month/year
         # assert Undate(day=5).duration().days == 1
-        assert Undate(day=5).duration().astype("int") == 1
-        assert Undate(year=1900, month=11, day="2X").duration().astype("int") == 1
+        assert Undate(day=5).duration().days == 1
+        assert Undate(year=1900, month=11, day="2X").duration().days == 1
 
         # month in unknown year
-        assert Undate(month=6).duration().astype("int") == 30
+        assert Undate(month=6).duration().days == 30
         # partially known month
-        assert Undate(year=1900, month="1X").duration().astype("int") == 31
+        assert Undate(year=1900, month="1X").duration().days == 31
         # what about february?
         # could vary with leap years, but assume non-leapyear
-        assert Undate(month=2).duration().astype("int") == 28
+        assert Undate(month=2).duration().days == 28
 
     def test_known_year(self):
         assert Undate(2022).known_year is True
@@ -485,41 +503,52 @@ class TestUndateInterval:
         )
         assert UndateInterval(Undate(2022, 5)) != UndateInterval(Undate(2022, 6))
 
+    def test_min_year_non_leapyear(self):
+        assert not calendar.isleap(Undate.MIN_ALLOWABLE_YEAR)
+
     def test_duration(self):
         week_duration = UndateInterval(
             Undate(2022, 11, 1), Undate(2022, 11, 7)
         ).duration()
-        # assert isinstance(week_duration, timedelta)
-        assert week_duration.astype("int") == 7
+        assert isinstance(week_duration, Timedelta)
+        assert week_duration.days == 7
 
         twomonths = UndateInterval(Undate(2022, 11), Undate(2022, 12)).duration()
         # november - december = 30 days + 31 days
-        assert twomonths.astype("int") == 30 + 31
+        assert twomonths.days == 30 + 31
 
         twoyears = UndateInterval(Undate(2021), Undate(2022)).duration()
-        assert twoyears.astype("int") == 365 * 2
+        assert twoyears.days == 365 * 2
 
         # special case: month/day with no year (assumes same year)
         week_noyear_duration = UndateInterval(
             Undate(None, 11, 1), Undate(None, 11, 7)
         ).duration()
-        assert week_noyear_duration.astype("int") == 7
+        assert week_noyear_duration.days == 7
         # special case 2: month/day with no year, wrapping from december to january
         # (assumes sequential years)
         month_noyear_duration = UndateInterval(
             Undate(None, 12, 1), Undate(None, 1, 1)
         ).duration()
-        assert month_noyear_duration.astype("int") == 31
-        # change from relativedelta to timedelta64 changes this for some reason
-        # assert month_noyear_duration.astype("int") == 32
-        # this seems wrong, but we currently count both start and dates
+        assert month_noyear_duration.days == 32
 
-        # real case from Shakespeare and Company Project data;
+        # real world test cases from Shakespeare and Company Project data;
         # second date is a year minus one day in the future
         month_noyear_duration = UndateInterval(
             Undate(None, 6, 7), Undate(None, 6, 6)
         ).duration()
-        assert month_noyear_duration.astype("int") == 365
+        assert month_noyear_duration.days == 365
+
+        # durations that span february in unknown years should assume
+        # non-leap years
+        jan_march_duration = UndateInterval(
+            Undate(None, 2, 28), Undate(None, 3, 1)
+        ).duration()
+        assert jan_march_duration.days == 2
 
         # duration is not supported for open-ended intervals
         assert UndateInterval(Undate(2000), None).duration() == NotImplemented
+
+        # one year set and the other not currently raises not implemented error
+        with pytest.raises(NotImplementedError):
+            UndateInterval(Undate(2000), Undate()).duration()
