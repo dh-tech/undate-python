@@ -13,6 +13,13 @@ EDTF_UNSPECIFIED_DIGIT: str = "X"
 
 
 class EDTFDateConverter(BaseDateConverter):
+    """
+    Converter for Extended Date/Time Format (EDTF).
+
+    Supports parsing and serializing dates and date ranges in EDTF format.
+    Does not support all of EDTF, and only supports dates and not times.
+    """
+
     #: converter name: EDTF
     name: str = "EDTF"
 

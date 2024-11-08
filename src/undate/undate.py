@@ -12,7 +12,7 @@ from undate.date import ONE_DAY, ONE_MONTH_MAX, ONE_YEAR, Date, DatePrecision, T
 class Undate:
     """object for representing uncertain, fuzzy or partially unknown dates"""
 
-    DEFAULT_FORMAT: str = "ISO8601"
+    DEFAULT_CONVERTER: str = "ISO8601"
 
     #: symbol for unknown digits within a date value
     MISSING_DIGIT: str = "X"
@@ -138,7 +138,7 @@ class Undate:
         if converter is None:
             #  import all subclass definitions; initialize the default
             converter_cls = BaseDateConverter.available_converters()[
-                self.DEFAULT_FORMAT
+                self.DEFAULT_CONVERTER
             ]
             converter = converter_cls()
         self.converter = converter
