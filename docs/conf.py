@@ -86,4 +86,4 @@ html_sidebars = {
 }
 
 # turn on relative links; make sure both github and sphinx links work
-myst_enable_extensions = ["linkify"]
+# myst_enable_extensions = ["linkify"]  # disabling because not found
