@@ -39,7 +39,7 @@ class EDTFDateConverter(BaseDateConverter):
         try:
             parsetree = edtf_parser.parse(value)
             return self.transformer.transform(parsetree)
-        except UnexpectedCharacters as err:
+        except UnexpectedCharacters:
             raise ValueError(
                 "Parsing failed: '%s' is not a supported EDTF date format" % value
             )
