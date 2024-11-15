@@ -3,13 +3,18 @@
 ## 0.3
 
 - Updated to use numpy `datetime64` to support a greater range of years beyond the 4-digit years supported by python's builtin ``datetime.date`
+  - Custom `Date` and `Timedelta` objects as shims to make numpy datetime64 and timedelta64 act more like python `datetime` objects
 - Renamed formatters to converters for more flexibility / scope
-- Support using different converters for input and output (new `format` and `parse` methods)
-- Improve readme with example usage and disclaimers about current functionality
-- Improve documentation for adding new converters
-- Improve documentation for branching guidelines in contributing
-
-
+- Support using different converters with new `format` and `parse` methods on `Undate`
+- Improved EDTF support:
+  - Support 5+ digit years with leading Y (thanks to numpy.datetime64)
+  - Jupyter notebook demonstrating / validating EDTF support
+- Improved readme with example usage and disclaimers about current functionality
+- Improved documentation for adding new converters
+- Improved documentation for branching guidelines in contributing
+- Restructured sphinx documentation and added more code documentation
+- Added a project logo
+- Switch from black to ruff for pre-commit formatting
 
 ### numpy impact
 
