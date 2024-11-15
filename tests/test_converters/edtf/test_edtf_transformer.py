@@ -14,6 +14,9 @@ testcases = [
     ("1000-01/2000-05-01", UndateInterval(Undate(1000, 1), Undate(2000, 5, 1))),
     # level 1
     ("Y17000002", Undate(17000002)),
+    ("-Y17000002", Undate(-17000002)),
+    # negative year
+    ("-1985", Undate(-1985)),
     # "2001-21",  # spring 2001
     # qualifiers TODO - not yet supported by undate
     # "1984?",
@@ -30,6 +33,11 @@ testcases = [
     ("1985-04/..", UndateInterval(Undate(1985, 4), None)),
     ("../1985-04-12", UndateInterval(None, Undate(1985, 4, 12))),
     ("/1985-04-12", UndateInterval(None, Undate(1985, 4, 12))),
+    # level 2 unspecified digits
+    ("156X-12-25", Undate("156X", 12, 25)),
+    ("XXXX-12-XX", Undate("XXXX", 12, "XX")),
+    ("1XXX-XX", Undate("1XXX", "XX")),
+    ("1984-1X", Undate(1984, "1X")),
 ]
 
 

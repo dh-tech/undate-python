@@ -71,8 +71,14 @@ class EDTFDateConverter(BaseDateConverter):
         if undate.precision >= DatePrecision.YEAR:
             year = self._convert_missing_digits(undate.year, undate.MISSING_DIGIT)
             # years with more than 4 digits should be prefixed with Y
-            if year and len(year) > 4:
-                year = f"Y{year}"
+            # (don't count minus sign when checking digits)
+            if year and len(year.lstrip("-")) > 4:
+                negative_year = ""
+                if year.startswith("-"):
+                    negative_year = "-"
+                    year = year[1:]
+                year = f"{negative_year}Y{year}"
+
             # TODO: handle uncertain / approximate
             parts.append(year or EDTF_UNSPECIFIED_DIGIT * 4)
 
@@ -97,4 +103,4 @@ class EDTFDateConverter(BaseDateConverter):
             return "-".join(parts)
 
         # how can we have an empty string? probably shouldn't get here
-        return ""
+        raise ValueError("Failed to generate an EDTF string from %r", undate)

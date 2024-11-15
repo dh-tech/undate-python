@@ -64,8 +64,26 @@ class EDTFTransformer(Transformer):
     def date_level1(self, items):
         return self.date(items)
 
+    def year(self, items):
+        # when the year is negative, there are two tokens
+        if len(items) > 1 and items[0] == "-":
+            # an anonymous token for the - and the integer year
+            year = items[1]
+            return Tree(data="year", children=[-year])
+
+        return Tree(data="year", children=[items[0]])
+
     def year_fivedigitsplus(self, items):
         # strip off the leading Y and convert to integer
         token = items[0]
-        year = int(token.value.lstrip("Y"))
+        value = token.value
+        # check if year is negative
+        negative = False
+        if value.startswith("-"):
+            value = value[1:]
+            negative = True
+        year = int(value.lstrip("Y"))
+
+        if negative:
+            year = -year
         return Tree(data="year", children=[year])
