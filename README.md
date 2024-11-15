@@ -4,10 +4,12 @@
 
 **undate** is a python library for working with uncertain or partially known dates.
 
-It was initially created as part of a [DH-Tech](https://dh-tech.github.io/) hackathon in November 2022.
-
 > [!WARNING]
-> This is pre-alpha software and is **NOT** feature complete! Use with caution. 
+> This is pre-alpha software and is **NOT** feature complete! Use with caution.
+> Currently it only supports parsing and formatting dates in ISO8601 format and
+> some portions of EDTF (Extended Date Time Format).
+
+*Undate was initially created as part of a [DH-Tech](https://dh-tech.github.io/) hackathon in November 2022.*
 
 ---
 
@@ -84,7 +86,7 @@ False
 False
 ```
 
-For dates that are imprecise or partially known, `undate` calculates earliest and latest possible dates for comparison purposes so you can sort dates and compare with equals, greater than, and less than. You can also compare with python `datetime.date` objects. 
+For dates that are imprecise or partially known, `undate` calculates earliest and latest possible dates for comparison purposes so you can sort dates and compare with equals, greater than, and less than. You can also compare with python `datetime.date` objects.
 
 ```python
 >>> november7_2020 = Undate(2020, 11, 7)
@@ -137,19 +139,20 @@ An `UndateInterval` is a date range between two `Undate` objects. Intervals can 
 31
 ```
 
-You can initialize `Undate` or `UndateInterval` objects by parsing a date string with a specific formatter.
+You can initialize `Undate` or `UndateInterval` objects by parsing a date string with a specific converter, and you can also output an `Undate` object in those formats.
+Available converters are "ISO8601" and "EDTF" (but only)
+
 ```python
->>> from undate.dateformat.iso8601 import ISO8601DateFormat
->>> isoformatter = ISO8601DateFormat()
->>> isoformatter.parse("2002")
+>>> from undate import Undate
+>>> Undate.parse("2002", "ISO8601")
 <Undate 2002>
->>> isoformatter.parse("2002-05")
+>>> Undate.parse("2002-05", "EDTF")
 <Undate 2002-05>
->>> isoformatter.parse("--05-03")
+>>> Undate.parse("--05-03", "ISO8601")
 <Undate --05-03>
->>> isoformatter.parse("--05-03")
-<Undate --05-03>
->>> isoformatter.parse("1800/1900")
+>>> Undate.parse("--05-03", "ISO8601").format("EDTF")
+'XXXX-05-03'
+>>> Undate.parse("1800/1900")
 <UndateInterval 1800/1900>
 ```
 
