@@ -40,7 +40,9 @@ class EDTFDateConverter(BaseDateConverter):
             parsetree = edtf_parser.parse(value)
             return self.transformer.transform(parsetree)
         except UnexpectedCharacters as err:
-            raise ValueError("Parsing failed due to UnexpectedCharacters: %s" % err)
+            raise ValueError(
+                "Parsing failed: '%s' is not a supported EDTF date format" % value
+            )
 
     def _convert_missing_digits(
         self, value: Optional[str], old_missing_digit: str

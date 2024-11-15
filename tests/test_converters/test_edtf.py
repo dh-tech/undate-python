@@ -12,8 +12,14 @@ class TestEDTFDateConverter:
         # unknown dates are not strictly equal, but string comparison should match
         assert str(EDTFDateConverter().parse("201X")) == str(Undate("201X"))
         assert str(EDTFDateConverter().parse("2004-XX")) == str(Undate(2004, "XX"))
-        # missing year but month/day known
-        # assert EDTFDateConverter().parse("--05-03") == Undate(month=5, day=3)
+        assert str(EDTFDateConverter().parse("XXXX-05-03")) == Undate(
+            month=5, day=3
+        ).format("EDTF")
+
+    def test_parse_singledate_error(self):
+        # missing year but month/day known - this format should cause an error
+        with pytest.raises(ValueError):
+            EDTFDateConverter().parse("--05-03")
 
     def test_parse_singledate_unequal(self):
         assert EDTFDateConverter().parse("2002") != Undate(2003)
