@@ -21,7 +21,6 @@ jobs:
           cache-dependency-path: '**/pyproject.toml'
       - name: Install package with development dependencies
         run: pip install -e ".[dev]"
-        if: steps.setup-python.outputs.cache-hit != 'true'
 
       # check with ruff
       - name: Run ruff

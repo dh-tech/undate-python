@@ -32,9 +32,7 @@ jobs:
           cache: 'pip'
           cache-dependency-path: '**/pyproject.toml'
       - name: Install package with dependencies
-        run: |
-          pip install -e ".[test]"
-        if: steps.setup-python.outputs.cache-hit != 'true'
+        run: pip install -e ".[test]"
 
       # for all versions but the one we use for code coverage, run normally
       - name: Run unit tests normally
