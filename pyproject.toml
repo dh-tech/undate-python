@@ -75,7 +75,7 @@ Changelog = "https://github.com/dh-tech/undate-python/blob/main/CHANGELOG.md"
 path = "src/undate/__init__.py"
 
 [tool.hatch.build.targets.sdist]
-include = ["src/undate/**/*.py", "src/undate/**/*.lark", "/tests"]
+include = ["src/undate/**/*.py", "src/undate/**/*.lark", "tests/**"]
 
 [tool.pytest.ini_options]
 pythonpath = "src/"
