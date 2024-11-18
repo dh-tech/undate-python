@@ -76,14 +76,5 @@ class EDTFTransformer(Transformer):
     def year_fivedigitsplus(self, items):
         # strip off the leading Y and convert to integer
         token = items[0]
-        value = token.value
-        # check if year is negative
-        negative = False
-        if value.startswith("-"):
-            value = value[1:]
-            negative = True
-        year = int(value.lstrip("Y"))
-
-        if negative:
-            year = -year
+        year = int(token.value.lstrip("Y"))
         return Tree(data="year", children=[year])

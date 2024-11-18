@@ -14,7 +14,7 @@ testcases = [
     ("1000-01/2000-05-01", UndateInterval(Undate(1000, 1), Undate(2000, 5, 1))),
     # level 1
     ("Y17000002", Undate(17000002)),
-    ("-Y17000002", Undate(-17000002)),
+    ("Y-17000002", Undate(-17000002)),
     # negative year
     ("-1985", Undate(-1985)),
     # "2001-21",  # spring 2001

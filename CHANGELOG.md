@@ -1,5 +1,31 @@
 # Change Log
 
+## 0.3
+
+- Updated to use numpy `datetime64` to support a greater range of years beyond the 4-digit years supported by python's builtin ``datetime.date`
+  - Custom `Date` and `Timedelta` objects as shims to make numpy datetime64 and timedelta64 act more like python `datetime` objects
+- Renamed formatters to converters for more flexibility / scope
+- Support using different converters with new `format` and `parse` methods on `Undate`
+- Improved EDTF support:
+  - Support 5+ digit years with leading Y (thanks to numpy.datetime64)
+  - Jupyter notebook demonstrating / validating EDTF support
+    - Full support for Level 0 Date and Time Interval (no Date and Time support)
+    - Level 1: 
+      - Letter-prefixed cbalendar year
+      - Unspecified digit from the right
+      - Partial support for extended interval
+    - Level 2: unspecified digit anywhere in the date
+- Improved readme with example usage and disclaimers about current functionality
+- Improved documentation for adding new converters
+- Improved documentation for branching guidelines in contributing
+- Restructured sphinx documentation and added more code documentation
+- Added a project logo
+- Switch from black to ruff for pre-commit formatting
+
+### numpy impact
+
+Performance differences seem to be negligible, but it does increase payloud size.  The virtualenv for installing version 0.2 was 14MB; when installing the newer version with numpy, the virtualenv is 46MB (the numpy folder in site packages is 31MB on its own).
+
 ## 0.2
 
 - Undate and UndateInterval now include an optional label for named dates or time periods

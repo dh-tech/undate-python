@@ -63,9 +63,6 @@ html_theme = "alabaster"
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
 
-# preliminary undate logo
-# html_logo = "_static/undate_logo.png"
-
 html_theme_options = {
     "logo": "undate_logo.png",
     "logo_name": False,
