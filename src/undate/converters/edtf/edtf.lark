@@ -1,0 +1,68 @@
+%import common.ESCAPED_STRING   -> STRING
+%import common.INT -> INT
+%import common.WS
+%ignore WS
+
+// --- EDTF / ISO 8601-2 ---
+
+?edtf: edtf_level0 | edtf_level1
+
+// --- EDTF Level 0 / ISO 8601-1 ---
+
+?edtf_level0: date | timeinterval
+// not implementing datetime for now
+
+date: year | year "-" month | year "-" month "-" day
+
+year: /-?\d+/
+month: /(0[1-9])|(1[0-2])/
+day: /([0-2][1-9])|(3[0-1])/
+
+timeinterval: date "/" date
+
+
+// EDTF Level 1
+
+?edtf_level1: date_level1 | extended_interval
+
+// qualification may occur at the end of the date
+qualification: uncertain | approximate | uncertain_approximate
+
+uncertain: "?"
+approximate: "~"
+uncertain_approximate: "%"
+
+// The character 'X' may be used in place of one or more rightmost
+// digits to indicate that the value of that digit is unspecified
+// In Level 2, year may be completely unspecified.
+unspecified: /X/
+?year_unspecified: /\d+/ unspecified+ | unspecified ~ 4
+?month_unspecified: "0".."1"? unspecified ~ 1..2
+//?year_month_unspecified: year_l1 "-" month_unspecified
+?day_unspecified: "0".."3"? unspecified ~ 1..2
+
+// 'Y' may be used at the beginning of the date string to signify that 
+// the date is a year, when (and only when) the year exceeds four digits,
+// i.e. for years later than 9999 or earlier than -9999.
+// For negative years, the minus comes after the Y.
+year_fivedigitsplus: /Y-?\d{5,}/
+?year_l1: year_fivedigitsplus | year | year_unspecified
+
+// The values 21, 22, 23, 24 may be used used to signify
+// ' Spring', 'Summer', 'Autumn', 'Winter', respectively,
+// in place of a month value (01 through 12) for a year-and-month format string.
+season: /2[1-4]/
+?year_season: year_l1 "-" season
+
+date_level1: (year_l1
+	| year_l1 "-" (month | month_unspecified)
+	| year_l1 "-" (month | month_unspecified) "-" (day | day_unspecified)
+	| year_season) qualification?
+
+// unknown date:  double dot or empty string
+unknown_date: ".."?
+extended_interval: date_level1 "/" date_level1
+	| date_level1 "/" unknown_date
+	| unknown_date "/" date_level1
+
+// negative calendar year?
