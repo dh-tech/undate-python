@@ -81,7 +81,7 @@ include = ["src/undate/**/*.py", "src/undate/**/*.lark", "/tests"]
 pythonpath = "src/"
 markers = [
     "last : run marked tests after all others",
-    "first : run marked tests efore all others",
+    "first : run marked tests before all others",
 ]
 
 [tool.mypy]
