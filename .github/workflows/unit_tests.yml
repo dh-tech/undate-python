@@ -1,0 +1,51 @@
+name: unit tests
+
+on:
+  push:
+    branches:
+      - "**"
+    paths:
+      - 'undate/**'
+      - 'tests/**'
+  pull_request:
+
+env:
+  # python version used to calculate and submit code coverage
+  COV_PYTHON_VERSION: "3.12"
+
+jobs:
+  python-unit:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+    defaults:
+      run:
+        working-directory: .
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python }}
+          cache: 'pip'
+          cache-dependency-path: '**/pyproject.toml'
+      - name: Install package with dependencies
+        run: |
+          pip install -e ".[test]"
+        if: steps.python-cache.outputs.cache-hit != 'true'
+
+      # for all versions but the one we use for code coverage, run normally
+      - name: Run unit tests normally
+        run: pytest
+        if: ${{ matrix.python != env.COV_PYTHON_VERSION }}
+
+      # run code coverage in one version only
+      - name: Run unit tests with code coverage reporting
+        run: pytest --cov=undate
+        if: ${{ matrix.python == env.COV_PYTHON_VERSION }}
+      - name: Upload test coverage to Codecov
+        uses: codecov/codecov-action@v3
+        if: ${{ matrix.python == env.COV_PYTHON_VERSION }}
+

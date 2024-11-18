@@ -24,8 +24,10 @@ wheels/
 .installed.cfg
 *.egg
 MANIFEST
+docs/_build/
 
 # Environments
+.tox
 .env
 .venv
 env/
@@ -33,3 +35,10 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+
+# code coverage
+.coverage
+coverage.xml
+
+# jupyter
+.ipynb_checkpoints/

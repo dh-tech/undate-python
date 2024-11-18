@@ -1,0 +1,31 @@
+# YAML 1.2
+# Metadata for citation of this software according to the CFF format (https://citation-file-format.github.io/)
+cff-version: 1.0.3
+message: If you use this software, please cite it using these metadata.
+title: undate python library
+doi: 10.5281/zenodo.11068868
+authors:
+- given-names: Rebecca Sutton
+  family-names: Koeser
+  affiliation: Center for Digital Humanities, Princeton University
+  orcid: https://orcid.org/0000-0002-8762-8057
+- given-names: Cole
+  family-names: Crawford
+  affiliation: Harvard University Arts and Humanities Research Computing
+  orcid: https://orcid.org/0000-0002-8347-0096
+- given-names: Julia
+  family-names: Damerow
+  affiliation: Arizona State University
+  orcid: https://orcid.org/0000-0002-0874-0092
+- given-names: Malte
+  family-names: Vogl
+  affiliation: Max-Planck-Institute of Geoanthropology
+  orcid: https://orcid.org/0000-0002-2683-6610  
+- given-names: Robert
+  family-names: Casties
+  affiliation: Max Planck Institute for the History of Science
+  orcid: https://orcid.org/0009-0008-9370-1303
+version: '0.2'
+date-released: 2024-04-25
+repository-code: https://github.com/dh-tech/undate-python
+license: Apache 2

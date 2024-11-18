@@ -1,0 +1,40 @@
+name: Check style + docs + types
+
+on:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: .
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: 'pip'
+          cache-dependency-path: '**/pyproject.toml'
+      - name: Install package with development dependencies
+        run: pip install -e ".[dev]"
+        if: steps.python-cache.outputs.cache-hit != 'true'
+
+      # check with ruff
+      - name: Run ruff
+        run: ruff check
+
+      # check docs
+      - name: Check that documentation can be built
+        run: sphinx-build docs docs/_build   # --fail-on-warning
+
+      # check types with mypy
+      - name: Check types in python src directory; install needed types
+        run: mypy --install-types --non-interactive src
+
+      # use treon to make sure that example notebooks run
+      - name: Check jupyter notebooks with treon
+        run: treon

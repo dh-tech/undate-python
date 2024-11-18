@@ -1,0 +1,81 @@
+{
+  "files": [
+    "CONTRIBUTORS.md"
+  ],
+  "imageSize": 100,
+  "commit": true,
+  "commitConvention": "angular",
+  "contributors": [
+    {
+      "login": "ColeDCrawford",
+      "name": "Cole Crawford",
+      "avatar_url": "https://avatars.githubusercontent.com/u/16374762?v=4",
+      "profile": "https://github.com/ColeDCrawford",
+      "contributions": [
+        "code",
+        "review",
+        "test",
+        "ideas"
+      ]
+    },
+    {
+      "login": "rlskoeser",
+      "name": "Rebecca Sutton Koeser",
+      "avatar_url": "https://avatars.githubusercontent.com/u/691231?v=4",
+      "profile": "http://rlskoeser.github.io",
+      "contributions": [
+        "code",
+        "review",
+        "test",
+        "blog",
+        "example",
+        "doc",
+        "platform"
+      ]
+    },
+    {
+      "login": "robcast",
+      "name": "Robert Casties",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1488847?v=4",
+      "profile": "https://github.com/robcast",
+      "contributions": [
+        "data",
+        "ideas",
+        "review"
+      ]
+    },
+    {
+      "login": "jdamerow",
+      "name": "Julia Damerow",
+      "avatar_url": "https://avatars.githubusercontent.com/u/8881141?v=4",
+      "profile": "https://github.com/jdamerow",
+      "contributions": [
+        "code",
+        "review",
+        "test",
+        "eventOrganizing",
+        "ideas"
+      ]
+    },
+    {
+      "login": "maltevogl",
+      "name": "Malte Vogl",
+      "avatar_url": "https://avatars.githubusercontent.com/u/20907912?v=4",
+      "profile": "https://github.com/maltevogl",
+      "contributions": [
+        "code",
+        "review",
+        "test",
+        "doc"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "linkToUsage": true,
+  "skipCi": true,
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "projectName": "undate-python",
+  "projectOwner": "dh-tech",
+  "badgeTemplate": "![All Contributors](https://img.shields.io/github/all-contributors/dh-tech/undate-python?color=ee8449&style=flat-square)"
+}
