@@ -41,8 +41,11 @@ unspecified: /X/
 //?year_month_unspecified: year_l1 "-" month_unspecified
 ?day_unspecified: "0".."3"? unspecified ~ 1..2
 
-// 'Y' may be used at the beginning of the date string to signify that the date is a year, when (and only when) the year exceeds four digits, i.e. for years later than 9999 or earlier than -9999.
-year_fivedigitsplus: /-?Y\d{5,}/
+// 'Y' may be used at the beginning of the date string to signify that 
+// the date is a year, when (and only when) the year exceeds four digits,
+// i.e. for years later than 9999 or earlier than -9999.
+// For negative years, the minus comes after the Y.
+year_fivedigitsplus: /Y-?\d{5,}/
 ?year_l1: year_fivedigitsplus | year | year_unspecified
 
 // The values 21, 22, 23, 24 may be used used to signify

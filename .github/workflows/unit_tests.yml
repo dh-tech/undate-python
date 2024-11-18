@@ -34,7 +34,7 @@ jobs:
       - name: Install package with dependencies
         run: |
           pip install -e ".[test]"
-        if: steps.python-cache.outputs.cache-hit != 'true'
+        if: steps.setup-python.outputs.cache-hit != 'true'
 
       # for all versions but the one we use for code coverage, run normally
       - name: Run unit tests normally

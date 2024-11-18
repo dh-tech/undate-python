@@ -75,11 +75,7 @@ class EDTFDateConverter(BaseDateConverter):
             # years with more than 4 digits should be prefixed with Y
             # (don't count minus sign when checking digits)
             if year and len(year.lstrip("-")) > 4:
-                negative_year = ""
-                if year.startswith("-"):
-                    negative_year = "-"
-                    year = year[1:]
-                year = f"{negative_year}Y{year}"
+                year = f"Y{year}"
 
             # TODO: handle uncertain / approximate
             parts.append(year or EDTF_UNSPECIFIED_DIGIT * 4)

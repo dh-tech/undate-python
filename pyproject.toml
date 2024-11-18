@@ -49,6 +49,7 @@ classifiers = [
 
 [project.optional-dependencies]
 docs = ["sphinx>=7.0.0", "alabaster", "myst-parser", "myst-parser[linkify]"]
+test = ["pytest>=7.2", "pytest-ordering", "pytest-cov"]
 dev = [
     "ruff",
     "pre-commit>=2.20.0",
@@ -57,19 +58,17 @@ dev = [
     "build",
     "mypy",
     "treon",
-    "undate",
     "undate[docs]",
     "undate[test]",
 ]
-test = ["pytest>=7.2", "pytest-ordering", "pytest-cov"]
-all = ["undate[dev]", "undate[test]"]
+all = ["undate", "undate[dev]"]
 
 [project.urls]
 Homepage = "https://github.com/dh-tech/undate-python"
 Documentation = "https://undate-python.readthedocs.io/en/latest/"
 Repository = "https://github.com/dh-tech/undate-python.git"
 Issues = "https://github.com/dh-tech/undate-python/issues"
-Changelog = "https://github.com/dh-tech/undate/main/master/CHANGELOG.md"
+Changelog = "https://github.com/dh-tech/undate-python/blob/main/CHANGELOG.md"
 
 
 [tool.hatch.version]

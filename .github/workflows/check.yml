@@ -21,15 +21,15 @@ jobs:
           cache-dependency-path: '**/pyproject.toml'
       - name: Install package with development dependencies
         run: pip install -e ".[dev]"
-        if: steps.python-cache.outputs.cache-hit != 'true'
+        if: steps.setup-python.outputs.cache-hit != 'true'
 
       # check with ruff
       - name: Run ruff
         run: ruff check
 
-      # check docs
-      - name: Check that documentation can be built
-        run: sphinx-build docs docs/_build   # --fail-on-warning
+      # check docs build
+      - name: Check that documentation builds with no errors or warnings
+        run: sphinx-build docs docs/_build --fail-on-warning
 
       # check types with mypy
       - name: Check types in python src directory; install needed types

@@ -9,6 +9,12 @@
 - Improved EDTF support:
   - Support 5+ digit years with leading Y (thanks to numpy.datetime64)
   - Jupyter notebook demonstrating / validating EDTF support
+    - Full support for Level 0 Date and Time Interval (no Date and Time support)
+    - Level 1: 
+      - Letter-prefixed cbalendar year
+      - Unspecified digit from the right
+      - Partial support for extended interval
+    - Level 2: unspecified digit anywhere in the date
 - Improved readme with example usage and disclaimers about current functionality
 - Improved documentation for adding new converters
 - Improved documentation for branching guidelines in contributing

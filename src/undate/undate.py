@@ -327,7 +327,7 @@ class Undate:
         "year as string (minimum 4 characters), if year is known"
         year = self._get_date_part("year")
         if year:
-            return f"{year:>04}"
+            return f"{year:0>4}"
         # if value is unset but date precision is month or greater, return unknown month
         elif self.precision >= DatePrecision.YEAR:
             return self.MISSING_DIGIT * 4
@@ -340,7 +340,7 @@ class Undate:
         # TODO: need to distinguish between unknown (XX) and unset/not part of the date due to granularity
         month = self._get_date_part("month")
         if month:
-            return f"{month:>02}"
+            return f"{month:0>2}"
         # if value is unset but date precision is month or greater, return unknown month
         elif self.precision >= DatePrecision.MONTH:
             return self.MISSING_DIGIT * 2
@@ -351,7 +351,7 @@ class Undate:
         "day as 2-character string or None if unset"
         day = self._get_date_part("day")
         if day:
-            return f"{day:>02}"
+            return f"{day:0>2}"
         # if value is unset but date precision is day, return unknown day
         # (may not be possible to have day precision with day part set in normal use)
         elif self.precision == DatePrecision.DAY:
