@@ -1,0 +1,104 @@
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix crm: <http://www.cidoc-crm.org/cidoc-crm/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+# prefix for date and calendar type URIs
+@prefix datetype: <http://content.mpiwg-berlin.mpg.de/ns/ismi/type/date/> .
+@prefix calendartype: <http://content.mpiwg-berlin.mpg.de/ns/ismi/type/calendar/> .
+# prefix for sample data
+@prefix : <http://content.mpiwg-berlin.mpg.de/ns/ismi/> .
+
+# day-precision date in islamic calendar
+:date1 a crm:E52_Time-Span ;
+  crm:P2_has_type datetype:day ;
+  crm:P82_at_some_time_within "1495-12-11"^^xsd:date ;
+  crm:P3_has_note "day-precision date in islamic calendar" ;
+  crm:P1_is_identified_by :date1-label .
+:date1-label a crm:E41_Appellation ;
+  crm:P2_has_type calendartype:islamic ;
+  rdfs:label "901 Rabīʿ I 14 (islamic)" .
+
+# year-precision date in islamic calendar
+:date2 a crm:E52_Time-Span ;
+  crm:P2_has_type datetype:year ;
+  crm:P82a_begin_of_the_begin "1479-04-03"^^xsd:date ;
+  crm:P82b_end_of_the_end "1480-03-21"^^xsd:date ;
+  crm:P3_has_note "year-precision date in islamic calendar" ;
+  crm:P1_is_identified_by :date2-label .
+:date2-label a crm:E41_Appellation ;
+  crm:P2_has_type calendartype:islamic ;
+  rdfs:label "884 (islamic)" .
+
+# range-type (century in islamic calendar) date in islamic calendar
+:date3 a crm:E52_Time-Span ;
+  crm:P2_has_type datetype:range ;
+  crm:P82a_begin_of_the_begin "1494-10-11"^^xsd:date ;
+  crm:P82b_end_of_the_end "1591-10-18"^^xsd:date ;
+  crm:P3_has_note "range-type (century in islamic calendar) date in islamic calendar" ;
+  crm:P1_is_identified_by :date3-label .
+:date3-label a crm:E41_Appellation ;
+  crm:P2_has_type calendartype:islamic ;
+  rdfs:label "900 Muḥarram 1 - 999 Ḏu al-Ḥijjaẗ 29 (islamic)" .
+
+# day-precision date in gregorian calendar
+:date4 a crm:E52_Time-Span ;
+  crm:P2_has_type datetype:day ;
+  crm:P82_at_some_time_within "1830-02-08"^^xsd:date ;
+  crm:P3_has_note "day-precision date in gregorian calendar" ;
+  crm:P1_is_identified_by :date4-label .
+:date4-label a crm:E41_Appellation ;
+  crm:P2_has_type calendartype:gregorian ;
+  rdfs:label "1830 February 8 (gregorian)" .
+
+# year-precision date in gregorian calendar
+:date5 a crm:E52_Time-Span ;
+  crm:P2_has_type datetype:year ;
+  crm:P82a_begin_of_the_begin "1796-01-01"^^xsd:date ;
+  crm:P82b_end_of_the_end "1796-12-31"^^xsd:date ;
+  crm:P3_has_note "year-precision date in gregorian calendar" ;
+  crm:P1_is_identified_by :date5-label .
+:date5-label a crm:E41_Appellation ;
+  crm:P2_has_type calendartype:gregorian ;
+  rdfs:label "1796 (gregorian)" .
+
+# range-type (century in gregorian calendar) date in gregorian calendar
+:date6 a crm:E52_Time-Span ;
+  crm:P2_has_type datetype:range ;
+  crm:P82a_begin_of_the_begin "1600-01-01"^^xsd:date ;
+  crm:P82b_end_of_the_end "1699-12-31"^^xsd:date ;
+  crm:P3_has_note "range-type (century in gregorian calendar) date in gregorian calendar" ;
+  crm:P1_is_identified_by :date6-label .
+:date6-label a crm:E41_Appellation ;
+  crm:P2_has_type calendartype:gregorian ;
+  rdfs:label "1600 January 1 - 1699 December 31 (gregorian)" .
+
+# day-precision date in julian calendar
+:date7 a crm:E52_Time-Span ;
+  crm:P2_has_type datetype:day ;
+  crm:P82_at_some_time_within "1035-06-04"^^xsd:date ;
+  crm:P3_has_note "day-precision date in julian calendar" ;
+  crm:P1_is_identified_by :date7-label .
+:date7-label a crm:E41_Appellation ;
+  crm:P2_has_type calendartype:julian ;
+  rdfs:label "1035 May 29 (julian)" .
+
+# year-precision date in julian calendar
+:date8 a crm:E52_Time-Span ;
+  crm:P2_has_type datetype:year ;
+  crm:P82a_begin_of_the_begin "1013-01-07"^^xsd:date ;
+  crm:P82b_end_of_the_end "1014-01-06"^^xsd:date ;
+  crm:P3_has_note "year-precision date in julian calendar" ;
+  crm:P1_is_identified_by :date8-label .
+:date8-label a crm:E41_Appellation ;
+  crm:P2_has_type calendartype:julian ;
+  rdfs:label "1013 (julian)" .
+
+# range-type (century in julian calendar) date in julian calendar
+:date9 a crm:E52_Time-Span ;
+  crm:P2_has_type datetype:range ;
+  crm:P82a_begin_of_the_begin "1200-01-08"^^xsd:date ;
+  crm:P82b_end_of_the_end "1300-01-07"^^xsd:date ;
+  crm:P3_has_note "range-type (century in julian calendar) date in julian calendar" ;
+  crm:P1_is_identified_by :date9-label .
+:date9-label a crm:E41_Appellation ;
+  crm:P2_has_type calendartype:julian ;
+  rdfs:label "1200 January 1 - 1299 December 31 (julian)" .
