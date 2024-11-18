@@ -156,7 +156,7 @@ Available converters are "ISO8601" and "EDTF" (but only)
 <UndateInterval 1800/1900>
 ```
 
-For more examples, refer to the [example notebooks](examples/notebooks/) included in this repository.
+For more examples, refer to the [example notebooks](https://github.com/dh-tech/undate-python/tree/main/examples/notebooks/) included in this repository.
 
 ## Documentation
 
