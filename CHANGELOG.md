@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.3.1
+
+Update readthedocs config for current installation
+
 ## 0.3
 
 - Updated to use numpy `datetime64` to support a greater range of years beyond the 4-digit years supported by python's builtin `datetime.date`
