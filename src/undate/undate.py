@@ -442,10 +442,13 @@ class UndateInterval:
     :type label: `str`
     """
 
-    # date range between two uncertain dates
+    # date range between two undates
     earliest: Union[Undate, None]
     latest: Union[Undate, None]
     label: Union[str, None]
+
+    # TODO: let's think about adding an optional precision / length /size field
+    # using DatePrecision
 
     def __init__(
         self,

@@ -1,7 +1,7 @@
 %import common.WS
 %ignore WS
 
-?date: year | month year | day month year | year month | year month day
+hijri_date: year | month year | day month year | year month | year month day
 // NOTE: ISMI sample dates are year month day
 // if we can assume years are 3 digits minimum, we can support year month day AND we can use faster LALR parser
 
