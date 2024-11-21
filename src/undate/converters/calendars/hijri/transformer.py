@@ -47,10 +47,20 @@ MAX_MONTH = 12
 
 
 def islamic_to_gregorian_interval(year, month=None, day=None):
+    """Convert partial Hijri date to a Gregorian date interval.
+
+    Args:
+        year (int): Hijri year
+        month (int, optional): Hijri month (1-12)
+        day (int, optional): Hijri day (1-30)
+
+    Returns:
+        tuple: (start_date, end_date) as tuples of (year, month, day)
+    """
     start = (year, month or MIN_MONTH, day or MIN_DAY)
     end_month = month or MAX_MONTH
     # islamic calendar converter has month_length
     if day is None:
         day = islamic.month_length(year, end_month)
-    end = (year, month or MAX_MONTH, day)
+    end = (year, end_month, day)  # Use end_month instead of redundant check
     return (islamic.to_gregorian(*start), islamic.to_gregorian(*end))
