@@ -49,3 +49,24 @@ testcases = [
 @pytest.mark.parametrize("date_string", testcases)
 def test_should_parse(date_string):
     assert hijri_parser.parse(date_string)
+
+
+error_cases = [
+    # invalid days
+    "0 Muḥarram 1243",
+    "31 Muḥarram 1243",
+    # month alone
+    "Shawwal",
+    # month day only
+    "12 Shawwal",
+    # invalid month
+    "Foo 383",
+    # wrong format
+    "2024-10-02",
+]
+
+
+@pytest.mark.parametrize("date_string", error_cases)
+def test_should_error(date_string):
+    with pytest.raises(Exception):
+        hijri_parser.parse(date_string)
