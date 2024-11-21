@@ -7,6 +7,10 @@ hijri_date: year | month year | day month year | year month | year month day
 
 // TODO: handle date ranges?
 
+// TODO: add support for qualifiers?
+// PGP dates use qualifiers like "first decade of" (for beginning of month)
+// "first third of", seasons (can look for more examples)
+
 // TODO: is there a minimum year we need to support?
 // if we can assume 3+ digit years we can distinguish between days and years,
 year: /\d{3,}/
@@ -30,7 +34,8 @@ day: /[1-9]/ | /[12][0-9]/ | /30/
 // months, in order; from convertdate list
 // with variants from Princeton Geniza Project
 // support matching with and without accents
-month_1: /al-Mu[ḥh]arram/ | /Mu[ḥh]arram/
+// al-Muḥarram or Muḥarram
+month_1: /(al-)?Mu[ḥh]arram/
 month_2: /[ṢS]afar/
 // Rabīʿ al-ʾAwwal or Rabi' I
 month_3: /Rab[īi][ʿ'] (al-[`ʾ]Awwal|I)/
