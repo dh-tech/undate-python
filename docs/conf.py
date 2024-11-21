@@ -14,6 +14,7 @@
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 
+import undate
 
 # -- Project information -----------------------------------------------------
 
@@ -22,7 +23,7 @@ copyright = "2024, DHtech"
 author = "DHtech Community"
 
 # The full version, including alpha/beta/rc tags
-release = "0.0.1.dev"
+release = undate.__version__
 
 master_doc = "index"
 
