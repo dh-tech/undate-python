@@ -1,5 +1,5 @@
 from lark import Transformer, Tree
-from convertdate import islamic
+from convertdate import islamic  # type: ignore
 
 from undate.undate import Undate, UndateInterval
 
