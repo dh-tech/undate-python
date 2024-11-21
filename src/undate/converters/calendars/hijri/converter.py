@@ -41,8 +41,8 @@ class HijriDateConverter(BaseDateConverter):
             # set the original date as a label, with the calendar name
             undate_obj.label = f"{value} {self.calendar_name}"
             return undate_obj
-        except UnexpectedCharacters:
-            raise ValueError("Could not parse '%s' as a Hijri date" % value)
+        except UnexpectedCharacters as err:
+            raise ValueError(f"Could not parse '{value}' as a Hijri date") from err
 
     # do we need to support conversion the other direction?
     # i.e., generate a Hijri date from an abitrary undate or undate interval?
