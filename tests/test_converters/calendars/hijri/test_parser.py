@@ -16,22 +16,33 @@ testcases = [
     # variant month name, with or without accent
     "Muharram 900",
     "Muḥarram 900",
+    "Rabīʿ al-ʾAwwal 901",
+    "Rabi' I 901",
+    "Rabīʿ ath-Thānī 343",
+    "Rabīʿ II 343",
     "Jumādā al-ʾAwwal 1081",
     "Jumada al-`Awwal 1081",
     "Jumādā I 1081",
     "Jumādā ath-Thāniyah 901",
     "Jumada ath-Thaniyah 901",
     "Jumādā II 981",
+    "Rajab 942",
     "Shaʿbān 900",
     "Sha'ban 900",
     "Ramaḍān 903",
     "Ramadan 903",
+    "Shawwāl 1042",
+    "Shawwal 1042",
     "Zū al-Qaʿdah 124",
     "Dhu l-Qa'da 124",
     # day month year
     "7 Jumādā I 1243",
     "29 Muḥarram 1243",
     "30 Muḥarram 1243",
+    # year month, if we can assume 3+ digit years
+    "901 Rabīʿ I",
+    # year month day
+    "901 Rabīʿ I 12",
 ]
 
 

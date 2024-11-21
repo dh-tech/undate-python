@@ -1,10 +1,9 @@
 %import common.WS
 %ignore WS
 
-?date: year | month year | day month year | year month day 
+?date: year | month year | day month year | year month | year month day
 // NOTE: ISMI sample dates are year month day
-// if we can assume years are 3 digits minimum, we can support year month day
-// AND we can use 
+// if we can assume years are 3 digits minimum, we can support year month day AND we can use faster LALR parser
 
 // TODO: handle date ranges?
 
@@ -28,15 +27,15 @@ month: month_1
 // months have 29 or 30 days; we do not expect leading zeroes
 day: /[1-9]/ | /[12][0-9]/ | /30/
 
-// months, in order; from convertdate list 
+// months, in order; from convertdate list
 // with variants from Princeton Geniza Project
 // support matching with and without accents
 month_1: /al-Mu[ḥh]arram/ | /Mu[ḥh]arram/
 month_2: /[ṢS]afar/
 // Rabīʿ al-ʾAwwal or Rabi' I
-month_3: /Rab[īi][ʿ']' (al-[`ʾ]Awwal|I)/
-// Rabīʿ ath-Thānī" or Rabi' II
-month_4: /Rab[īi][ʿ'] (ath-Th[āa]n[īi]|Rabi' II)/
+month_3: /Rab[īi][ʿ'] (al-[`ʾ]Awwal|I)/
+// Rabīʿ ath-Thānī or Rabi' II
+month_4: /Rab[īi][ʿ'] (ath-Th[āa]n[īi]|II)/
 // Jumādā al-ʾAwwal or Jumādā I
 month_5: /Jum[āa]d[āa] (al-[ʾ`]Awwal|I)/
 // Jumādā ath-Thāniya or Jumādā II
