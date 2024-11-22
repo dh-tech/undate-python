@@ -2,23 +2,21 @@
 
 The [Islamic Scientific Manuscript Initiative project](https://ismi.mpwig-berlin.mpg.de) aims to collect information about all Islamic Manuscripts in the exact sciences from the 9th to the 19th centuries CE.
 
-The old [ISMI database](https://gitlab.gwdg.de/MPIWG/Department-II/ismi-project) database OpenMind (OM4) stores historical dates as JSON objects with the following structure:
+The new [ISMI database](https://gitlab.gwdg.de/MPIWG/Department-II/ismi-project) stores historical dates as CIDOC-CRM RDF objects with the following structure:
 
-- `state`
-  - "unknown": no date
-  - "not checked": unparsed date in `date_in_text`
-  - "known": date or date range entered in specified calendar
-    - `calendar_type`: calendar the date was entered in
-      - "Julian", "Islamic", "Gregorian"
-    - `input_form`: date type
-      - "Year"
-        - `from`: first day, `until`: last day of year (dates in Gregorian calendar, ambiguity of +-2 days when entered in Islamic calendar)
-      - "Range"
-        - `from`: first day, `until`: last day of range (dates in Gregorian calendar, ambiguity of +-2 days when entered in Islamic calendar)
-      - "Date"
-         - `date`: given day (date in Gregorian calendar, ambiguity of +-2 days when entered in Islamic calendar)
-    - `additional_info`: textual note with additional information
+- `crm:E52_Time-Span`
+  - `crm:P2_has_type`: date type
+    - "datetype:day"
+      - `crm:P82_at_some_time_within`: given day (xsd:date)
+    - "datetype:year"
+      - `crm:P82a_begin_of_the_begin`: first day (xsd:date), `crm:P82b_end_of_the_end`: last day of year (xsd:date)
+    - "datetype:range"
+      - `crm:P82a_begin_of_the_begin`: first day (xsd:date), `crm:P82b_end_of_the_end`: last day of range (xsd:date)
+  - `crm:P1_is_identified_by`
+    - `crm:E41_Appellation`
+    - `rdfs:label`: textual representation of timespan (e.g. "901 Rabīʿ I 14 (islamic)")
+    - `crm:P2_has_type`: calendar type (calendar the date was entered in)
+      - "calendartype:julian", "calendartype:islamic", "calendartype:gregorian"
+    - `crm:P3_has_note`: textual note with additional information
 
-We plan to extract as much as possible of this data in the migration to the new RDF database with a CIDOC-CRM-based data model.
-
-A sample file with dates of each type can be found in `data/ismi-om4-date-samples.json`
+A sample file with dates of each type can be found in `data/ismi-crm-date-samples.ttl`
