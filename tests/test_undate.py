@@ -3,7 +3,7 @@ from datetime import date
 
 import pytest
 from undate.date import DatePrecision, Timedelta
-from undate.undate import Undate, UndateInterval
+from undate.undate import Undate, UndateInterval, Calendar
 
 
 class TestUndate:
@@ -116,6 +116,17 @@ class TestUndate:
         # TODO: handle leap day in an unknown year
         # (currently causes an exception because min/max years are not leap years)
         # Undate(None, 2, 29)
+
+    def test_calendar(self):
+        assert Undate(2024).calendar == Calendar.GREGORIAN
+        # by name, any case
+        assert Undate(848, calendar="HIJRI").calendar == Calendar.HIJRI
+        assert Undate(848, calendar="hijri").calendar == Calendar.HIJRI
+        # by enum
+        assert Undate(848, calendar=Calendar.HIJRI).calendar == Calendar.HIJRI
+        # invalid
+        with pytest.raises(ValueError, match="Calendar `foobar` is not supported"):
+            Undate(848, calendar="foobar")
 
     def test_init_invalid(self):
         with pytest.raises(ValueError):

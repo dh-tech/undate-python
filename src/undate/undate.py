@@ -1,12 +1,20 @@
 import datetime
 import re
 from calendar import monthrange
+from enum import StrEnum, auto
 
 # Pre 3.10 requires Union for multiple types, e.g. Union[int, None] instead of int | None
 from typing import Dict, Optional, Union
 
 from undate.converters.base import BaseDateConverter
 from undate.date import ONE_DAY, ONE_MONTH_MAX, ONE_YEAR, Date, DatePrecision, Timedelta
+
+
+class Calendar(StrEnum):
+    """Supported calendars"""
+
+    GREGORIAN = auto()
+    HIJRI = auto()
 
 
 class Undate:
@@ -25,6 +33,8 @@ class Undate:
     converter: BaseDateConverter
     #: precision of the date (day, month, year, etc.)
     precision: DatePrecision
+    #: the calendar this date is using; Gregorian by default
+    calendar: Calendar = Calendar.GREGORIAN
 
     #: known non-leap year
     NON_LEAP_YEAR: int = 2022
@@ -43,6 +53,7 @@ class Undate:
         day: Optional[Union[int, str]] = None,
         converter: Optional[BaseDateConverter] = None,
         label: Optional[str] = None,
+        calendar: Optional[Union[str, Calendar]] = None,
     ):
         # keep track of initial values and which values are known
         # TODO: add validation: if str, must be expected length
@@ -57,6 +68,16 @@ class Undate:
             self.precision = DatePrecision.MONTH
         elif year:
             self.precision = DatePrecision.YEAR
+
+        if calendar is not None:
+            # if not passed as a Calendar instance, do a lookup
+            if not isinstance(calendar, Calendar):
+                # look for calendar by upper-case name
+                try:
+                    calendar = Calendar[calendar.upper()]
+                except KeyError:
+                    raise ValueError(f"Calendar `{calendar}` is not supported")
+            self.calendar = calendar
 
         # special case: treat year = XXXX as unknown/none
         if year == "XXXX":
