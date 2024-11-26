@@ -1,42 +1,39 @@
 import pytest
 from undate.converters.calendars.hijri.parser import hijri_parser
-from undate.converters.calendars.hijri.transformer import HijriDateTransformer
-from undate.undate import Undate, UndateInterval
+from undate.converters.calendars.hijri.transformer import (
+    HijriDateTransformer,
+    HijriUndate,
+)
+from undate.undate import Undate, Calendar
 from undate.date import DatePrecision
+
+
+def test_hijri_undate():
+    assert HijriUndate(848).calendar == Calendar.HIJRI
+
 
 testcases = [
     # examples from Princeton Geniza Project
     # date conversions checked with https://www.muqawwim.com/
-    # Monday, 7 Jumādā I 1243 Hijrī (26 November, 1827 CE)
-    ("7 Jumādā I 1243", Undate(1827, 11, 26), DatePrecision.DAY),
-    (
-        "Jumādā I 1243",
-        UndateInterval(Undate(1827, 11, 20), Undate(1827, 12, 19)),
-        DatePrecision.MONTH,
-    ),
-    (
-        "1243",
-        UndateInterval(Undate(1827, 7, 25), Undate(1828, 7, 13)),
-        DatePrecision.YEAR,
-    ),
-    ("27 Dhū l-Qaʿda 632", Undate(1235, 8, 20), DatePrecision.DAY),
-    (
-        "Rajab 495",
-        UndateInterval(Undate(1102, 4, 28), Undate(1102, 5, 27)),
-        DatePrecision.MONTH,
-    ),
-    (
-        "441",
-        UndateInterval(Undate(1049, 6, 11), Undate(1050, 5, 31)),
-        DatePrecision.YEAR,
-    ),
-    # examples from ISMI data
-    ("901 Rabīʿ I 14", Undate(1495, 12, 11), DatePrecision.DAY),
-    (
-        "884",
-        UndateInterval(Undate(1479, 4, 3), Undate(1480, 3, 21)),
-        DatePrecision.YEAR,
-    ),
+    # Monday, 7 Jumādā I 1243 Hijrī (26 November, 1827 CE); Jumada I = month 5
+    ("7 Jumādā I 1243", HijriUndate(1243, 5, 7), DatePrecision.DAY),
+    ("Jumādā I 1243", HijriUndate(1243, 5), DatePrecision.MONTH),
+    # Gregorian: UndateInterval(Undate(1827, 11, 20), Undate(1827, 12, 19))
+    ("1243", HijriUndate(1243), DatePrecision.YEAR),
+    # Gregorian:  UndateInterval(Undate(1827, 7, 25), Undate(1828, 7, 13)),
+    # Zū al-Qaʿdah / Dhu l-Qa'da = month 11
+    ("27 Dhū l-Qaʿda 632", HijriUndate(632, 11, 27), DatePrecision.DAY),
+    # Rajab = month 7
+    ("Rajab 495", HijriUndate(495, 7), DatePrecision.MONTH),
+    # Gregorian:  UndateInterval(Undate(1102, 4, 28), Undate(1102, 5, 27)),
+    ("441", HijriUndate(441), DatePrecision.YEAR),
+    # Gregorian:    UndateInterval(Undate(1049, 6, 11), Undate(1050, 5, 31)),
+    # examples from ISMI data (reformatted to day month year)
+    # Rabi 1 = month 3
+    ("14 Rabīʿ I 901", HijriUndate(901, 3, 14), DatePrecision.DAY),
+    # Gregorian: Undate(1495, 12, 11)
+    ("884", HijriUndate(884), DatePrecision.YEAR),
+    # Gregorian:  UndateInterval(Undate(1479, 4, 3), Undate(1480, 3, 21)),
     # add when we support parsing ranges:
     # 900 Muḥarram 1 - 999 Ḏu al-Ḥijjaẗ 29 : 1494-10-11 to 1591-10-18
 ]

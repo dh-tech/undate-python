@@ -1,7 +1,13 @@
 from lark import Transformer, Tree
 from convertdate import islamic  # type: ignore
 
-from undate.undate import Undate, UndateInterval
+from undate.undate import Undate, Calendar
+
+
+class HijriUndate(Undate):
+    """Undate convience subclass; sets default calendar to Hijri."""
+
+    calendar = Calendar.HIJRI
 
 
 class HijriDateTransformer(Transformer):
@@ -17,17 +23,20 @@ class HijriDateTransformer(Transformer):
                 value = int(child.children[0])
                 parts[str(child.data)] = value
 
-        # if we have a year, month, day, convert to a single undate
-        if len(parts.values()) == 3:
-            # convertdate returns a tuple of year, month day
-            converted_date = islamic.to_gregorian(**parts)
-            return Undate(*converted_date)
+        print(f"*** initializing undate with {parts} and Hijri calendar")
+        return HijriUndate(**parts)
 
-        # if not, convert to a date range
-        start, end = islamic_to_gregorian_interval(**parts)
-        # TODO: should we add optional date precision / interval length
-        # to UndateInteravl ?
-        return UndateInterval(Undate(*start), Undate(*end))
+        # # if we have a year, month, day, convert to a single undate
+        # if len(parts.values()) == 3:
+        #     # convertdate returns a tuple of year, month day
+        #     converted_date = islamic.to_gregorian(**parts)
+        #     return Undate(*converted_date)
+
+        # # if not, convert to a date range
+        # start, end = islamic_to_gregorian_interval(**parts)
+        # # TODO: should we add optional date precision / interval length
+        # # to UndateInteravl ?
+        # return UndateInterval(Undate(*start), Undate(*end))
 
     # this does nothing
     # def year(self, items):

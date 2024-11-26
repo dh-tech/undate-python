@@ -69,20 +69,25 @@ class Undate:
         elif year:
             self.precision = DatePrecision.YEAR
 
+        self.label = label
         if calendar is not None:
-            # if not passed as a Calendar instance, do a lookup
-            if not isinstance(calendar, Calendar):
-                # look for calendar by upper-case name
-                try:
-                    calendar = Calendar[calendar.upper()]
-                except KeyError:
-                    raise ValueError(f"Calendar `{calendar}` is not supported")
-            self.calendar = calendar
+            self.set_calendar(calendar)
 
         # special case: treat year = XXXX as unknown/none
         if year == "XXXX":
             year = None
 
+        self.calculate_earliest_latest(year, month, day)
+
+        if converter is None:
+            #  import all subclass definitions; initialize the default
+            converter_cls = BaseDateConverter.available_converters()[
+                self.DEFAULT_CONVERTER
+            ]
+            converter = converter_cls()
+        self.converter = converter
+
+    def calculate_earliest_latest(self, year, month, day):
         if year is not None:
             # could we / should we use str.isnumeric here?
             try:
@@ -159,15 +164,16 @@ class Undate:
         self.earliest = Date(min_year, min_month, min_day)
         self.latest = Date(max_year, max_month, max_day)
 
-        if converter is None:
-            #  import all subclass definitions; initialize the default
-            converter_cls = BaseDateConverter.available_converters()[
-                self.DEFAULT_CONVERTER
-            ]
-            converter = converter_cls()
-        self.converter = converter
-
-        self.label = label
+    def set_calendar(self, calendar: Union[str, Calendar]):
+        if calendar is not None:
+            # if not passed as a Calendar instance, do a lookup
+            if not isinstance(calendar, Calendar):
+                # look for calendar by upper-case name
+                try:
+                    calendar = Calendar[calendar.upper()]
+                except KeyError:
+                    raise ValueError(f"Calendar `{calendar}` is not supported")
+            self.calendar = calendar
 
     def __str__(self) -> str:
         # if any portion of the date is partially known, construct
