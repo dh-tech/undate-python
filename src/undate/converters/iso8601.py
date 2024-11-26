@@ -77,19 +77,33 @@ class ISO8601DateFormat(BaseDateConverter):
         # TODO: may want to refactor and take advantage of the year/month/day properties
         # added for use in EDTF formatter code
         for date_portion, iso_format in self.iso_format.items():
+            # is known means fully known, means guaranteed integer
             if undate.is_known(date_portion):
                 # NOTE: datetime strftime for %Y for 3-digit year
                 # results in leading zero in some environments
                 # and not others; force year to always be 4 digits
-                if date_portion == "year":
-                    date_parts.append("%04d" % undate.earliest.year)
-                elif date_portion == "month" and undate.earliest.month:
-                    date_parts.append("%02d" % undate.earliest.month)
-                elif date_portion == "day" and undate.earliest.day:
-                    date_parts.append("%02d" % undate.earliest.day)  # type: ignore
+                if date_portion == "year" and undate.year:
+                    try:
+                        date_parts.append("%04d" % int(undate.year))
+                    except ValueError:
+                        # shouldn't happen because of is_known
+                        date_parts.append(undate.year)
+                elif date_portion == "month" and undate.month:
+                    try:
+                        date_parts.append("%02d" % int(undate.month))
+                    except ValueError:
+                        # shouldn't happen because of is_known
+                        date_parts.append(undate.month)
+                elif date_portion == "day" and undate.day:
+                    try:
+                        date_parts.append("%02d" % int(undate.day))
+                    except ValueError:
+                        # shouldn't happen because of is_known
+                        date_parts.append(undate.day)
 
             elif date_portion == "year":
-                # if not known but this is year, add '-' for --MM-DD unknown year format
+                # if year is not known, add '-' for year portion,
+                # to genereate --MM-DD unknown year format
                 date_parts.append("-")
         # TODO: fix type error: "list[str | None]" is incompatible with "Iterable[str]"
         return "-".join(date_parts)  # type: ignore
