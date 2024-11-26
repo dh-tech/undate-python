@@ -81,6 +81,44 @@ class TestHijriDateConverter:
         with pytest.raises(ValueError):
             HijriDateConverter().parse("")
 
+    def test_partially_known(self):
+        # hijri dates get existing partially unknown behavior
+        unknown_month = HijriUndate(1243, "XX")
+        assert unknown_month.precision == DatePrecision.MONTH
+        assert unknown_month.earliest == Date(
+            *HijriDateConverter().to_gregorian(1243, 1, 1)
+        )
+        assert unknown_month.latest == Date(
+            *HijriDateConverter().to_gregorian(1243, 12, 30)
+        )
+
+        partially_unknown_month = HijriUndate(1243, "1X")
+        assert partially_unknown_month.precision == DatePrecision.MONTH
+        assert partially_unknown_month.earliest == Date(
+            *HijriDateConverter().to_gregorian(1243, 10, 1)
+        )
+        assert partially_unknown_month.latest == Date(
+            *HijriDateConverter().to_gregorian(1243, 12, 30)
+        )
+
+        unknown_day = HijriUndate(1243, 2, "XX")
+        assert unknown_day.precision == DatePrecision.DAY
+        assert unknown_day.earliest == Date(
+            *HijriDateConverter().to_gregorian(1243, 2, 1)
+        )
+        # second month has 29 days
+        assert unknown_day.latest == Date(
+            *HijriDateConverter().to_gregorian(1243, 2, 29)
+        )
+        partially_unknown_day = HijriUndate(1243, 2, "2X")
+        assert partially_unknown_day.precision == DatePrecision.DAY
+        assert partially_unknown_day.earliest == Date(
+            *HijriDateConverter().to_gregorian(1243, 2, 20)
+        )
+        assert partially_unknown_day.latest == Date(
+            *HijriDateConverter().to_gregorian(1243, 2, 29)
+        )
+
     def test_compare_across_calendars(self):
         # only day-precision dates can be exactly equal across calendars
 
