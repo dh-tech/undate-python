@@ -27,11 +27,12 @@ class TestUndate:
         # assert str(Undate(2022, day=7)) == "2022-XX-07"   @ currently returns 2022-07
 
     def test_repr(self):
-        assert repr(Undate(2022, 11, 7)) == "<Undate 2022-11-07>"
+        assert repr(Undate(2022, 11, 7)) == "<Undate 2022-11-07 (Gregorian)>"
         assert (
             repr(Undate(2022, 11, 7, label="A Special Day"))
-            == "<Undate 'A Special Day' (2022-11-07)>"
+            == "<Undate 'A Special Day' 2022-11-07 (Gregorian)>"
         )
+        assert repr(Undate(484, calendar=Calendar.HIJRI)) == "<Undate 0484 (Hijri)>"
 
     def test_init_str(self):
         assert Undate("2000").earliest.year == 2000

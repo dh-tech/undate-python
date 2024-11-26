@@ -202,9 +202,8 @@ class Undate:
         return self.converter.to_string(self)
 
     def __repr__(self) -> str:
-        if self.label:
-            return "<Undate '%s' (%s)>" % (self.label, self)
-        return "<Undate %s>" % self
+        label_str = f" '{self.label}'" if self.label else ""
+        return f"<Undate{label_str} {self} ({self.calendar.name.title()})>"
 
     @classmethod
     def parse(cls, date_string, format) -> Union["Undate", "UndateInterval"]:
