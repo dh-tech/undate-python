@@ -9,7 +9,7 @@ readme = "README.md"
 license = { text = "Apache-2" }
 requires-python = ">= 3.9"
 dynamic = ["version"]
-dependencies = ["lark[interegular]", "numpy", "convertdate"]
+dependencies = ["lark[interegular]", "numpy", "convertdate", "strenum; python_version < '3.11'"]
 authors = [
     { name = "Rebecca Sutton Koeser" },
     { name = "Cole Crawford" },

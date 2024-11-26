@@ -1,6 +1,14 @@
 import datetime
 import re
-from enum import StrEnum, auto
+
+from enum import auto
+
+try:
+    # StrEnum was only added in python 3.11
+    from enum import StrEnum
+except ImportError:
+    # for python 3.10 or earlier, use third-party package
+    from strenum import StrEnum  # type: ignore
 
 # Pre 3.10 requires Union for multiple types, e.g. Union[int, None] instead of int | None
 from typing import Dict, Optional, Union
