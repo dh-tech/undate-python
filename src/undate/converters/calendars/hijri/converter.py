@@ -3,13 +3,13 @@ from typing import Union
 from convertdate import islamic  # type: ignore
 from lark.exceptions import UnexpectedCharacters
 
-from undate.converters.base import BaseDateConverter
+from undate.converters.base import BaseCalendarConverter
 from undate.converters.calendars.hijri.parser import hijri_parser
 from undate.converters.calendars.hijri.transformer import HijriDateTransformer
 from undate.undate import Undate, UndateInterval
 
 
-class HijriDateConverter(BaseDateConverter):
+class HijriDateConverter(BaseCalendarConverter):
     """
     Converter for Hijri / Islamic calendar.
 

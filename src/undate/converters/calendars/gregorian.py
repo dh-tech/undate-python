@@ -1,12 +1,11 @@
 from calendar import monthrange
-from typing import Optional
 
-from undate.converters.base import BaseDateConverter
+from undate.converters.base import BaseCalendarConverter
 
 
-class GregorianDateConverter(BaseDateConverter):
+class GregorianDateConverter(BaseCalendarConverter):
     """
-    Converter class for Gregorian calendar.
+    Calendar onverter class for Gregorian calendar.
     """
 
     #: converter name: Gregorian
@@ -20,7 +19,8 @@ class GregorianDateConverter(BaseDateConverter):
         """Maximum month for this calendar for this year"""
         return 12
 
-    def max_day(self, year: Optional[int] = None, month: Optional[int] = None) -> int:
+    def max_day(self, year: int, month: int) -> int:
+        """maximum numeric day for the specified year and month in this calendar"""
         # if month is known, use that to calculate
         if month:
             # if year is known, use it; otherwise use a known non-leap year
@@ -38,4 +38,8 @@ class GregorianDateConverter(BaseDateConverter):
         return max_day
 
     def to_gregorian(self, year, month, day) -> tuple[int, int, int]:
+        """Convert a Hijri date, specified by year, month, and day,
+        to the Gregorian equivalent date. Returns a tuple of year, month, day.
+        """
+
         return (year, month, day)

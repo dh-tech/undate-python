@@ -3,7 +3,7 @@ from datetime import date
 
 import pytest
 
-from undate.converters.base import BaseDateConverter
+from undate.converters.base import BaseCalendarConverter
 from undate.date import DatePrecision, Timedelta
 from undate.undate import Undate, UndateInterval, Calendar
 
@@ -573,4 +573,5 @@ def test_calendar_get_converter():
     # calendar named in our calendar enum
     for cal in Calendar:
         converter = Calendar.get_converter(cal)
-        assert isinstance(converter, BaseDateConverter)
+        assert isinstance(converter, BaseCalendarConverter)
+        assert converter.name.lower() == cal.name.lower()
