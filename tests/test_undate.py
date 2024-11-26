@@ -2,6 +2,8 @@ import calendar
 from datetime import date
 
 import pytest
+
+from undate.converters.base import BaseDateConverter
 from undate.date import DatePrecision, Timedelta
 from undate.undate import Undate, UndateInterval, Calendar
 
@@ -563,3 +565,11 @@ class TestUndateInterval:
         # one year set and the other not currently raises not implemented error
         with pytest.raises(NotImplementedError):
             UndateInterval(Undate(2000), Undate()).duration()
+
+
+def test_calendar_get_converter():
+    # ensure we can retrieve a calendar converter for each
+    # calendar named in our calendar enum
+    for cal in Calendar:
+        converter = Calendar.get_converter(cal)
+        assert isinstance(converter, BaseDateConverter)
