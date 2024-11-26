@@ -39,10 +39,11 @@ testcases = [
     "7 Jumādā I 1243",
     "29 Muḥarram 1243",
     "30 Muḥarram 1243",
-    # year month, if we can assume 3+ digit years
-    "901 Rabīʿ I",
-    # year month day
-    "901 Rabīʿ I 12",
+    "Rabīʿ I 901",
+    "12 Rabīʿ I 901",
+    # two and 1 digit years
+    "12 Rabīʿ I 90",
+    "12 Rabīʿ I 9",
 ]
 
 
@@ -63,6 +64,9 @@ error_cases = [
     "Foo 383",
     # wrong format
     "2024-10-02",
+    # year month day not supported
+    "901 Rabīʿ I",
+    "901 Rabīʿ I 12",
 ]
 
 

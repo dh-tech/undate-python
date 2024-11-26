@@ -1,9 +1,9 @@
 %import common.WS
 %ignore WS
 
-hijri_date: year | month year | day month year | year month | year month day
-// NOTE: ISMI sample dates are year month day
-// if we can assume years are 3 digits minimum, we can support year month day AND we can use faster LALR parser
+// only support day month year format for now
+// parser requires numeric day and year to be distinguished based on order
+hijri_date: day month year | month year | year
 
 // TODO: handle date ranges?
 
@@ -11,9 +11,7 @@ hijri_date: year | month year | day month year | year month | year month day
 // PGP dates use qualifiers like "first decade of" (for beginning of month)
 // "first third of", seasons (can look for more examples)
 
-// TODO: is there a minimum year we need to support?
-// if we can assume 3+ digit years we can distinguish between days and years,
-year: /\d{3,}/
+year: /\d+/
 
 // months
 month: month_1
