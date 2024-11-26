@@ -254,11 +254,15 @@ class Undate:
         if other is NotImplemented:
             return NotImplemented
 
+        # if both dates are fully known, then earliest/latest check
+        # is sufficient (and will work across calendars!)
+
         # check for apparent equality
+        # - earliest/latest match and both have the same precision
         looks_equal = (
             self.earliest == other.earliest
             and self.latest == other.latest
-            and self.initial_values == other.initial_values
+            and self.precision == other.precision
         )
         # if everything looks the same, check for any unknowns in initial values
         # the same unknown date should NOT be considered equal
@@ -268,8 +272,15 @@ class Undate:
         # in one format (i.e. X for missing digits).
         # If we support other formats, will need to normalize to common
         # internal format for comparison
-        if looks_equal and any("X" in str(val) for val in self.initial_values.values()):
-            return False
+        if looks_equal:
+            # if any part of either date that is known is _partially_ known,
+            # then these dates are not equal
+            if any(
+                [self.is_partially_known(p) for p in self.initial_values.keys()]
+            ) or any(
+                [other.is_partially_known(p) for p in other.initial_values.keys()]
+            ):
+                return False
 
         return looks_equal
 

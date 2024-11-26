@@ -2,7 +2,7 @@ import pytest
 
 from undate.converters.calendars import HijriDateConverter
 from undate.converters.calendars.hijri.transformer import HijriUndate
-from undate.undate import Calendar
+from undate.undate import Calendar, Undate
 from undate.date import DatePrecision, Date
 
 
@@ -80,3 +80,37 @@ class TestHijriDateConverter:
         # empty string should also error
         with pytest.raises(ValueError):
             HijriDateConverter().parse("")
+
+    def test_compare_across_calendars(self):
+        # only day-precision dates can be exactly equal across calendars
+
+        # 7 Jumādā I 1243 Hijrī : 26 November, 1827; Jumada I = month 5
+        assert HijriUndate(1243, 5, 7) == Undate(1827, 11, 26)
+        # 14 Rabīʿ I 901 : 1495-12-11 (Rabi 1 = month 3 )
+        assert HijriUndate(901, 3, 14) == Undate(1495, 12, 11)
+
+        # greater than / less than
+        assert HijriUndate(901) < Undate(1500)
+        assert HijriUndate(901) > Undate(1450)
+        # Jumādā I 1243 : 1827-11-20 to 1827-12-19
+        assert HijriUndate(1243, 5) > Undate(1827, 10)
+        assert HijriUndate(1243, 5) < Undate(1828, 1)
+
+        # 7 Jumādā I 1243 Hijrī : 26 November, 1827, so it falls
+        # within (or is contained by) November 1827
+        assert HijriUndate(1243, 5, 7) in Undate(1827, 11)
+        assert HijriUndate(1243, 5, 7) not in Undate(1827, 10)
+
+        # sorting
+        sorted_dates = sorted(
+            [
+                HijriUndate(884),  # 1479 to 1480 Gregorian
+                HijriUndate(441),  # 1049 to 1050 Gregorian
+                HijriUndate(901),  # 1495 to 1495 Gregorian
+                Undate(1995),
+                Undate(33),
+                Undate(1350),
+            ]
+        )
+        expected_gregorian_years = [33, 1049, 1350, 1479, 1495, 1995]
+        assert [d.earliest.year for d in sorted_dates] == expected_gregorian_years
