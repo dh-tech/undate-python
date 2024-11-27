@@ -1,6 +1,6 @@
 import pytest
 
-from undate.converters.calendars.hebrew.converter import HebrewDateConverter
+from undate.converters.calendars import HebrewDateConverter
 from undate.converters.calendars.hebrew.transformer import HebrewUndate
 from undate.undate import Calendar, Undate
 from undate.date import DatePrecision, Date
