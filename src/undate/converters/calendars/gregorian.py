@@ -15,10 +15,6 @@ class GregorianDateConverter(BaseCalendarConverter):
     #: known non-leap year
     NON_LEAP_YEAR: int = 2022
 
-    def max_month(self, year: int) -> int:
-        """Maximum month for this calendar for this year"""
-        return 12
-
     def max_day(self, year: int, month: int) -> int:
         """maximum numeric day for the specified year and month in this calendar"""
         # if month is known, use that to calculate

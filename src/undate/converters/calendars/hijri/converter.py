@@ -24,10 +24,6 @@ class HijriDateConverter(BaseCalendarConverter):
     def __init__(self):
         self.transformer = HijriDateTransformer()
 
-    def max_month(self, year: int) -> int:
-        """maximum numeric month for the specified year in this calendar"""
-        return 12
-
     def max_day(self, year: int, month: int) -> int:
         """maximum numeric day for the specified year and month in this calendar"""
         return islamic.month_length(year, month)
@@ -41,8 +37,8 @@ class HijriDateConverter(BaseCalendarConverter):
     def parse(self, value: str) -> Union[Undate, UndateInterval]:
         """
         Parse a Hijri date string and return an :class:`~undate.undate.Undate` or
-        :class:`~undate.undate.UndateInterval` in Gregorian calendar.
-        The Hijri date string is preserved in the undate label
+        :class:`~undate.undate.UndateInterval`.
+        The Hijri date string is preserved in the undate label.
         """
         if not value:
             raise ValueError("Parsing empty string is not supported")

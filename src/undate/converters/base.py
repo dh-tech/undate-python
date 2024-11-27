@@ -28,6 +28,7 @@ To add support for a new calendar converter:
  formatter methods as desired/appropriate for your converter as well as the
  additional methods for ``max_month``, ``max_day``, and convertion ``to_gregorian``
  calendar.
+- Import your calendar in ``undate/converters/calendars/__init__.py`` and include in `__all__``
 - Add unit tests for the new calendar logic under ``tests/test_converters/calendars/``
 - Add the new calendar to the ``Calendar`` enum of supported calendars in
   ``undate/undate.py`` and confirm that the `get_converter` method loads your
@@ -136,9 +137,13 @@ class BaseCalendarConverter(BaseDateConverter):
     #: Converter name. Subclasses must define a unique name.
     name: str = "Base Calendar Converter"
 
-    def max_month(self, year: int) -> int:
-        """Maximum month for this calendar for this year"""
-        raise NotImplementedError
+    def min_month(self) -> int:
+        """First month for this calendar. Defaults to 1."""
+        return 1
+
+    def max_month(self) -> int:
+        """Last month for this calendar. Defaults to 12."""
+        return 12
 
     def max_day(self, year: int, month: int) -> int:
         """maximum numeric day for the specified year and month in this calendar"""

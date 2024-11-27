@@ -22,6 +22,7 @@ class Calendar(StrEnum):
 
     GREGORIAN = auto()
     HIJRI = auto()
+    HEBREW = auto()
 
     @staticmethod
     def get_converter(calendar):
@@ -123,10 +124,11 @@ class Undate:
         if month == "XX":
             month = None
 
-        min_month = 1  # is min month ever anything other than 1 ?
-        # get max month from the calendar, since it depends on the
-        # calendar and potentially the year (e.g. leap years in Hebrew Anno Mundi)
-        max_month = self.calendar_converter.max_month(max_year)
+        # get first and last month from the calendar, since it is not
+        # always 1 and 12
+        # TODO need to differentiate between min/max and first/last!
+        min_month = self.calendar_converter.min_month()
+        max_month = self.calendar_converter.max_month()
         if month is not None:
             try:
                 # treat as an integer if we can
@@ -137,7 +139,9 @@ class Undate:
             except ValueError:
                 # if not, calculate min/max for missing digits
                 min_month, max_month = self._missing_digit_minmax(
-                    str(month), min_month, max_month
+                    str(month),
+                    1,
+                    12,  # min_month, max_month
                 )
         # similar to month above — unknown day, but day-level granularity
         if day == "XX":
