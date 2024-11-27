@@ -25,9 +25,9 @@ To add support for a new calendar converter:
     - For converters with sufficient complexity, you may want to create a submodule;
       see ``undate.converters.calendars.hijri`` for an example.
 - Extend ``BaseCalendarConverter`` and implement ``parse`` and ``to_string``
- formatter methods as desired/appropriate for your converter as well as the
- additional methods for ``max_month``, ``max_day``, and convertion ``to_gregorian``
- calendar.
+  formatter methods as desired/appropriate for your converter as well as the
+  additional methods for ``max_month``, ``max_day``, and convertion ``to_gregorian``
+  calendar.
 - Add unit tests for the new calendar logic under ``tests/test_converters/calendars/``
 - Add the new calendar to the ``Calendar`` enum of supported calendars in
   ``undate/undate.py`` and confirm that the `get_converter` method loads your
