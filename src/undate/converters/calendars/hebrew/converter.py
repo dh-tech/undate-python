@@ -25,14 +25,21 @@ class HebrewDateConverter(BaseCalendarConverter):
         self.transformer = HebrewDateTransformer()
 
     def min_month(self) -> int:
-        """first numeric month for the specified year in this calendar"""
-        # hebrew calendar civil year starts in Tishri
+        """Smallest numeric month for this calendar."""
+        return 1
+
+    def max_month(self, year: int) -> int:
+        """Maximum numeric month for this calendar. In Hebrew calendar, this is 12 or 13
+        depending on whether it is a leap year."""
+        return hebrew.year_months(year)
+
+    def first_month(self) -> int:
+        """First month in this calendar. The Hebrew civil year starts in Tishri."""
         return hebrew.TISHRI
 
-    def max_month(self) -> int:
-        """last numeric month for the specified year in this calendar"""
-        # hebrew calendar civil year starts in Tishri
-        # Elul is the month before Tishri
+    def last_month(self, year: int) -> int:
+        """Last month in this calendar. Hebrew civil year starts in Tishri,
+        Elul is the month before Tishri."""
         return hebrew.ELUL
 
     def max_day(self, year: int, month: int) -> int:

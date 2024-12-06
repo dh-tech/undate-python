@@ -124,24 +124,24 @@ class Undate:
         if month == "XX":
             month = None
 
-        # get first and last month from the calendar, since it is not
-        # always 1 and 12
-        # TODO need to differentiate between min/max and first/last!
+        # get first and last month from the calendar (not always 1 and 12)
+        # as well as min/max months
+        earliest_month = self.calendar_converter.first_month()
+        latest_month = self.calendar_converter.last_month(max_year)
+
         min_month = self.calendar_converter.min_month()
-        max_month = self.calendar_converter.max_month()
+        max_month = self.calendar_converter.max_month(max_year)
         if month is not None:
             try:
                 # treat as an integer if we can
                 month = int(month)
                 # update initial value
                 self.initial_values["month"] = month
-                min_month = max_month = month
+                earliest_month = latest_month = month
             except ValueError:
                 # if not, calculate min/max for missing digits
-                min_month, max_month = self._missing_digit_minmax(
-                    str(month),
-                    1,
-                    12,  # min_month, max_month
+                earliest_month, latest_month = self._missing_digit_minmax(
+                    str(month), min_month, max_month
                 )
         # similar to month above — unknown day, but day-level granularity
         if day == "XX":
@@ -159,7 +159,7 @@ class Undate:
             rel_year = year if year and isinstance(year, int) else None
             # use month if it is an integer; otherwise use previusly determined
             # max month (which may not be 12 depending if partially unknown)
-            rel_month = month if month and isinstance(month, int) else max_month
+            rel_month = month if month and isinstance(month, int) else latest_month
 
             max_day = self.calendar_converter.max_day(rel_year, rel_month)
 
@@ -175,10 +175,10 @@ class Undate:
         # convert to Gregorian calendar so earliest/latest can always
         # be used for comparison
         self.earliest = Date(
-            *self.calendar_converter.to_gregorian(min_year, min_month, min_day)
+            *self.calendar_converter.to_gregorian(min_year, earliest_month, min_day)
         )
         self.latest = Date(
-            *self.calendar_converter.to_gregorian(max_year, max_month, max_day)
+            *self.calendar_converter.to_gregorian(max_year, latest_month, max_day)
         )
 
     def set_calendar(self, calendar: Union[str, Calendar]):

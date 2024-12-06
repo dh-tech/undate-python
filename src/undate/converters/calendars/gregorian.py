@@ -19,7 +19,7 @@ class GregorianDateConverter(BaseCalendarConverter):
         """First month for the Gregorian calendar."""
         return 1
 
-    def max_month(self) -> int:
+    def max_month(self, year: int) -> int:
         """maximum numeric month for the specified year in the Gregorian calendar"""
         return 12
 

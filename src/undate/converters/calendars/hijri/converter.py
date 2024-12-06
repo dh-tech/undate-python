@@ -29,11 +29,11 @@ class HijriDateConverter(BaseCalendarConverter):
         return islamic.month_length(year, month)
 
     def min_month(self) -> int:
-        """First month for this calendar."""
+        """smallest numeric month for this calendar."""
         return 1
 
-    def max_month(self) -> int:
-        """maximum numeric month for the specified year in this calendar"""
+    def max_month(self, year: int) -> int:
+        """maximum numeric month for this calendar"""
         return 12
 
     def to_gregorian(self, year: int, month: int, day: int) -> tuple[int, int, int]:

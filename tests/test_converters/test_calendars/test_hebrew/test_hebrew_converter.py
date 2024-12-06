@@ -84,11 +84,13 @@ class TestHebrewDateConverter:
         unknown_month = HebrewUndate(1243, "XX")
         assert unknown_month.precision == DatePrecision.MONTH
         assert unknown_month.earliest == Date(
-            *converter.to_gregorian(1243, converter.min_month(), 1)
+            *converter.to_gregorian(1243, converter.first_month(), 1)
         )
-        max_month = converter.max_month()
+        last_month = converter.last_month(year=1243)
         assert unknown_month.latest == Date(
-            *converter.to_gregorian(1243, max_month, converter.max_day(1243, max_month))
+            *converter.to_gregorian(
+                1243, last_month, converter.max_day(1243, last_month)
+            )
         )
 
         partially_unknown_month = HebrewUndate(1243, "1X")
@@ -96,8 +98,12 @@ class TestHebrewDateConverter:
         assert partially_unknown_month.earliest == Date(
             *converter.to_gregorian(1243, 10, 1)
         )
+        # for unknown digit, assume largest possible value instead
+        # of last semantic monthin the year
+        last_month = converter.max_month(year=1243)
+        last_day = converter.max_day(1243, last_month)
         assert partially_unknown_month.latest == Date(
-            *converter.to_gregorian(1243, 12, 30)
+            *converter.to_gregorian(1243, last_month, last_day)
         )
 
         # second month has 29 days
