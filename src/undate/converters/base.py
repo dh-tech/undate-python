@@ -138,12 +138,12 @@ class BaseCalendarConverter(BaseDateConverter):
     name: str = "Base Calendar Converter"
 
     def min_month(self) -> int:
-        """First month for this calendar. Defaults to 1."""
-        return 1
+        """First month for this calendar."""
+        raise NotImplementedError
 
     def max_month(self) -> int:
-        """Last month for this calendar. Defaults to 12."""
-        return 12
+        """Last month for this calendar."""
+        raise NotImplementedError
 
     def max_day(self, year: int, month: int) -> int:
         """maximum numeric day for the specified year and month in this calendar"""
