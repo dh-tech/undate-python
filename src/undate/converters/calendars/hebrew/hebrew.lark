@@ -11,6 +11,7 @@ hebrew_date: day month year | month year | year
 // PGP dates use qualifiers like "first decade of" (for beginning of month)
 // "first third of", seasons (can look for more examples)
 
+// Hebrew calendar starts with year 1  in 3761 BCE
 year: /\d+/
 
 // months
