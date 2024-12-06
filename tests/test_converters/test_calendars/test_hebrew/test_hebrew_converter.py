@@ -68,6 +68,13 @@ class TestHebrewDateConverter:
         with pytest.raises(ValueError):
             HebrewDateConverter().parse("")
 
+        # non-string input should raise a type error
+        with pytest.raises(TypeError):
+            HebrewDateConverter().parse(42)
+
+        with pytest.raises(TypeError):
+            HebrewDateConverter().parse({"foo": "bar"})
+
     def test_partially_known(self):
         # hebrew dates get existing partially unknown behavior
 

@@ -1,4 +1,6 @@
 import pytest
+from lark.exceptions import UnexpectedCharacters, UnexpectedEOF
+
 from undate.converters.calendars.hebrew.parser import hebrew_parser
 
 
@@ -41,23 +43,23 @@ def test_should_parse(date_string):
 
 error_cases = [
     # invalid days
-    "0 Tammuz 5403",
-    "31 Tishri 5403",
+    ("0 Tammuz 5403", UnexpectedCharacters),
+    ("31 Tishri 5403", UnexpectedCharacters),
     # month alone
-    "Tishri",
+    ("Tishri", UnexpectedEOF),
     # month day only
-    "12 Heshvan",
+    ("12 Heshvan", UnexpectedEOF),
     # invalid month
-    "Foo 383",
+    ("Foo 383", UnexpectedCharacters),
     # wrong format
-    "2024-10-02",
+    ("2024-10-02", UnexpectedCharacters),
     # year month day not supported
-    "5403 Adar",
-    "5403 Adar 14",
+    ("5403 Adar", UnexpectedCharacters),
+    ("5403 Adar 14", UnexpectedCharacters),
 ]
 
 
-@pytest.mark.parametrize("date_string", error_cases)
-def test_should_error(date_string):
-    with pytest.raises(Exception):
+@pytest.mark.parametrize("date_string,exception", error_cases)
+def test_should_error(date_string, exception):
+    with pytest.raises(exception):
         hebrew_parser.parse(date_string)
