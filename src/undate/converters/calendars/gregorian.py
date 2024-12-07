@@ -42,8 +42,9 @@ class GregorianDateConverter(BaseCalendarConverter):
         return max_day
 
     def to_gregorian(self, year, month, day) -> tuple[int, int, int]:
-        """Convert a Hijri date, specified by year, month, and day,
-        to the Gregorian equivalent date. Returns a tuple of year, month, day.
+        """Convert to Gregorian date. This returns the specified by year, month,
+        and day unchanged, but is provided for consistency since all calendar
+        converters need to support conversion to Gregorian calendar for
+        a common point of comparison.
         """
-
         return (year, month, day)
