@@ -5,11 +5,12 @@ from undate.converters.base import BaseCalendarConverter
 
 class GregorianDateConverter(BaseCalendarConverter):
     """
-    Calendar onverter class for Gregorian calendar.
+    Calendar converter class for Gregorian calendar.
     """
 
     #: converter name: Gregorian
     name: str = "Gregorian"
+    #: calendar
     calendar_name: str = "Gregorian"
 
     #: known non-leap year
