@@ -1,0 +1,56 @@
+%import common.WS
+%ignore WS
+
+// only support day month year format for now
+// parser requires numeric day and year to be distinguished based on order
+hebrew_date: day month year | month year | year
+
+// TODO: handle date ranges?
+
+// TODO: add support for qualifiers?
+// PGP dates use qualifiers like "first decade of" (for beginning of month)
+// "first third of", seasons (can look for more examples)
+
+// Hebrew calendar starts with year 1  in 3761 BCE
+year: /\d+/
+
+// months
+month: month_1
+     | month_2
+ 	 | month_3
+ 	 | month_4
+ 	 | month_5
+ 	 | month_6
+ 	 | month_7
+ 	 | month_8
+ 	 | month_9
+ 	 | month_10
+  	 | month_11
+      | month_12
+      | month_13      
+// months have 29 or 30 days; we do not expect leading zeroes
+day: /[1-9]/ | /[12][0-9]/ | /30/
+
+// months, in order; from convertdate list
+// with variants from Princeton Geniza Project
+// support matching with and without accents
+month_1: "Nisan"
+// Iyar or Iyyar
+month_2: /Iyy?ar/
+month_3: "Sivan"
+month_4: "Tammuz"
+month_5: "Av"
+month_6: "Elul"
+// Tishrei or Tishri
+month_7: /Tishre?i/
+month_8: "Heshvan"
+month_9: "Kislev"
+// Tevet or Teveth
+month_10: /[ṬT]eveth?/
+month_11: "Shevat"
+// Adar I or Adar
+month_12: /Adar( I)?/
+// Adar II or Adar Bet
+month_13: /Adar (II|Bet)/
+
+

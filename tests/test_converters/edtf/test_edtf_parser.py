@@ -8,6 +8,7 @@ testcases = [
     "1984-05",
     "1984-12",
     "1001-03-30",
+    "1901-02-20",
     "1000/2000",
     "1000-01/2000-05-01",
     # level 1
@@ -45,7 +46,7 @@ def test_should_parse(date_string):
     assert edtf_parser.parse(date_string)
 
 
-error_cases = ["1984-13", "Y1702"]
+error_cases = ["1984-13", "Y1702", "1984-00", "1984-01-00"]
 
 
 @pytest.mark.parametrize("date_string", error_cases)

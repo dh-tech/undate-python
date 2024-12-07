@@ -18,7 +18,7 @@ class TestBaseDateConverter:
 
     def test_converters_are_unique(self):
         assert len(BaseDateConverter.available_converters()) == len(
-            BaseDateConverter.__subclasses__()
+            BaseDateConverter.subclasses()
         ), "Formatter names have to be unique."
 
     def test_parse_not_implemented(self):
@@ -60,5 +60,5 @@ def test_converters_unique_error():
         name = "ISO8601"  # duplicates existing formatter
 
     assert len(BaseDateConverter.available_converters()) != len(
-        BaseDateConverter.__subclasses__()
+        BaseDateConverter.subclasses()
     )

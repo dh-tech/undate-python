@@ -8,6 +8,8 @@ on:
       - 'undate/**'
       - 'tests/**'
   pull_request:
+    branches:
+      - "**"
 
 env:
   # python version used to calculate and submit code coverage
