@@ -54,24 +54,19 @@ class EDTFTransformer(Transformer):
         return Tree(data="year", children=[value])
 
     def month_unspecified(self, items):
+        # combine multiple parts into a single string
         value = "".join(self.get_values(items))
         return Tree(data="month", children=[value])
 
     def day_unspecified(self, items):
+        # combine multiple parts into a single string
         value = "".join(self.get_values(items))
         return Tree(data="day", children=[value])
 
     def date_level1(self, items):
         return self.date(items)
 
-    def year(self, items):
-        # when the year is negative, there are two tokens
-        if len(items) > 1 and items[0] == "-":
-            # an anonymous token for the - and the integer year
-            year = items[1]
-            return Tree(data="year", children=[-year])
-
-        return Tree(data="year", children=[items[0]])
+    # year (including negative years) use default transformation
 
     def year_fivedigitsplus(self, items):
         # strip off the leading Y and convert to integer
