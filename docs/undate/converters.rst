@@ -1,19 +1,25 @@
 Converters
 ==========
 
+Overview
+--------
+
 .. automodule:: undate.converters.base
    :members:
    :undoc-members:
 
+Formats
+--------
+
 ISO8601
--------
+^^^^^^^
 
 .. automodule:: undate.converters.iso8601
    :members:
    :undoc-members:
 
 Extended Date-Time Format (EDTF)
---------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: undate.converters.edtf.converter
    :members:
@@ -23,8 +29,25 @@ Extended Date-Time Format (EDTF)
    :members:
    :undoc-members:
 
-.. transformer is more of an internal, probably doesn't make sense to include
-.. .. automodule:: undate.converters.edtf.transformer
-..    :members:
-..    :undoc-members:
+
+Calendars
+---------
+
+Gregorian
+^^^^^^^^^
+
+.. automodule:: undate.converters.calendars.gregorian
+   :members:
+
+Hijri (Islamic calendar)
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: undate.converters.calendars.hijri.converter
+   :members:
+
+Anno Mundi (Hebrew calendar)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: undate.converters.calendars.hebrew.converter
+   :members:
 

@@ -2,8 +2,10 @@ import calendar
 from datetime import date
 
 import pytest
+
+from undate.converters.base import BaseCalendarConverter
 from undate.date import DatePrecision, Timedelta
-from undate.undate import Undate, UndateInterval
+from undate.undate import Undate, UndateInterval, Calendar
 
 
 class TestUndate:
@@ -25,11 +27,12 @@ class TestUndate:
         # assert str(Undate(2022, day=7)) == "2022-XX-07"   @ currently returns 2022-07
 
     def test_repr(self):
-        assert repr(Undate(2022, 11, 7)) == "<Undate 2022-11-07>"
+        assert repr(Undate(2022, 11, 7)) == "<Undate 2022-11-07 (Gregorian)>"
         assert (
             repr(Undate(2022, 11, 7, label="A Special Day"))
-            == "<Undate 'A Special Day' (2022-11-07)>"
+            == "<Undate 'A Special Day' 2022-11-07 (Gregorian)>"
         )
+        assert repr(Undate(484, calendar=Calendar.HIJRI)) == "<Undate 0484 (Hijri)>"
 
     def test_init_str(self):
         assert Undate("2000").earliest.year == 2000
@@ -116,6 +119,17 @@ class TestUndate:
         # TODO: handle leap day in an unknown year
         # (currently causes an exception because min/max years are not leap years)
         # Undate(None, 2, 29)
+
+    def test_calendar(self):
+        assert Undate(2024).calendar == Calendar.GREGORIAN
+        # by name, any case
+        assert Undate(848, calendar="HIJRI").calendar == Calendar.HIJRI
+        assert Undate(848, calendar="hijri").calendar == Calendar.HIJRI
+        # by enum
+        assert Undate(848, calendar=Calendar.HIJRI).calendar == Calendar.HIJRI
+        # invalid
+        with pytest.raises(ValueError, match="Calendar `foobar` is not supported"):
+            Undate(848, calendar="foobar")
 
     def test_init_invalid(self):
         with pytest.raises(ValueError):
@@ -552,3 +566,12 @@ class TestUndateInterval:
         # one year set and the other not currently raises not implemented error
         with pytest.raises(NotImplementedError):
             UndateInterval(Undate(2000), Undate()).duration()
+
+
+def test_calendar_get_converter():
+    # ensure we can retrieve a calendar converter for each
+    # calendar named in our calendar enum
+    for cal in Calendar:
+        converter = Calendar.get_converter(cal)
+        assert isinstance(converter, BaseCalendarConverter)
+        assert converter.name.lower() == cal.name.lower()

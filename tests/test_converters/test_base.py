@@ -1,7 +1,7 @@
 import logging
 
 import pytest
-from undate.converters.base import BaseDateConverter
+from undate.converters.base import BaseDateConverter, BaseCalendarConverter
 
 
 class TestBaseDateConverter:
@@ -18,7 +18,7 @@ class TestBaseDateConverter:
 
     def test_converters_are_unique(self):
         assert len(BaseDateConverter.available_converters()) == len(
-            BaseDateConverter.__subclasses__()
+            BaseDateConverter.subclasses()
         ), "Formatter names have to be unique."
 
     def test_parse_not_implemented(self):
@@ -60,5 +60,17 @@ def test_converters_unique_error():
         name = "ISO8601"  # duplicates existing formatter
 
     assert len(BaseDateConverter.available_converters()) != len(
-        BaseDateConverter.__subclasses__()
+        BaseDateConverter.subclasses()
     )
+
+
+class TestBaseCalendarConverter:
+    def test_not_implemented(self):
+        with pytest.raises(NotImplementedError):
+            BaseCalendarConverter().min_month()
+        with pytest.raises(NotImplementedError):
+            BaseCalendarConverter().max_month(1900)
+        with pytest.raises(NotImplementedError):
+            BaseCalendarConverter().max_day(1900, 12)
+        with pytest.raises(NotImplementedError):
+            BaseCalendarConverter().to_gregorian(1900, 12, 31)
