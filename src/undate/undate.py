@@ -29,6 +29,7 @@ class Calendar(StrEnum):
     GREGORIAN = auto()
     HEBREW = auto()
     ISLAMIC = auto()
+    SELEUCID = auto()
 
     @staticmethod
     def get_converter(calendar):
