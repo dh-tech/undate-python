@@ -319,8 +319,12 @@ class Undate:
         # (e.g., single date within the same year)
         # comparison for those cases is not currently supported
         elif other in self or self in other:
+            # sort by precision, most precise first
+            by_precision = sorted(
+                [self, other], key=lambda x: x.precision, reverse=True
+            )
             raise NotImplementedError(
-                "Can't compare when one date falls within the other"
+                f"Can't compare when one date ({by_precision[0]}) falls within the other ({by_precision[1]})"
             )
         # NOTE: unsupported comparisons are supposed to return NotImplemented
         # However, doing that in this case results in a confusing TypeError!
