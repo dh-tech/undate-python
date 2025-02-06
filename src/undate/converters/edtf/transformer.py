@@ -66,7 +66,10 @@ class EDTFTransformer(Transformer):
     def date_level1(self, items):
         return self.date(items)
 
-    # year (including negative years) use default transformation
+    def year(self, items):
+        # combine parts (numeric & unknown) into a single string
+        value = "".join(self.get_values(items))
+        return Tree(data="year", children=[value])
 
     def year_fivedigitsplus(self, items):
         # strip off the leading Y and convert to integer

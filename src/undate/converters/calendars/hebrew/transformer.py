@@ -22,14 +22,14 @@ class HebrewDateTransformer(Transformer):
                 value = int(child.children[0])
                 parts[str(child.data)] = value
 
-        # initialize and return an undate with islamic year, month, day and
-        # islamic calendar
+        # initialize and return an undate with year, month, day in
+        # hebrew calendar
         return HebrewUndate(**parts)
 
-    # year translation is not needed since we want a tree with name year
-    # this is equivalent to a no-op
-    # def year(self, items):
-    #     return Tree(data="year", children=[items[0]])
+    def year(self, items):
+        # combine multiple parts into a single string
+        value = "".join([str(i) for i in items])
+        return Tree(data="year", children=[value])
 
     def month(self, items):
         # month has a nested tree for the rule and the value
