@@ -26,11 +26,11 @@ jobs:
         working-directory: .
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       # use github python action instead of uv to take advantage of caching
       - name: Set up Python ${{ matrix.python }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python }}
 
