@@ -128,7 +128,6 @@ class BaseDateConverter:
         all_subclasses = set(direct_subclasses)
         # recurse to find nested subclasses
         for subc in direct_subclasses:
-            # print(f"class subclasses: {subc.name} {subc.subclasses()}")
             all_subclasses |= subc.subclasses()
 
         # omit the calendar converter base class, which is not itself a converter
