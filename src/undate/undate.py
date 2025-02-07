@@ -97,7 +97,6 @@ class Undate:
         if calendar is not None:
             self.set_calendar(calendar)
         self.calendar_converter = Calendar.get_converter(self.calendar)
-
         self.calculate_earliest_latest(year, month, day)
 
         if converter is None:
@@ -193,6 +192,9 @@ class Undate:
         )
 
     def set_calendar(self, calendar: Union[str, Calendar]):
+        """Find calendar by name if passed as string and set on the object.
+        Only intended for use at initialization time; use :meth:`as_calendar`
+        to change calendar."""
         if calendar is not None:
             # if not passed as a Calendar instance, do a lookup
             if not isinstance(calendar, Calendar):
@@ -202,6 +204,19 @@ class Undate:
                 except KeyError as err:
                     raise ValueError(f"Calendar `{calendar}` is not supported") from err
             self.calendar = calendar
+
+    def as_calendar(self, calendar: Union[str, Calendar]):
+        """Return a new :class:`Undate` object with the same year, month, day, and labels
+        used to initialize the current object, but with a different calendar.  Note that this
+        does NOT do calendar conversion, but reinterprets current numeric year, month, day values
+        according to the new calendar."""
+        return Undate(
+            year=self.initial_values.get("year"),
+            month=self.initial_values.get("month"),
+            day=self.initial_values.get("day"),
+            label=self.label,
+            calendar=calendar,
+        )
 
     def __str__(self) -> str:
         # if any portion of the date is partially known, construct
