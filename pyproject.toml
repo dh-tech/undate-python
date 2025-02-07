@@ -50,6 +50,7 @@ classifiers = [
 [project.optional-dependencies]
 docs = ["sphinx>=7.0.0", "alabaster", "myst-parser", "myst-parser[linkify]"]
 test = ["pytest>=7.2", "pytest-ordering", "pytest-cov"]
+examples = ["jupyterlab", "pandas"]
 dev = [
     "ruff",
     "pre-commit>=2.20.0",
