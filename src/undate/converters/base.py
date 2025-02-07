@@ -116,8 +116,9 @@ class BaseDateConverter:
     @classmethod
     def subclasses(cls) -> set[Type["BaseDateConverter"]]:
         """
-        List of available converters classes. Includes calendar convert
-        subclasses.
+        Set of available converters classes. Includes descendant
+        subclasses, including calendar converters, but does not include
+        :class:`BaseCalendarConverter`.
         """
         # ensure undate converters are imported
         cls.import_converters()
