@@ -420,7 +420,9 @@ class Undate:
         """What is the duration of this date?
         Calculate based on earliest and latest date within range,
         taking into account the precision of the date even if not all
-        parts of the date are known."""
+        parts of the date are known. Note that durations are inclusive
+        (i.e., a closed interval)  and include both the earliest and latest
+        date rather than the difference between them."""
 
         # if precision is a single day, duration is one day
         # no matter when it is or what else is known
@@ -541,6 +543,9 @@ class UndateInterval:
 
     def duration(self) -> Timedelta:
         """Calculate the duration between two undates.
+        Note that durations are inclusive (i.e., a closed interval), and
+        include both the earliest and latest date rather than the difference
+        between them.
 
         :returns: A duration
         :rtype: Timedelta
