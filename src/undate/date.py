@@ -104,6 +104,27 @@ class Date(np.ndarray):
             return int(str(self.astype("datetime64[D]")).split("-")[-1])
         return None
 
+    @property
+    def weekday(self) -> Optional[int]:
+        """Equivalent to :meth:`datetime.date.weedkay`; returns day of week as an
+        integer where Monday is 0 and Sunday is 6. Only supported for dates
+        with date unit in days.
+        """
+        # only return a weekday if date unit is in days
+        if self.dtype == "datetime64[D]":
+            # calculate based on difference between current day and week start
+            # numpy datetime weeks start on thursdays - presumably since
+            # unix epoch day zero was a thursday...
+
+            # implementation inspired in part by https://stackoverflow.com/a/54264187
+
+            thursday_week = self.astype("datetime64[W]")
+            days_from_thursday = (self - thursday_week).astype(int)
+            # if monday is 0, thursday is 3
+            return (days_from_thursday + 3) % 7
+
+        return None
+
     def __sub__(self, other):
         # modify to conditionally return a timedelta object instead of a
         # Date object with dtype timedelta64[D] (default behavior)
