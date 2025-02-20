@@ -143,3 +143,35 @@ class TestUndateInterval:
         # one year set and the other not currently raises not implemented error
         with pytest.raises(NotImplementedError):
             UndateInterval(Undate(2000), Undate(month=10)).duration()
+
+    def test_intersection(self):
+        century11th = UndateInterval(Undate(1001), Undate(1100))
+        century20th = UndateInterval(Undate(1901), Undate(2000))
+        # no intersection
+        assert century11th.intersection(century20th) is None
+        # should work in either direction
+        assert century20th.intersection(century11th) is None
+
+        decade1990s = UndateInterval(Undate(1990), Undate(1999))
+        # intersection of an interval completely contained in another
+        # returns an interval equivalent to the smaller one
+        assert century20th.intersection(decade1990s) == decade1990s
+        assert decade1990s.intersection(century20th) == decade1990s
+
+        # partial overlap
+        nineties_oughts = UndateInterval(Undate(1990), Undate(2009))
+        assert century20th.intersection(nineties_oughts) == UndateInterval(
+            Undate(1990), Undate(2000)
+        )
+
+        # intersections between half open intervals
+        after_c11th = UndateInterval(Undate(1001), None)
+        assert after_c11th.intersection(century20th) == century20th
+        assert after_c11th.intersection(decade1990s) == decade1990s
+
+        before_20th = UndateInterval(None, Undate(1901))
+        assert before_20th.intersection(decade1990s) is None
+        assert before_20th.intersection(century11th) == century11th
+        assert before_20th.intersection(after_c11th) == UndateInterval(
+            Undate(1001), Undate(1901)
+        )

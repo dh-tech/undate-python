@@ -122,3 +122,27 @@ class UndateInterval:
             # is there any meaningful way to calculate duration
             # if one year is known and the other is not?
             raise NotImplementedError
+
+    def intersection(self, other: "UndateInterval") -> Optional["UndateInterval"]:
+        """Determine the intersection or overlap between two :class:`UndateInterval`
+        objects and return a new interval, or None if no overlap.
+        """
+        try:
+            # when both values are defined, return the inner bounds;
+            # if not, return whichever is not None, or None
+            earliest = (
+                max(self.earliest, other.earliest)
+                if self.earliest and other.earliest
+                else self.earliest or other.earliest
+            )
+            latest = (
+                min(self.latest, other.latest)
+                if self.latest and other.latest
+                else self.latest or other.latest
+            )
+
+            # if this results in an invalid interval, initialization
+            # will throw an exception
+            return UndateInterval(earliest, latest)
+        except ValueError:
+            return None
