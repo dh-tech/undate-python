@@ -1,8 +1,12 @@
+from __future__ import annotations
+
 import datetime
-import re
-
 from enum import auto
+import re
+from typing import TYPE_CHECKING
 
+if TYPE_CHECKING:
+    from undate.interval import UndateInterval
 try:
     # StrEnum was only added in python 3.11
     from enum import StrEnum
@@ -14,7 +18,7 @@ except ImportError:
 from typing import Dict, Optional, Union
 
 from undate.converters.base import BaseDateConverter
-from undate.date import ONE_DAY, ONE_MONTH_MAX, ONE_YEAR, Date, DatePrecision, Timedelta
+from undate.date import ONE_DAY, ONE_MONTH_MAX, Date, DatePrecision, Timedelta
 
 
 class Calendar(StrEnum):
@@ -218,7 +222,7 @@ class Undate:
         return f"<Undate{label_str} {self} ({self.calendar.name.title()})>"
 
     @classmethod
-    def parse(cls, date_string, format) -> Union["Undate", "UndateInterval"]:
+    def parse(cls, date_string, format) -> Union["Undate", UndateInterval]:
         """parse a string to an undate or undate interval using the specified format;
         for now, only supports named converters"""
         converter_cls = BaseDateConverter.available_converters().get(format, None)
@@ -487,98 +491,3 @@ class Undate:
         min_val = int("".join(new_min_val))
         max_val = int("".join(new_max_val))
         return (min_val, max_val)
-
-
-class UndateInterval:
-    """A date range between two uncertain dates.
-
-    :param earliest: Earliest undate
-    :type earliest: `undate.Undate`
-    :param latest: Latest undate
-    :type latest:  `undate.Undate`
-    :param label: A string to label a specific undate interval, similar to labels of `undate.Undate`.
-    :type label: `str`
-    """
-
-    # date range between two undates
-    earliest: Union[Undate, None]
-    latest: Union[Undate, None]
-    label: Union[str, None]
-
-    # TODO: let's think about adding an optional precision / length /size field
-    # using DatePrecision
-
-    def __init__(
-        self,
-        earliest: Optional[Undate] = None,
-        latest: Optional[Undate] = None,
-        label: Optional[str] = None,
-    ):
-        # for now, assume takes two undate objects
-        self.earliest = earliest
-        self.latest = latest
-        self.label = label
-
-    def __str__(self) -> str:
-        # using EDTF syntax for open ranges
-        return "%s/%s" % (self.earliest or "..", self.latest or "")
-
-    def format(self, format) -> str:
-        """format this undate interval as a string using the specified format;
-        for now, only supports named converters"""
-        converter_cls = BaseDateConverter.available_converters().get(format, None)
-        if converter_cls:
-            return converter_cls().to_string(self)
-
-        raise ValueError(f"Unsupported format '{format}'")
-
-    def __repr__(self) -> str:
-        if self.label:
-            return "<UndateInterval '%s' (%s)>" % (self.label, self)
-        return "<UndateInterval %s>" % self
-
-    def __eq__(self, other) -> bool:
-        # consider interval equal if both dates are equal
-        return self.earliest == other.earliest and self.latest == other.latest
-
-    def duration(self) -> Timedelta:
-        """Calculate the duration between two undates.
-        Note that durations are inclusive (i.e., a closed interval), and
-        include both the earliest and latest date rather than the difference
-        between them.
-
-        :returns: A duration
-        :rtype: Timedelta
-        """
-        # what is the duration of this date range?
-
-        # if range is open-ended, can't calculate
-        if self.earliest is None or self.latest is None:
-            return NotImplemented
-
-        # if both years are known, subtract end of range from beginning of start
-        if self.latest.known_year and self.earliest.known_year:
-            return self.latest.latest - self.earliest.earliest + ONE_DAY
-
-        # if neither year is known...
-        elif not self.latest.known_year and not self.earliest.known_year:
-            # under what circumstances can we assume that if both years
-            # are unknown the dates are in the same year or sequential?
-            duration = self.latest.earliest - self.earliest.earliest
-            # if we get a negative, we've wrapped from end of one year
-            # to the beginning of the next;
-            # recalculate assuming second date is in the subsequent year
-            if duration.days < 0:
-                end = self.latest.earliest + ONE_YEAR
-                duration = end - self.earliest.earliest
-
-            # add the additional day *after* checking for a negative
-            # or after recalculating with adjusted year
-            duration += ONE_DAY
-
-            return duration
-
-        else:
-            # is there any meaningful way to calculate duration
-            # if one year is known and the other is not?
-            raise NotImplementedError

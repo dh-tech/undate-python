@@ -1,6 +1,6 @@
 from lark import Transformer, Tree
 
-from undate.undate import Undate, Calendar
+from undate import Undate, Calendar
 
 
 class HijriUndate(Undate):
