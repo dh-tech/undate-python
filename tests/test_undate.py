@@ -132,7 +132,10 @@ class TestUndate:
 
     def test_init_invalid(self):
         with pytest.raises(ValueError):
-            Undate("19xx")
+            Undate("19??")
+
+        with pytest.raises(ValueError, match="At least one of year, month, or day"):
+            Undate()
 
     def test_invalid_date(self):
         # invalid month should raise an error
@@ -156,10 +159,11 @@ class TestUndate:
         # unset year
         assert Undate(month=12, day=31).year == "XXXX"
 
+        # NOTE: no longer supported to inistalize undate with no date information
         # force method to hit conditional for date precision
-        some_century = Undate()
-        some_century.precision = DatePrecision.CENTURY
-        assert some_century.year is None
+        # some_century = Undate()
+        # some_century.precision = DatePrecision.CENTURY
+        # assert some_century.year is None
 
     def test_month_property(self):
         # one, two digit month

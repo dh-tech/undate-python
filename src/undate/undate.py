@@ -72,6 +72,10 @@ class Undate:
         label: Optional[str] = None,
         calendar: Optional[Union[str, Calendar]] = None,
     ):
+        # everything is optional but something is required
+        if all([val is None for val in [year, month, day]]):
+            raise ValueError("At least one of year, month, or day must be specified")
+
         # keep track of initial values and which values are known
         # TODO: add validation: if str, must be expected length
         self.initial_values: Dict[str, Optional[Union[int, str]]] = {
