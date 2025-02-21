@@ -7,7 +7,7 @@ name = "undate"
 description = "library for working with uncertain, fuzzy, or partially unknown dates and date intervals"
 readme = "README.md"
 license = { text = "Apache-2" }
-requires-python = ">= 3.9"
+requires-python = ">= 3.10"
 dynamic = ["version"]
 dependencies = ["lark[interegular]", "numpy", "convertdate", "strenum; python_version < '3.11'"]
 authors = [
@@ -31,7 +31,6 @@ keywords = [
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
