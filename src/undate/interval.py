@@ -1,5 +1,3 @@
-import datetime
-
 # Pre 3.10 requires Union for multiple types, e.g. Union[int, None] instead of int | None
 from typing import Optional, Union
 
@@ -34,21 +32,18 @@ class UndateInterval:
         latest: Optional[Undate] = None,
         label: Optional[str] = None,
     ):
-        # for now, assume takes two undate objects;
-        # support conversion from datetime
-        if earliest and not isinstance(earliest, Undate):
-            # NOTE: some overlap with Undate._comparison_type method
-            # maybe support conversion from other formats later
-            if isinstance(earliest, datetime.date):
-                earliest = Undate.from_datetime_date(earliest)
-            else:
+        # takes two undate objects; allows conversion from supported types
+        if earliest:
+            try:
+                earliest = Undate.to_undate(earliest)
+            except TypeError:
                 raise ValueError(
                     f"earliest date {earliest} cannot be converted to Undate"
                 )
-        if latest and not isinstance(latest, Undate):
-            if isinstance(latest, datetime.date):
-                latest = Undate.from_datetime_date(latest)
-            else:
+        if latest:
+            try:
+                latest = Undate.to_undate(latest)
+            except TypeError:
                 raise ValueError(f"latest date {latest} cannot be converted to Undate")
 
         # check that the interval is valid

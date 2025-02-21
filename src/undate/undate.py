@@ -2,11 +2,13 @@ from __future__ import annotations
 
 import datetime
 from enum import auto
+
 import re
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from undate.interval import UndateInterval
+
 try:
     # StrEnum was only added in python 3.11
     from enum import StrEnum
@@ -246,22 +248,18 @@ class Undate:
 
         raise ValueError(f"Unsupported format '{format}'")
 
-    def _comparison_type(self, other: object) -> "Undate":
+    @classmethod
+    def _comparison_type(cls, other: object) -> "Undate":
         """Common logic for type handling in comparison methods.
         Converts to Undate object if possible, otherwise raises
-        NotImplemented error.  Currently only supports conversion
-        from :class:`datetime.date`
+        NotImplementedError exception.  Uses :meth:`to_undate` for conversion.
         """
-
-        # support datetime.date by converting to undate
-        if isinstance(other, datetime.date):
-            other = Undate.from_datetime_date(other)
-
-        # recommended to support comparison with arbitrary objects
-        if not isinstance(other, Undate):
+        # convert if possible; return NotImplemented if not
+        try:
+            return cls.to_undate(other)
+        except TypeError:
+            # recommended to support comparison with arbitrary objects
             return NotImplemented
-
-        return other
 
     def __eq__(self, other: object) -> bool:
         # Note: assumes label differences don't matter for comparing dates
@@ -272,6 +270,8 @@ class Undate:
 
         other = self._comparison_type(other)
         if other is NotImplemented:
+            # return NotImplemented to indicate comparison is not supported
+            # with this type
             return NotImplemented
 
         # if both dates are fully known, then earliest/latest check
@@ -363,10 +363,23 @@ class Undate:
             ]
         )
 
-    @staticmethod
-    def from_datetime_date(dt_date: datetime.date):
-        """Initialize an :class:`Undate` object from a :class:`datetime.date`"""
-        return Undate(dt_date.year, dt_date.month, dt_date.day)
+    @classmethod
+    def to_undate(cls, other: object) -> "Undate":
+        """Converted arbitrary object to Undate, if possible. Raises TypeError
+        if conversion is not possible.
+
+        Currently suppports:
+            - :class:`datetime.date` or :class:`datetime.datetime`
+
+        """
+        match other:
+            case Undate():
+                return other
+            case datetime.date() | datetime.datetime():
+                return Undate(other.year, other.month, other.day)
+
+            case _:
+                raise TypeError(f"Conversion from {type(other)} is not supported")
 
     @property
     def known_year(self) -> bool:

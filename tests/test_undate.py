@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 
 import pytest
 
@@ -142,10 +142,15 @@ class TestUndate:
         with pytest.raises(ValueError):
             Undate(1990, 22)
 
-    def test_from_datetime_date(self):
-        undate_from_date = Undate.from_datetime_date(date(2001, 3, 5))
+    def test_to_undate(self):
+        undate_from_date = Undate.to_undate(date(2001, 3, 5))
         assert isinstance(undate_from_date, Undate)
         assert undate_from_date == Undate(2001, 3, 5)
+
+        now = datetime.now()
+        undate_from_dt = Undate.to_undate(now)
+        assert isinstance(undate_from_dt, Undate)
+        assert undate_from_dt == Undate(now.year, now.month, now.day)
 
     # test properties for accessing parts of date
     def test_year_property(self):
