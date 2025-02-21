@@ -73,6 +73,9 @@ class UndateInterval:
         return "<UndateInterval %s>" % self
 
     def __eq__(self, other) -> bool:
+        # currently doesn't support comparison with any other types
+        if not isinstance(other, UndateInterval):
+            return NotImplemented
         # consider interval equal if both dates are equal
         return self.earliest == other.earliest and self.latest == other.latest
 

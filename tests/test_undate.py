@@ -152,6 +152,10 @@ class TestUndate:
         assert isinstance(undate_from_dt, Undate)
         assert undate_from_dt == Undate(now.year, now.month, now.day)
 
+        # unsupported type
+        with pytest.raises(TypeError):
+            Undate.to_undate("foo")
+
     # test properties for accessing parts of date
     def test_year_property(self):
         # two, three, four five digit years; numeric and string

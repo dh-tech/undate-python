@@ -82,6 +82,12 @@ class TestUndateInterval:
         )
         assert UndateInterval(Undate(2022, 5)) == UndateInterval(Undate(2022, 5))
 
+    def test_eq_type_check(self):
+        # doesn't currently support comparison with anything else
+        interval = UndateInterval(Undate(900))
+        # returns NotIplemented if comparison with this type is not supported
+        assert interval.__eq__("foo") == NotImplemented
+
     def test_not_eq(self):
         assert UndateInterval(Undate(2022), Undate(2023)) != UndateInterval(
             Undate(2022), Undate(2024)
