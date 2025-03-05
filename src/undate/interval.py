@@ -67,7 +67,6 @@ class UndateInterval:
         """format this undate interval as a string using the specified format;
         for now, only supports named converters"""
         converter_cls = BaseDateConverter.available_converters().get(format, None)
-        print(f"converter_cls == {converter_cls}")
         if converter_cls:
             return converter_cls().to_string(self)
 
