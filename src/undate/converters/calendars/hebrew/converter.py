@@ -3,10 +3,10 @@ from typing import Union
 from convertdate import hebrew  # type: ignore
 from lark.exceptions import UnexpectedCharacters
 
+from undate import Undate, UndateInterval
 from undate.converters.base import BaseCalendarConverter
 from undate.converters.calendars.hebrew.parser import hebrew_parser
 from undate.converters.calendars.hebrew.transformer import HebrewDateTransformer
-from undate.undate import Undate, UndateInterval
 
 
 class HebrewDateConverter(BaseCalendarConverter):

@@ -1,7 +1,8 @@
 import pytest
+
+from undate import Undate, UndateInterval
 from undate.converters.edtf.parser import edtf_parser
 from undate.converters.edtf.transformer import EDTFTransformer
-from undate.undate import Undate, UndateInterval
 
 # for now, just test that valid dates can be parsed
 
