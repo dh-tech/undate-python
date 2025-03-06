@@ -1,9 +1,11 @@
 from enum import IntEnum
+from dataclasses import dataclass
 
 # Pre 3.10 requires Union for multiple types, e.g. Union[int, None] instead of int | None
 from typing import Optional, Union
 
 import numpy as np
+import portion
 
 
 class Timedelta(np.ndarray):
@@ -27,6 +29,32 @@ class Timedelta(np.ndarray):
     def days(self) -> int:
         """number of days, as an integer"""
         return int(self.astype("datetime64[D]").astype("int"))
+
+
+class IntegerRange(portion.AbstractDiscreteInterval):
+    """Range of integer values. Implemented as a closed integer interval,
+    subclass of :class:`portion.AbstractDiscreteInterval` with a
+    step of 1.
+
+    Initialize by passing in the lower (min) and upper (max) values
+    included in the range.
+
+    """
+
+    _step = 1
+
+    def __init__(self, lower: int, upper: int):
+        # base init method takes one or more intervals; we want a single closed interval
+        if not lower < upper:
+            raise ValueError(f"Lower value {lower} must be less than upper {upper}")
+        super().__init__(portion.closed(lower, upper))
+
+
+@dataclass
+class Udelta:
+    days: IntegerRange
+    # def __init__(self, deltadays: ufloat):
+    #     self.days = deltadays
 
 
 #: timedelta for single day

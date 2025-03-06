@@ -1,5 +1,8 @@
 import numpy as np
-from undate.date import ONE_YEAR, Date, DatePrecision, Timedelta
+import portion
+import pytest
+
+from undate.date import ONE_YEAR, Date, DatePrecision, Timedelta, Udelta, IntegerRange
 
 
 class TestDatePrecision:
@@ -77,3 +80,31 @@ class TestTimeDelta:
 
     def test_days(self):
         assert Timedelta(10).days == 10
+
+
+class TestIntegerRange:
+    def test_init(self):
+        february_days = IntegerRange(28, 29)  # 28 or 29
+        assert february_days.lower == 28
+        assert february_days.upper == 29
+        assert february_days.left == portion.CLOSED
+        assert february_days.right == portion.CLOSED
+        assert 28 in february_days
+        assert 29 in february_days
+        assert 30 not in february_days
+
+    def test_init_validation(self):
+        with pytest.raises(ValueError):
+            IntegerRange(10, 4)
+
+    # TODO: test/implement comparisons
+    # NOTE: this results in a deprecation warning;
+    # implement conversion to singleton in the class?
+    # assert 30 > february_days
+
+
+class TestUdelta:
+    def test_init(self):
+        february_days = IntegerRange(28, 29)  # 28 or 29
+        udelt = Udelta(february_days)
+        assert udelt.days == february_days
