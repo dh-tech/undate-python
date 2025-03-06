@@ -442,6 +442,10 @@ class Undate:
                 # a single year
                 latest = Date(self.earliest.year, self.latest.month, self.latest.day)
 
+                # TODO: calculate duration for a leap year and a non-leap year,
+                # then return a udelta if they vary
+                # TODO: how does this logic work for other calendars?
+
                 # latest = datetime.date(
                 #     self.earliest.year, self.latest.month, self.latest.day
                 # )

@@ -1,5 +1,7 @@
 import numpy as np
-from undate.date import ONE_YEAR, Date, DatePrecision, Timedelta
+from uncertainties import ufloat
+
+from undate.date import ONE_YEAR, Date, DatePrecision, Timedelta, Udelta
 
 
 class TestDatePrecision:
@@ -77,3 +79,10 @@ class TestTimeDelta:
 
     def test_days(self):
         assert Timedelta(10).days == 10
+
+
+class TestUdelta:
+    def test_init(self):
+        february_days = ufloat(28.5, 0.5)  # 28 or 29
+        udelt = Udelta(february_days)
+        assert udelt.days == february_days

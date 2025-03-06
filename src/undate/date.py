@@ -1,9 +1,11 @@
 from enum import IntEnum
+from dataclasses import dataclass
 
 # Pre 3.10 requires Union for multiple types, e.g. Union[int, None] instead of int | None
 from typing import Optional, Union
 
 import numpy as np
+from uncertainties import ufloat
 
 
 class Timedelta(np.ndarray):
@@ -27,6 +29,13 @@ class Timedelta(np.ndarray):
     def days(self) -> int:
         """number of days, as an integer"""
         return int(self.astype("datetime64[D]").astype("int"))
+
+
+@dataclass
+class Udelta:
+    days: ufloat
+    # def __init__(self, deltadays: ufloat):
+    #     self.days = deltadays
 
 
 #: timedelta for single day

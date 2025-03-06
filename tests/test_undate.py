@@ -1,6 +1,7 @@
 from datetime import date
 
 import pytest
+from uncertainties import ufloat
 
 from undate import Undate, UndateInterval, Calendar
 from undate.converters.base import BaseCalendarConverter
@@ -383,10 +384,11 @@ class TestUndate:
         # month in unknown year
         assert Undate(month=6).duration().days == 30
         # partially known month
-        assert Undate(year=1900, month="1X").duration().days == 31
+        # 1X = October, November, or December = 30 or 31 days
+        assert Undate(year=1900, month="1X").duration().days == ufloat(30.5, 0.5)
         # what about february?
-        # could vary with leap years, but assume non-leapyear
-        assert Undate(month=2).duration().days == 28
+        # could vary with leap years; either 28 or 29 days
+        assert Undate(month=2).duration().days == ufloat(28.5, 0.5)
 
     def test_known_year(self):
         assert Undate(2022).known_year is True
