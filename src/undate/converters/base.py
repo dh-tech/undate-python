@@ -114,20 +114,25 @@ class BaseDateConverter:
         return {c.name: c for c in cls.subclasses()}  # type: ignore
 
     @classmethod
-    def subclasses(cls) -> list[Type["BaseDateConverter"]]:
+    def subclasses(cls) -> set[Type["BaseDateConverter"]]:
         """
-        List of available converters classes. Includes calendar convert
-        subclasses.
+        Set of available converters classes. Includes descendant
+        subclasses, including calendar converters, but does not include
+        :class:`BaseCalendarConverter`.
         """
         # ensure undate converters are imported
         cls.import_converters()
 
         # find all direct subclasses, excluding base calendar converter
-        subclasses = cls.__subclasses__()
-        subclasses.remove(BaseCalendarConverter)
-        # add all subclasses of calendar converter base class
-        subclasses.extend(BaseCalendarConverter.__subclasses__())
-        return subclasses
+        direct_subclasses = cls.__subclasses__()
+        all_subclasses = set(direct_subclasses)
+        # recurse to find nested subclasses
+        for subc in direct_subclasses:
+            all_subclasses |= subc.subclasses()
+
+        # omit the calendar converter base class, which is not itself a converter
+        all_subclasses -= {BaseCalendarConverter}
+        return all_subclasses
 
 
 class BaseCalendarConverter(BaseDateConverter):

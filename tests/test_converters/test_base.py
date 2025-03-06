@@ -2,6 +2,11 @@ import logging
 
 import pytest
 from undate.converters.base import BaseDateConverter, BaseCalendarConverter
+from undate.converters.calendars import (
+    GregorianDateConverter,
+    HebrewDateConverter,
+    HijriDateConverter,
+)
 
 
 class TestBaseDateConverter:
@@ -28,6 +33,18 @@ class TestBaseDateConverter:
     def test_parse_to_string(self):
         with pytest.raises(NotImplementedError):
             BaseDateConverter().to_string(1991)
+
+    def test_subclasses(self):
+        # define a nested subclass
+        class SubSubConverter(HijriDateConverter):
+            pass
+
+        subclasses = BaseDateConverter.subclasses()
+        assert BaseCalendarConverter not in subclasses
+        assert HijriDateConverter in subclasses
+        assert HebrewDateConverter in subclasses
+        assert GregorianDateConverter in subclasses
+        assert SubSubConverter in subclasses
 
 
 def test_import_converters_import_only_once(caplog):
