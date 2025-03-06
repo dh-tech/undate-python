@@ -1,5 +1,16 @@
 import numpy as np
-from undate.date import ONE_YEAR, Date, DatePrecision, Timedelta
+import pytest
+
+from undate.date import (
+    ONE_DAY,
+    ONE_YEAR,
+    ONE_MONTH_MAX,
+    Date,
+    DatePrecision,
+    Timedelta,
+    UnDelta,
+    UnInt,
+)
 
 
 class TestDatePrecision:
@@ -77,3 +88,130 @@ class TestTimeDelta:
 
     def test_days(self):
         assert Timedelta(10).days == 10
+
+
+class TestUnInt:
+    def test_init(self):
+        february_days = UnInt(28, 29)  # 28 or 29
+        assert february_days.lower == 28
+        assert february_days.upper == 29
+
+        # also supports keyword args
+        anymonth_days = UnInt(lower=28, upper=31)
+        assert anymonth_days.lower == 28
+        assert anymonth_days.upper == 31
+
+    def test_init_validation(self):
+        with pytest.raises(
+            ValueError, match=r"Lower value \(10\) must be less than upper \(4\)"
+        ):
+            UnInt(10, 4)
+
+    def test_contains(self):
+        anymonth_days = UnInt(lower=28, upper=31)
+        # integer
+        assert 28 in anymonth_days
+        assert 29 in anymonth_days
+        assert 31 in anymonth_days
+        assert 32 not in anymonth_days
+        # unint
+        assert UnInt(28, 29) in anymonth_days
+
+        # other types are assumed not in range
+        assert "twenty-eight" not in anymonth_days
+
+    def test_iterable(self):
+        anymonth_days = UnInt(lower=28, upper=31)
+        assert list(anymonth_days) == [28, 29, 30, 31]
+
+    def test_add(self):
+        february_days = UnInt(28, 29)
+        # add integer
+        assert february_days + 1 == UnInt(29, 30)
+        # add UnInt - minimum is 28 + 1, maximum is 29 + 2
+        assert february_days + UnInt(1, 2) == UnInt(29, 31)
+        # other types are not supported
+        with pytest.raises(TypeError, match="unsupported operand"):
+            february_days + "two"
+
+    def test_subtract(self):
+        february_days = UnInt(28, 29)
+        # subtract integer
+        assert february_days - 10 == UnInt(18, 19)
+        # subtract UnInt - minimum is lower - largest value, maximum is upper - smallest value
+        # difference between number of days in any month and the month of February?
+        # [28,31] - [28,29] = [-1, 3]
+        anymonth_days = UnInt(lower=28, upper=31)
+        assert anymonth_days - february_days == UnInt(-1, 3)
+        # what if we go the other direction?
+        assert february_days - anymonth_days == UnInt(-3, 1)
+        # other types are not supported
+        with pytest.raises(TypeError, match="unsupported operand"):
+            february_days - "two"
+
+
+class TestUnDelta:
+    def test_init(self):
+        # February in an unknown year in Gregorian calendar could be 28 or 29 days
+        february_days = UnInt(28, 29)  # 28 or 29
+        udelt = UnDelta(28, 29)
+        assert isinstance(udelt.days, UnInt)
+        assert udelt.days.lower == 28
+        assert udelt.days.upper == 29
+
+        # NOTE: default portion interval comparison may not be what we want here,
+        # since this is an unknown value within the range...
+        # (maybe handled in undelta class comparison methods)
+        assert udelt.days == february_days
+
+        # do the right thing with more than one value, out of order
+        unknown_month_duration = UnDelta(30, 31, 28)
+        assert isinstance(unknown_month_duration.days, UnInt)
+        assert unknown_month_duration.days.lower == 28
+        assert unknown_month_duration.days.upper == 31
+
+    def test_init_validation(self):
+        with pytest.raises(ValueError, match="Must specify at least two values"):
+            UnDelta(10)
+
+    def test_repr(self):
+        # customized string representation
+        assert repr(UnDelta(28, 29)) == "UnDelta(days=[28,29])"
+
+    def test_eq(self):
+        # uncertain deltas are not equivalent
+        udelt1 = UnDelta(30, 31)
+        udelt2 = UnDelta(30, 31)
+        # not equal to equivalent undelta range
+        assert udelt1 != udelt2
+        # equal to self
+        assert udelt1 is udelt1
+
+    def test_lt(self):
+        week_or_tenday = UnDelta(7, 10)
+        # compare undelta with undelta
+        month = UnDelta(28, 31)
+        # a week or ten-day is unambiguously less than a month
+        assert week_or_tenday < month
+        # compare undelta with Timedelta
+        # NOTE: currently requires this direction, until we update Timedelta
+        assert not week_or_tenday < ONE_DAY
+        # an uncertain  month is unambiguously less than a year
+        assert month < ONE_YEAR
+        # an uncertain  month may or may not be less than one month max
+        assert not month < ONE_MONTH_MAX
+
+    def test_gt(self):
+        week_or_tenday = UnDelta(7, 10)
+        # compare undelta with undelta
+        month = UnDelta(28, 31)
+        # a month is unambiguously longer than week or ten-day
+        assert month > week_or_tenday
+        # compare undelta with Timedelta
+        # NOTE: currently requires this direction, until we update Timedelta
+        # to support the reverse comparison
+        assert week_or_tenday > ONE_DAY
+        # an uncertain month is not greater than a year
+        assert not month > ONE_YEAR
+        # an uncertain  month may or may not be greater than one month max
+        assert not month > ONE_MONTH_MAX
