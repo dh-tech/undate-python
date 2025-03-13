@@ -36,15 +36,17 @@ class UndateInterval:
         if earliest:
             try:
                 earliest = Undate.to_undate(earliest)
-            except TypeError:
+            except TypeError as err:
                 raise ValueError(
                     f"earliest date {earliest} cannot be converted to Undate"
-                )
+                ) from err
         if latest:
             try:
                 latest = Undate.to_undate(latest)
-            except TypeError:
-                raise ValueError(f"latest date {latest} cannot be converted to Undate")
+            except TypeError as err:
+                raise ValueError(
+                    f"latest date {latest} cannot be converted to Undate"
+                ) from err
 
         # check that the interval is valid
         if latest and earliest and latest <= earliest:
@@ -123,7 +125,7 @@ class UndateInterval:
 
     def intersection(self, other: "UndateInterval") -> Optional["UndateInterval"]:
         """Determine the intersection or overlap between two :class:`UndateInterval`
-        objects and return a new interval, or None if no overlap.
+        objects and return a new interval. Returns None if there is no overlap.
         """
         try:
             # when both values are defined, return the inner bounds;
