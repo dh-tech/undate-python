@@ -33,9 +33,23 @@ class Timedelta(np.ndarray):
 
 @dataclass
 class Udelta:
+    """An uncertain timedelta, for durations where the number of days is uncertain.
+    Initialize with a list of possible day durations as integers, which are used
+    to calculate a value for duration in :attr:`days` as an
+    instance of :class:`uncertainties.ufloat`.
+    """
+
+    # NOTE: we will probably need other timedelta-like logic here besides days...
+
+    #: number of days, as an instance of :class:`uncertainties.ufloat`
     days: ufloat
-    # def __init__(self, deltadays: ufloat):
-    #     self.days = deltadays
+
+    def __init__(self, *days: int):
+        min_days = min(days)
+        max_days = max(days)
+        half_diff = (max_days - min_days) / 2
+        midpoint = min_days + half_diff
+        self.days = ufloat(midpoint, half_diff)
 
 
 #: timedelta for single day

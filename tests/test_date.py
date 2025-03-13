@@ -83,6 +83,11 @@ class TestTimeDelta:
 
 class TestUdelta:
     def test_init(self):
+        # february in an unknown year in Gregorian calendar could be 28 or 29 days
         february_days = ufloat(28.5, 0.5)  # 28 or 29
-        udelt = Udelta(february_days)
-        assert udelt.days == february_days
+        udelt = Udelta(28, 29)
+        # two ufloat values don't actually compare as equal, due to the variance
+        assert udelt != february_days
+        # so inspect the expected values
+        assert udelt.days.nominal_value == 28.5
+        assert udelt.days.std_dev == 0.5
