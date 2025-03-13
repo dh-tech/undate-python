@@ -52,9 +52,20 @@ class IntegerRange(portion.AbstractDiscreteInterval):
 
 @dataclass
 class Udelta:
+    """
+    An uncertain timedelta, for durations where the number of days is uncertain.
+    Initialize with a list of possible durations in days as integers, which are used
+    to calculate a value for duration in :attr:`days` as an
+    instance of :class:`IntegerRange`.
+    """
+
+    # NOTE: we will probably need other timedelta-like logic here besides days...
+
+    #: number of days, as an instance of :class:`IntegerRange`
     days: IntegerRange
-    # def __init__(self, deltadays: ufloat):
-    #     self.days = deltadays
+
+    def __init__(self, *days: int):
+        self.days = IntegerRange(min(days), max(days))
 
 
 #: timedelta for single day

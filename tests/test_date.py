@@ -105,6 +105,20 @@ class TestIntegerRange:
 
 class TestUdelta:
     def test_init(self):
+        # February in an unknown year in Gregorian calendar could be 28 or 29 days
         february_days = IntegerRange(28, 29)  # 28 or 29
-        udelt = Udelta(february_days)
+        udelt = Udelta(28, 29)
+        assert isinstance(udelt.days, IntegerRange)
+        assert udelt.days.lower == 28
+        assert udelt.days.upper == 29
+
+        # NOTE: default portion interval comparison may not be what we want here,
+        # since this is an unknown value within the range...
+        # (maybe handled in udelta class comparison methods)
         assert udelt.days == february_days
+
+        # do the right thing with more than one value, out of order
+        unknown_month_duration = Udelta(30, 31, 28)
+        assert isinstance(unknown_month_duration.days, IntegerRange)
+        assert unknown_month_duration.days.lower == 28
+        assert unknown_month_duration.days.upper == 31
