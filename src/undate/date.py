@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from typing import Optional, Union
 
 import numpy as np
-from uncertainties import ufloat
+from uncertainties import ufloat  # type: ignore
 
 
 class Timedelta(np.ndarray):
