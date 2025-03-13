@@ -85,7 +85,7 @@ class TestUndateInterval:
     def test_eq_type_check(self):
         # doesn't currently support comparison with anything else
         interval = UndateInterval(Undate(900))
-        # returns NotIplemented if comparison with this type is not supported
+        # returns NotImplemented if comparison with this type is not supported
         assert interval.__eq__("foo") == NotImplemented
 
     def test_not_eq(self):
@@ -207,7 +207,7 @@ class TestUndateInterval:
         assert datetime.date(1922, 5, 1) in century20th
         # unsupported types result in a type error
         with pytest.raises(TypeError):
-            "nineteen-eighty-four" in century20th
+            assert "nineteen-eighty-four" in century20th
 
         # contains check with half-open intervals
         after_c11th = UndateInterval(Undate(1001), None)
