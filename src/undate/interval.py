@@ -23,8 +23,8 @@ class UndateInterval:
     latest: Union[Undate, None]
     label: Union[str, None]
 
-    # TODO: let's think about adding an optional precision / length /size field
-    # using DatePrecision
+    # TODO: think about adding an optional precision / length /size field
+    # using DatePrecision for intervals of any standard duration (decade, century)
 
     def __init__(
         self,
@@ -122,6 +122,41 @@ class UndateInterval:
             # is there any meaningful way to calculate duration
             # if one year is known and the other is not?
             raise NotImplementedError
+
+    def __contains__(self, other: object) -> bool:
+        """Determine if another interval or date falls within this
+        interval."""
+        # support comparison with another interval
+        if isinstance(other, UndateInterval):
+            # if two intervals are strictly equal, don't consider
+            # either one as containing the other
+            if self == other:
+                return False
+            # otherwise compare based on earliest/latest bounds
+            other_earliest = other.earliest
+            other_latest = other.latest
+        else:
+            # otherwise, try to convert to an Undate
+            try:
+                other = Undate.to_undate(other)
+                other_latest = other_earliest = other
+            except TypeError:
+                # if conversion fails, then we don't support comparison
+                raise
+
+        # if either bound of the current interval is None,
+        # then it is an open interval and we don't need to check the other value.
+        # if the other value is set, then check that it falls within the
+        # bounds of this interval
+        return (
+            self.earliest is None
+            or other_earliest is not None
+            and other_earliest >= self.earliest
+        ) and (
+            self.latest is None
+            or other_latest is not None
+            and other_latest <= self.latest
+        )
 
     def intersection(self, other: "UndateInterval") -> Optional["UndateInterval"]:
         """Determine the intersection or overlap between two :class:`UndateInterval`

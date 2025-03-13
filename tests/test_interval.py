@@ -181,3 +181,51 @@ class TestUndateInterval:
         assert before_20th.intersection(after_c11th) == UndateInterval(
             Undate(1001), Undate(1901)
         )
+
+    def test_contains(self):
+        century11th = UndateInterval(Undate(1001), Undate(1100))
+        century20th = UndateInterval(Undate(1901), Undate(2000))
+        decade1990s = UndateInterval(Undate(1990), Undate(1999))
+        # an interval doesn't contain itself
+        for interval in [century11th, century20th, decade1990s]:
+            assert interval not in interval
+
+        # checking if an interval is within another interval
+        assert decade1990s in century20th
+        assert decade1990s not in century11th
+        assert century11th not in decade1990s
+        assert century20th not in decade1990s
+        # a specific date can be contained by an interval
+        y2k = Undate(2000)
+        assert y2k in century20th
+        assert y2k not in century11th
+        # partially known date should work too
+        april_someyear = Undate("198X", 4)
+        assert april_someyear in century20th
+        assert april_someyear not in century11th
+        # conversion from datetime.date also works
+        assert datetime.date(1922, 5, 1) in century20th
+        # unsupported types result in a type error
+        with pytest.raises(TypeError):
+            "nineteen-eighty-four" in century20th
+
+        # contains check with half-open intervals
+        after_c11th = UndateInterval(Undate(1001), None)
+        before_20th = UndateInterval(None, Undate(1901))
+        # neither of them contains the other
+        assert after_c11th not in before_20th
+        assert before_20th not in after_c11th
+        # nor are they contained by a smaller range
+        assert after_c11th not in decade1990s
+        assert before_20th not in decade1990s
+
+        # all of our previous test dates are in the 1900s,
+        # so they are after the 11th century and not before the 20th
+        for period in [decade1990s, y2k, april_someyear]:
+            assert period in after_c11th
+            assert period not in before_20th
+
+        # fully open interval - is this even meaningful?
+        whenever = UndateInterval(None, None)
+        assert decade1990s in whenever
+        assert whenever not in whenever
