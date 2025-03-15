@@ -2,6 +2,7 @@ import types
 
 import rdflib
 
+from undate import Undate, DatePrecision
 from undate.converters import cidoc_crm
 
 
@@ -36,6 +37,7 @@ DATE1_URI = rdflib.URIRef("http://content.mpiwg-berlin.mpg.de/ns/ismi/date1")
 class TestTimeSpan:
     def test_properties(self):
         # initialize a time span rdflib.resource for date1 in the sample data
+        # TODO: convert to a fixture
         g = rdflib.Graph()
         g.parse(data=sample_data)
 
@@ -60,3 +62,19 @@ class TestTimeSpan:
         assert len(time_spans) == 1
         assert isinstance(time_spans[0], cidoc_crm.TimeSpan)
         assert time_spans[0].identifier == DATE1_URI
+
+    def test_to_undate(self):
+        g = rdflib.Graph()
+        g.parse(data=sample_data)
+
+        time_span = cidoc_crm.TimeSpan(g, DATE1_URI)
+        ts_undate = time_span.to_undate()
+        assert isinstance(ts_undate, Undate)
+        # 1495-12-11"^^xsd:date ;
+        assert ts_undate.year == "1495"
+        assert ts_undate.month == "12"
+        assert ts_undate.day == "11"
+        assert ts_undate.precision == DatePrecision.DAY
+
+        # if we round trip the date it comes out the same
+        assert ts_undate.format("ISO8601") == str(time_span.at_some_time_within)
