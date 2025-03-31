@@ -1,5 +1,12 @@
 # Change Log
 
+## 0.4
+
+- Make Undate Calendar aware / explicit; default is Gregorian
+  - Parsing and calendar conversion for Hebrew/Anno Mundi
+  - Parsing and calendar conversion for Islamic/Hijri 
+
+
 ## 0.3.1
 
 Update readthedocs config for current installation
