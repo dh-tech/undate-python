@@ -186,9 +186,9 @@ class TestUndateInterval:
         century11th = UndateInterval(Undate(1001), Undate(1100))
         century20th = UndateInterval(Undate(1901), Undate(2000))
         decade1990s = UndateInterval(Undate(1990), Undate(1999))
-        # an interval doesn't contain itself
+        # an interval DOES contain itself
         for interval in [century11th, century20th, decade1990s]:
-            assert interval not in interval
+            assert interval in interval
 
         # checking if an interval is within another interval
         assert decade1990s in century20th
@@ -228,4 +228,6 @@ class TestUndateInterval:
         # fully open interval - is this even meaningful?
         whenever = UndateInterval(None, None)
         assert decade1990s in whenever
-        assert whenever not in whenever
+        # NOTE: an interval contains itself or an equivalent interval,
+        # but that may not make sense for open intervals...
+        assert whenever in whenever

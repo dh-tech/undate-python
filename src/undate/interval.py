@@ -125,14 +125,12 @@ class UndateInterval:
 
     def __contains__(self, other: object) -> bool:
         """Determine if another interval or date falls within this
-        interval."""
-        # support comparison with another interval
+        interval.  Supports comparison with :class:`UndateInterval`
+        or anything that can be converted with :meth:`Undate.to_undate`."""
+        # support comparison with another interval or anything
+        # that can be converted to an Undate
         if isinstance(other, UndateInterval):
-            # if two intervals are strictly equal, don't consider
-            # either one as containing the other
-            if self == other:
-                return False
-            # otherwise compare based on earliest/latest bounds
+            # compare based on earliest/latest bounds
             other_earliest = other.earliest
             other_latest = other.latest
         else:
