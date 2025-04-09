@@ -1,5 +1,3 @@
-import datetime
-
 # Pre 3.10 requires Union for multiple types, e.g. Union[int, None] instead of int | None
 from typing import Optional, Union
 
@@ -25,8 +23,8 @@ class UndateInterval:
     latest: Union[Undate, None]
     label: Union[str, None]
 
-    # TODO: let's think about adding an optional precision / length /size field
-    # using DatePrecision
+    # TODO: think about adding an optional precision / length /size field
+    # using DatePrecision for intervals of any standard duration (decade, century)
 
     def __init__(
         self,
@@ -34,22 +32,21 @@ class UndateInterval:
         latest: Optional[Undate] = None,
         label: Optional[str] = None,
     ):
-        # for now, assume takes two undate objects;
-        # support conversion from datetime
-        if earliest and not isinstance(earliest, Undate):
-            # NOTE: some overlap with Undate._comparison_type method
-            # maybe support conversion from other formats later
-            if isinstance(earliest, datetime.date):
-                earliest = Undate.from_datetime_date(earliest)
-            else:
+        # takes two undate objects; allows conversion from supported types
+        if earliest:
+            try:
+                earliest = Undate.to_undate(earliest)
+            except TypeError as err:
                 raise ValueError(
                     f"earliest date {earliest} cannot be converted to Undate"
-                )
-        if latest and not isinstance(latest, Undate):
-            if isinstance(latest, datetime.date):
-                latest = Undate.from_datetime_date(latest)
-            else:
-                raise ValueError(f"latest date {latest} cannot be converted to Undate")
+                ) from err
+        if latest:
+            try:
+                latest = Undate.to_undate(latest)
+            except TypeError as err:
+                raise ValueError(
+                    f"latest date {latest} cannot be converted to Undate"
+                ) from err
 
         # check that the interval is valid
         if latest and earliest and latest <= earliest:
@@ -78,6 +75,9 @@ class UndateInterval:
         return "<UndateInterval %s>" % self
 
     def __eq__(self, other) -> bool:
+        # currently doesn't support comparison with any other types
+        if not isinstance(other, UndateInterval):
+            return NotImplemented
         # consider interval equal if both dates are equal
         return self.earliest == other.earliest and self.latest == other.latest
 
@@ -122,3 +122,60 @@ class UndateInterval:
             # is there any meaningful way to calculate duration
             # if one year is known and the other is not?
             raise NotImplementedError
+
+    def __contains__(self, other: object) -> bool:
+        """Determine if another interval or date falls within this
+        interval.  Supports comparison with :class:`UndateInterval`
+        or anything that can be converted with :meth:`Undate.to_undate`."""
+        # support comparison with another interval or anything
+        # that can be converted to an Undate
+        if isinstance(other, UndateInterval):
+            # compare based on earliest/latest bounds
+            other_earliest = other.earliest
+            other_latest = other.latest
+        else:
+            # otherwise, try to convert to an Undate
+            try:
+                other = Undate.to_undate(other)
+                other_latest = other_earliest = other
+            except TypeError:
+                # if conversion fails, then we don't support comparison
+                raise
+
+        # if either bound of the current interval is None,
+        # then it is an open interval and we don't need to check the other value.
+        # if the other value is set, then check that it falls within the
+        # bounds of this interval
+        return (
+            self.earliest is None
+            or other_earliest is not None
+            and other_earliest >= self.earliest
+        ) and (
+            self.latest is None
+            or other_latest is not None
+            and other_latest <= self.latest
+        )
+
+    def intersection(self, other: "UndateInterval") -> Optional["UndateInterval"]:
+        """Determine the intersection or overlap between two :class:`UndateInterval`
+        objects and return a new interval. Returns None if there is no overlap.
+        """
+        try:
+            # when both values are defined, return the inner bounds;
+            # if not, return whichever is not None, or None
+            earliest = (
+                max(self.earliest, other.earliest)
+                if self.earliest and other.earliest
+                else self.earliest or other.earliest
+            )
+            latest = (
+                min(self.latest, other.latest)
+                if self.latest and other.latest
+                else self.latest or other.latest
+            )
+
+            # if this results in an invalid interval, initialization
+            # will throw an exception
+            return UndateInterval(earliest, latest)
+        except ValueError:
+            return None

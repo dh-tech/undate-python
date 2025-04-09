@@ -82,6 +82,12 @@ class TestUndateInterval:
         )
         assert UndateInterval(Undate(2022, 5)) == UndateInterval(Undate(2022, 5))
 
+    def test_eq_type_check(self):
+        # doesn't currently support comparison with anything else
+        interval = UndateInterval(Undate(900))
+        # returns NotImplemented if comparison with this type is not supported
+        assert interval.__eq__("foo") == NotImplemented
+
     def test_not_eq(self):
         assert UndateInterval(Undate(2022), Undate(2023)) != UndateInterval(
             Undate(2022), Undate(2024)
@@ -143,3 +149,85 @@ class TestUndateInterval:
         # one year set and the other not currently raises not implemented error
         with pytest.raises(NotImplementedError):
             UndateInterval(Undate(2000), Undate(month=10)).duration()
+
+    def test_intersection(self):
+        century11th = UndateInterval(Undate(1001), Undate(1100))
+        century20th = UndateInterval(Undate(1901), Undate(2000))
+        # no intersection
+        assert century11th.intersection(century20th) is None
+        # should work in either direction
+        assert century20th.intersection(century11th) is None
+
+        decade1990s = UndateInterval(Undate(1990), Undate(1999))
+        # intersection of an interval completely contained in another
+        # returns an interval equivalent to the smaller one
+        assert century20th.intersection(decade1990s) == decade1990s
+        assert decade1990s.intersection(century20th) == decade1990s
+
+        # partial overlap
+        nineties_oughts = UndateInterval(Undate(1990), Undate(2009))
+        assert century20th.intersection(nineties_oughts) == UndateInterval(
+            Undate(1990), Undate(2000)
+        )
+
+        # intersections between half open intervals
+        after_c11th = UndateInterval(Undate(1001), None)
+        assert after_c11th.intersection(century20th) == century20th
+        assert after_c11th.intersection(decade1990s) == decade1990s
+
+        before_20th = UndateInterval(None, Undate(1901))
+        assert before_20th.intersection(decade1990s) is None
+        assert before_20th.intersection(century11th) == century11th
+        assert before_20th.intersection(after_c11th) == UndateInterval(
+            Undate(1001), Undate(1901)
+        )
+
+    def test_contains(self):
+        century11th = UndateInterval(Undate(1001), Undate(1100))
+        century20th = UndateInterval(Undate(1901), Undate(2000))
+        decade1990s = UndateInterval(Undate(1990), Undate(1999))
+        # an interval DOES contain itself
+        for interval in [century11th, century20th, decade1990s]:
+            assert interval in interval
+
+        # checking if an interval is within another interval
+        assert decade1990s in century20th
+        assert decade1990s not in century11th
+        assert century11th not in decade1990s
+        assert century20th not in decade1990s
+        # a specific date can be contained by an interval
+        y2k = Undate(2000)
+        assert y2k in century20th
+        assert y2k not in century11th
+        # partially known date should work too
+        april_someyear = Undate("198X", 4)
+        assert april_someyear in century20th
+        assert april_someyear not in century11th
+        # conversion from datetime.date also works
+        assert datetime.date(1922, 5, 1) in century20th
+        # unsupported types result in a type error
+        with pytest.raises(TypeError):
+            assert "nineteen-eighty-four" in century20th
+
+        # contains check with half-open intervals
+        after_c11th = UndateInterval(Undate(1001), None)
+        before_20th = UndateInterval(None, Undate(1901))
+        # neither of them contains the other
+        assert after_c11th not in before_20th
+        assert before_20th not in after_c11th
+        # nor are they contained by a smaller range
+        assert after_c11th not in decade1990s
+        assert before_20th not in decade1990s
+
+        # all of our previous test dates are in the 1900s,
+        # so they are after the 11th century and not before the 20th
+        for period in [decade1990s, y2k, april_someyear]:
+            assert period in after_c11th
+            assert period not in before_20th
+
+        # fully open interval - is this even meaningful?
+        whenever = UndateInterval(None, None)
+        assert decade1990s in whenever
+        # NOTE: an interval contains itself or an equivalent interval,
+        # but that may not make sense for open intervals...
+        assert whenever in whenever

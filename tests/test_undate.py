@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 
 import pytest
 
@@ -132,17 +132,29 @@ class TestUndate:
 
     def test_init_invalid(self):
         with pytest.raises(ValueError):
-            Undate("19xx")
+            Undate("19??")
+
+        with pytest.raises(ValueError, match="At least one of year, month, or day"):
+            Undate()
 
     def test_invalid_date(self):
         # invalid month should raise an error
         with pytest.raises(ValueError):
             Undate(1990, 22)
 
-    def test_from_datetime_date(self):
-        undate_from_date = Undate.from_datetime_date(date(2001, 3, 5))
+    def test_to_undate(self):
+        undate_from_date = Undate.to_undate(date(2001, 3, 5))
         assert isinstance(undate_from_date, Undate)
         assert undate_from_date == Undate(2001, 3, 5)
+
+        now = datetime.now()
+        undate_from_dt = Undate.to_undate(now)
+        assert isinstance(undate_from_dt, Undate)
+        assert undate_from_dt == Undate(now.year, now.month, now.day)
+
+        # unsupported type
+        with pytest.raises(TypeError):
+            Undate.to_undate("foo")
 
     # test properties for accessing parts of date
     def test_year_property(self):
@@ -156,10 +168,11 @@ class TestUndate:
         # unset year
         assert Undate(month=12, day=31).year == "XXXX"
 
+        # NOTE: no longer supported to inistalize undate with no date information
         # force method to hit conditional for date precision
-        some_century = Undate()
-        some_century.precision = DatePrecision.CENTURY
-        assert some_century.year is None
+        # some_century = Undate()
+        # some_century.precision = DatePrecision.CENTURY
+        # assert some_century.year is None
 
     def test_month_property(self):
         # one, two digit month
