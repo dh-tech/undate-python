@@ -13,8 +13,10 @@ class GregorianDateConverter(BaseCalendarConverter):
     #: calendar
     calendar_name: str = "Gregorian"
 
-    #: known non-leap year
+    #: arbitrary known non-leap year
     NON_LEAP_YEAR: int = 2022
+    #: arbitrary known leap year
+    LEAP_YEAR: int = 2024
 
     def min_month(self) -> int:
         """First month for the Gregorian calendar."""
@@ -38,6 +40,7 @@ class GregorianDateConverter(BaseCalendarConverter):
             _, max_day = monthrange(year, month)
         else:
             # if year and month are unknown, return maximum possible
+            # TODO: should this return a ufloat?
             max_day = 31
 
         return max_day

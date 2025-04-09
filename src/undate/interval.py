@@ -104,6 +104,11 @@ class UndateInterval:
         elif not self.latest.known_year and not self.earliest.known_year:
             # under what circumstances can we assume that if both years
             # are unknown the dates are in the same year or sequential?
+
+            # TODO: for Gregorian calendars, if this interval spans end
+            # of February we should return a udelta object since the interval
+            # may or may not include February 29
+
             duration = self.latest.earliest - self.earliest.earliest
             # if we get a negative, we've wrapped from end of one year
             # to the beginning of the next;

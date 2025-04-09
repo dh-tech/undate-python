@@ -1,9 +1,11 @@
 from enum import IntEnum
+from dataclasses import dataclass
 
 # Pre 3.10 requires Union for multiple types, e.g. Union[int, None] instead of int | None
 from typing import Optional, Union
 
 import numpy as np
+from uncertainties import ufloat  # type: ignore
 
 
 class Timedelta(np.ndarray):
@@ -27,6 +29,27 @@ class Timedelta(np.ndarray):
     def days(self) -> int:
         """number of days, as an integer"""
         return int(self.astype("datetime64[D]").astype("int"))
+
+
+@dataclass
+class Udelta:
+    """An uncertain timedelta, for durations where the number of days is uncertain.
+    Initialize with a list of possible day durations as integers, which are used
+    to calculate a value for duration in :attr:`days` as an
+    instance of :class:`uncertainties.ufloat`.
+    """
+
+    # NOTE: we will probably need other timedelta-like logic here besides days...
+
+    #: number of days, as an instance of :class:`uncertainties.ufloat`
+    days: ufloat
+
+    def __init__(self, *days: int):
+        min_days = min(days)
+        max_days = max(days)
+        half_diff = (max_days - min_days) / 2
+        midpoint = min_days + half_diff
+        self.days = ufloat(midpoint, half_diff)
 
 
 #: timedelta for single day
