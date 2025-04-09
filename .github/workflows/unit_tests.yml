@@ -26,24 +26,31 @@ jobs:
         working-directory: .
 
     steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+
+      # use github python action instead of uv to take advantage of caching
+      - name: Set up Python ${{ matrix.python }}
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python }}
-          cache: 'pip'
-          cache-dependency-path: '**/pyproject.toml'
-      - name: Install package with dependencies
-        run: pip install -e ".[test]"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: "pyproject.toml"
+
+      - name: Install package with dev and test dependencies
+        run: uv sync --extra test
 
       # for all versions but the one we use for code coverage, run normally
       - name: Run unit tests normally
-        run: pytest
+        run: uv run pytest
         if: ${{ matrix.python != env.COV_PYTHON_VERSION }}
 
       # run code coverage in one version only
       - name: Run unit tests with code coverage reporting
-        run: pytest --cov=undate
+        run: uv run pytest --cov=undate
         if: ${{ matrix.python == env.COV_PYTHON_VERSION }}
       - name: Upload test coverage to Codecov
         uses: codecov/codecov-action@v3
