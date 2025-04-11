@@ -2,9 +2,24 @@
 
 ## 0.4
 
-- Make Undate Calendar aware / explicit; default is Gregorian
-  - Parsing and calendar conversion for Hebrew/Anno Mundi
-  - Parsing and calendar conversion for Islamic/Hijri 
+- Undate is now Calendar aware / Calendar explicit; default is Gregorian
+  - New `BaseCalendarConverter` class, with additional methods required for calendar converters
+  - `HebrewDateConverter`: Parsing and calendar conversion for Hebrew/Anno Mundi
+  - `IslamicDateConverter`: Parsing and calendar conversion for Islamic/Hijri
+  - `GregorianDateConverter`: basic Gregorian calendar logic
+  - `undate.Calendar` class to track `Undate` object calendar, and match with calendar converters
+- BaseDateConverter class now includes nested/descendant subclasses when looking
+  for available converters
+- `Undate.to_undate` method to convert supported date objects to `Undate` (`datetime.date`, `datetime.datetime`, and internal `undate.date.Date` class)
+- `UndateInterval` improvements
+  - Can be initialized with `Undate` objects or any type supported by `Undate.to_undate`
+  - New method for contains (`in`), to determine if another interval or date is contained by an interval
+  - New method `intersection` to determine the overlap between two `UndateInterval` objects
+- EDTF parser : fixed day parsing for some unsupported cases
+- Dropped support for Python 3.9
+- Reorganized examples folder to avoid unnecessary nesting
+  - ISMI data has been updated from older JSON data to examples in RDF (turtle)
+  -
 
 
 ## 0.3.1
@@ -21,7 +36,7 @@ Update readthedocs config for current installation
   - Support 5+ digit years with leading Y (thanks to numpy.datetime64)
   - Jupyter notebook demonstrating / validating EDTF support
     - Full support for Level 0 Date and Time Interval (no Date and Time support)
-    - Level 1: 
+    - Level 1:
       - Letter-prefixed calendar year
       - Unspecified digit from the right
       - Partial support for extended interval
