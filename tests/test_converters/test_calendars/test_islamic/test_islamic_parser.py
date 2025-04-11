@@ -1,4 +1,6 @@
 import pytest
+from lark.exceptions import LarkError
+
 from undate.converters.calendars.islamic.parser import islamic_parser
 
 
@@ -72,5 +74,5 @@ error_cases = [
 
 @pytest.mark.parametrize("date_string", error_cases)
 def test_should_error(date_string):
-    with pytest.raises(Exception):
+    with pytest.raises(LarkError):
         islamic_parser.parse(date_string)

@@ -94,7 +94,9 @@ class UndateInterval:
 
         # if range is open-ended, can't calculate
         if self.earliest is None or self.latest is None:
-            return NotImplemented
+            raise NotImplementedError(
+                "Cannot calculate duration for open-ended interval"
+            )
 
         # if both years are known, subtract end of range from beginning of start
         if self.latest.known_year and self.earliest.known_year:

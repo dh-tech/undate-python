@@ -5,13 +5,13 @@
 **undate** is a python library for working with uncertain or partially known dates.
 
 > [!WARNING]
-> This is pre-alpha software and is **NOT** feature complete! Use with caution.
-> Currently it only supports parsing and formatting dates in ISO8601 format and
-> some portions of EDTF (Extended Date Time Format).
+> This is alpha software and is not yet feature complete! Use with caution and give us feedback.
+> Currently `undate` supports parsing and formatting dates in ISO8601, some 
+portions of EDTF (Extended Date Time Format), and parsing and conversion for dates in Hebrew Anno Mundi and Islamic Hijri calendars
 
 *Undate was initially created as part of a [DH-Tech](https://dh-tech.github.io/) hackathon in November 2022.*
 
----
+* * * 
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.11068867.svg)](https://doi.org/10.5281/zenodo.11068867)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
@@ -167,9 +167,9 @@ Dates are stored with the year, month, day and appropriate precision for the ori
 >>> tammuz4816 = Undate.parse("26 Tammuz 4816", "Hebrew")
 >>> tammuz4816
 <Undate '26 Tammuz 4816 Anno Mundi' 4816-04-26 (Hebrew)>
->>> rajab495 = Undate.parse("Rajab 495", "Hijri")
+>>> rajab495 = Undate.parse("Rajab 495", "Islamic")
 >>> rajab495
-<Undate 'Rajab 495 Hijrī' 0495-07 (Hijri)>
+<Undate 'Rajab 495 Hijrī' 0495-07 (Islamic)>
 >>> y2k = Undate.parse("2001", "EDTF")
 >>> y2k
 <Undate 2001 (Gregorian)>
@@ -178,12 +178,12 @@ Dates are stored with the year, month, day and appropriate precision for the ori
 >>> [str(d.precision) for d in [rajab495, tammuz4816, y2k]]
 ['MONTH', 'DAY', 'YEAR']
 >>> sorted([rajab495, tammuz4816, y2k])
-[<Undate '26 Tammuz 4816 Anno Mundi' 4816-04-26 (Hebrew)>, <Undate 'Rajab 495 Hijrī' 0495-07 (Hijri)>, <Undate 2001 (Gregorian)>]
+[<Undate '26 Tammuz 4816 Anno Mundi' 4816-04-26 (Hebrew)>, <Undate 'Rajab 495 Hijrī' 0495-07 (Islamic)>, <Undate 2001 (Gregorian)>]
 ```
 
 * * * 
 
-For more examples, refer to the [example notebooks](https://github.com/dh-tech/undate-python/tree/main/examples/notebooks/) included in this repository.
+For more examples, refer to the code notebooks included in the [examples](https://github.com/dh-tech/undate-python/tree/main/examples/) in this repository.
 
 ## Documentation
 
