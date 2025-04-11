@@ -27,8 +27,8 @@ class Calendar(StrEnum):
     """Supported calendars"""
 
     GREGORIAN = auto()
-    HIJRI = auto()
     HEBREW = auto()
+    ISLAMIC = auto()
 
     @staticmethod
     def get_converter(calendar):

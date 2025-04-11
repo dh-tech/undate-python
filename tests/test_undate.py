@@ -31,7 +31,7 @@ class TestUndate:
             repr(Undate(2022, 11, 7, label="A Special Day"))
             == "<Undate 'A Special Day' 2022-11-07 (Gregorian)>"
         )
-        assert repr(Undate(484, calendar=Calendar.HIJRI)) == "<Undate 0484 (Hijri)>"
+        assert repr(Undate(484, calendar=Calendar.ISLAMIC)) == "<Undate 0484 (Islamic)>"
 
     def test_init_str(self):
         assert Undate("2000").earliest.year == 2000
@@ -122,10 +122,10 @@ class TestUndate:
     def test_calendar(self):
         assert Undate(2024).calendar == Calendar.GREGORIAN
         # by name, any case
-        assert Undate(848, calendar="HIJRI").calendar == Calendar.HIJRI
-        assert Undate(848, calendar="hijri").calendar == Calendar.HIJRI
+        assert Undate(848, calendar="ISLAMIC").calendar == Calendar.ISLAMIC
+        assert Undate(848, calendar="islamic").calendar == Calendar.ISLAMIC
         # by enum
-        assert Undate(848, calendar=Calendar.HIJRI).calendar == Calendar.HIJRI
+        assert Undate(848, calendar=Calendar.ISLAMIC).calendar == Calendar.ISLAMIC
         # invalid
         with pytest.raises(ValueError, match="Calendar `foobar` is not supported"):
             Undate(848, calendar="foobar")

@@ -5,7 +5,7 @@ from undate.converters.base import BaseDateConverter, BaseCalendarConverter
 from undate.converters.calendars import (
     GregorianDateConverter,
     HebrewDateConverter,
-    HijriDateConverter,
+    IslamicDateConverter,
 )
 
 
@@ -36,12 +36,12 @@ class TestBaseDateConverter:
 
     def test_subclasses(self):
         # define a nested subclass
-        class SubSubConverter(HijriDateConverter):
+        class SubSubConverter(IslamicDateConverter):
             pass
 
         subclasses = BaseDateConverter.subclasses()
         assert BaseCalendarConverter not in subclasses
-        assert HijriDateConverter in subclasses
+        assert IslamicDateConverter in subclasses
         assert HebrewDateConverter in subclasses
         assert GregorianDateConverter in subclasses
         assert SubSubConverter in subclasses

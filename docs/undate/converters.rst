@@ -39,15 +39,15 @@ Gregorian
 .. automodule:: undate.converters.calendars.gregorian
    :members:
 
-Hijri (Islamic calendar)
-^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. automodule:: undate.converters.calendars.hijri.converter
-   :members:
-
-Anno Mundi (Hebrew calendar)
+Hebrew Anno Mundi calendar
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: undate.converters.calendars.hebrew.converter
+   :members:
+
+Islamic Hijri calendar
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: undate.converters.calendars.islamic.converter
    :members:
 

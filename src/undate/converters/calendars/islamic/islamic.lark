@@ -3,7 +3,7 @@
 
 // only support day month year format for now
 // parser requires numeric day and year to be distinguished based on order
-hijri_date: day month year | month year | year
+islamic_date: day month year | month year | year
 
 // TODO: handle date ranges?
 
