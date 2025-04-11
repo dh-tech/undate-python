@@ -368,8 +368,9 @@ class Undate:
         """Convert arbitrary object to Undate, if possible. Raises TypeError
         if conversion is not possible.
 
-        Currently suppports:
+        Currently supports:
             - :class:`datetime.date` or :class:`datetime.datetime`
+            - :class:`undate.date.Date`
 
         """
         match other:
