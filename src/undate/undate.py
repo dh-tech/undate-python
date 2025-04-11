@@ -1,12 +1,41 @@
+from __future__ import annotations
+
 import datetime
+from enum import auto
+
 import re
-from calendar import monthrange
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from undate.interval import UndateInterval
+
+try:
+    # StrEnum was only added in python 3.11
+    from enum import StrEnum
+except ImportError:
+    # for python 3.10 or earlier, use third-party package
+    from strenum import StrEnum  # type: ignore
 
 # Pre 3.10 requires Union for multiple types, e.g. Union[int, None] instead of int | None
 from typing import Dict, Optional, Union
 
 from undate.converters.base import BaseDateConverter
-from undate.date import ONE_DAY, ONE_MONTH_MAX, ONE_YEAR, Date, DatePrecision, Timedelta
+from undate.date import ONE_DAY, ONE_MONTH_MAX, Date, DatePrecision, Timedelta
+
+
+class Calendar(StrEnum):
+    """Supported calendars"""
+
+    GREGORIAN = auto()
+    HEBREW = auto()
+    ISLAMIC = auto()
+
+    @staticmethod
+    def get_converter(calendar):
+        # calendar converter must be available with a name matching
+        # the title-case name of the calendar enum entry
+        converter_cls = BaseDateConverter.available_converters()[calendar.value.title()]
+        return converter_cls()
 
 
 class Undate:
@@ -25,9 +54,9 @@ class Undate:
     converter: BaseDateConverter
     #: precision of the date (day, month, year, etc.)
     precision: DatePrecision
+    #: the calendar this date is using; Gregorian by default
+    calendar: Calendar = Calendar.GREGORIAN
 
-    #: known non-leap year
-    NON_LEAP_YEAR: int = 2022
     # numpy datetime is stored as 64-bit integer, so min/max
     # depends on the time unit; assume days for now
     # See https://numpy.org/doc/stable/reference/arrays.datetime.html#datetime-units
@@ -43,7 +72,12 @@ class Undate:
         day: Optional[Union[int, str]] = None,
         converter: Optional[BaseDateConverter] = None,
         label: Optional[str] = None,
+        calendar: Optional[Union[str, Calendar]] = None,
     ):
+        # everything is optional but something is required
+        if all([val is None for val in [year, month, day]]):
+            raise ValueError("At least one of year, month, or day must be specified")
+
         # keep track of initial values and which values are known
         # TODO: add validation: if str, must be expected length
         self.initial_values: Dict[str, Optional[Union[int, str]]] = {
@@ -58,10 +92,25 @@ class Undate:
         elif year:
             self.precision = DatePrecision.YEAR
 
+        self.label = label
+        if calendar is not None:
+            self.set_calendar(calendar)
+        self.calendar_converter = Calendar.get_converter(self.calendar)
+
+        self.calculate_earliest_latest(year, month, day)
+
+        if converter is None:
+            #  import all subclass definitions; initialize the default
+            converter_cls = BaseDateConverter.available_converters()[
+                self.DEFAULT_CONVERTER
+            ]
+            converter = converter_cls()
+        self.converter = converter
+
+    def calculate_earliest_latest(self, year, month, day):
         # special case: treat year = XXXX as unknown/none
         if year == "XXXX":
             year = None
-
         if year is not None:
             # could we / should we use str.isnumeric here?
             try:
@@ -81,32 +130,34 @@ class Undate:
             max_year = self.MAX_ALLOWABLE_YEAR
 
         # if month is passed in as a string but completely unknown,
-        # treat as none
-        # TODO: we should preserve this information somehow;
-        # difference between just a year and and an unknown month within a year
-        # maybe in terms of date precision ?
+        # treat as unknown/none (date precision already set in init)
         if month == "XX":
             month = None
 
-        min_month = 1
-        max_month = 12
+        # get first and last month from the calendar (not always 1 and 12)
+        # as well as min/max months
+        earliest_month = self.calendar_converter.first_month()
+        latest_month = self.calendar_converter.last_month(max_year)
+
+        min_month = self.calendar_converter.min_month()
+        max_month = self.calendar_converter.max_month(max_year)
         if month is not None:
             try:
                 # treat as an integer if we can
                 month = int(month)
                 # update initial value
                 self.initial_values["month"] = month
-                min_month = max_month = month
+                earliest_month = latest_month = month
             except ValueError:
                 # if not, calculate min/max for missing digits
-                min_month, max_month = self._missing_digit_minmax(
+                earliest_month, latest_month = self._missing_digit_minmax(
                     str(month), min_month, max_month
                 )
-
         # similar to month above — unknown day, but day-level granularity
         if day == "XX":
             day = None
 
+        # if day is numeric, use as is
         if isinstance(day, int) or isinstance(day, str) and day.isnumeric():
             day = int(day)
             # update initial value - fully known day
@@ -114,39 +165,42 @@ class Undate:
             min_day = max_day = day
         else:
             # if we have no day or partial day, calculate min / max
-            min_day = 1
-            # if we know year and month (or max month), calculate exactly
-            if year and month and isinstance(year, int):
-                _, max_day = monthrange(int(year), max_month)
-            elif year is None and month:
-                # If we don't have year and month,
-                # calculate based on a known non-leap year
-                # (better than just setting 31, but still not great)
-                _, max_day = monthrange(self.NON_LEAP_YEAR, max_month)
-            else:
-                max_day = 31
+            min_day = 1  # is min day ever anything other than 1 ?
+            rel_year = year if year and isinstance(year, int) else None
+            # use month if it is an integer; otherwise use previusly determined
+            # max month (which may not be 12 depending if partially unknown)
+            rel_month = month if month and isinstance(month, int) else latest_month
+
+            max_day = self.calendar_converter.max_day(rel_year, rel_month)
 
             # if day is partially specified, narrow min/max further
             if day is not None:
                 min_day, max_day = self._missing_digit_minmax(day, min_day, max_day)
 
         # TODO: special case, if we get a Feb 29 date with unknown year,
-        # must switch the min/max years to known leap years!
+        # should switch the min/max years to known leap years!
 
         # for unknowns, assume smallest possible value for earliest and
         # largest valid for latest
-        self.earliest = Date(min_year, min_month, min_day)
-        self.latest = Date(max_year, max_month, max_day)
+        # convert to Gregorian calendar so earliest/latest can always
+        # be used for comparison
+        self.earliest = Date(
+            *self.calendar_converter.to_gregorian(min_year, earliest_month, min_day)
+        )
+        self.latest = Date(
+            *self.calendar_converter.to_gregorian(max_year, latest_month, max_day)
+        )
 
-        if converter is None:
-            #  import all subclass definitions; initialize the default
-            converter_cls = BaseDateConverter.available_converters()[
-                self.DEFAULT_CONVERTER
-            ]
-            converter = converter_cls()
-        self.converter = converter
-
-        self.label = label
+    def set_calendar(self, calendar: Union[str, Calendar]):
+        if calendar is not None:
+            # if not passed as a Calendar instance, do a lookup
+            if not isinstance(calendar, Calendar):
+                # look for calendar by upper-case name
+                try:
+                    calendar = Calendar[calendar.upper()]
+                except KeyError as err:
+                    raise ValueError(f"Calendar `{calendar}` is not supported") from err
+            self.calendar = calendar
 
     def __str__(self) -> str:
         # if any portion of the date is partially known, construct
@@ -170,12 +224,11 @@ class Undate:
         return self.converter.to_string(self)
 
     def __repr__(self) -> str:
-        if self.label:
-            return "<Undate '%s' (%s)>" % (self.label, self)
-        return "<Undate %s>" % self
+        label_str = f" '{self.label}'" if self.label else ""
+        return f"<Undate{label_str} {self} ({self.calendar.name.title()})>"
 
     @classmethod
-    def parse(cls, date_string, format) -> Union["Undate", "UndateInterval"]:
+    def parse(cls, date_string, format) -> Union["Undate", UndateInterval]:
         """parse a string to an undate or undate interval using the specified format;
         for now, only supports named converters"""
         converter_cls = BaseDateConverter.available_converters().get(format, None)
@@ -195,22 +248,18 @@ class Undate:
 
         raise ValueError(f"Unsupported format '{format}'")
 
-    def _comparison_type(self, other: object) -> "Undate":
+    @classmethod
+    def _comparison_type(cls, other: object) -> "Undate":
         """Common logic for type handling in comparison methods.
         Converts to Undate object if possible, otherwise raises
-        NotImplemented error.  Currently only supports conversion
-        from :class:`datetime.date`
+        NotImplementedError exception.  Uses :meth:`to_undate` for conversion.
         """
-
-        # support datetime.date by converting to undate
-        if isinstance(other, datetime.date):
-            other = Undate.from_datetime_date(other)
-
-        # recommended to support comparison with arbitrary objects
-        if not isinstance(other, Undate):
+        # convert if possible; return NotImplemented if not
+        try:
+            return cls.to_undate(other)
+        except TypeError:
+            # recommended to support comparison with arbitrary objects
             return NotImplemented
-
-        return other
 
     def __eq__(self, other: object) -> bool:
         # Note: assumes label differences don't matter for comparing dates
@@ -221,13 +270,19 @@ class Undate:
 
         other = self._comparison_type(other)
         if other is NotImplemented:
+            # return NotImplemented to indicate comparison is not supported
+            # with this type
             return NotImplemented
 
+        # if both dates are fully known, then earliest/latest check
+        # is sufficient (and will work across calendars!)
+
         # check for apparent equality
+        # - earliest/latest match and both have the same precision
         looks_equal = (
             self.earliest == other.earliest
             and self.latest == other.latest
-            and self.initial_values == other.initial_values
+            and self.precision == other.precision
         )
         # if everything looks the same, check for any unknowns in initial values
         # the same unknown date should NOT be considered equal
@@ -237,7 +292,12 @@ class Undate:
         # in one format (i.e. X for missing digits).
         # If we support other formats, will need to normalize to common
         # internal format for comparison
-        if looks_equal and any("X" in str(val) for val in self.initial_values.values()):
+        if looks_equal and (
+            # if any part of either date that is known is _partially_ known,
+            # then these dates are not equal
+            any([self.is_partially_known(p) for p in self.initial_values.keys()])
+            or any([other.is_partially_known(p) for p in other.initial_values.keys()])
+        ):
             return False
 
         return looks_equal
@@ -301,10 +361,27 @@ class Undate:
             ]
         )
 
-    @staticmethod
-    def from_datetime_date(dt_date: datetime.date):
-        """Initialize an :class:`Undate` object from a :class:`datetime.date`"""
-        return Undate(dt_date.year, dt_date.month, dt_date.day)
+    @classmethod
+    def to_undate(cls, other: object) -> "Undate":
+        """Convert arbitrary object to Undate, if possible. Raises TypeError
+        if conversion is not possible.
+
+        Currently supports:
+            - :class:`datetime.date` or :class:`datetime.datetime`
+            - :class:`undate.date.Date`
+
+        """
+        match other:
+            case Undate():
+                return other
+            case datetime.date() | datetime.datetime():
+                return Undate(other.year, other.month, other.day)
+            case Date():
+                # handle conversion from internal Date class
+                return Undate(other.year, other.month, other.day)
+
+            case _:
+                raise TypeError(f"Conversion from {type(other)} is not supported")
 
     @property
     def known_year(self) -> bool:
@@ -366,7 +443,9 @@ class Undate:
         """What is the duration of this date?
         Calculate based on earliest and latest date within range,
         taking into account the precision of the date even if not all
-        parts of the date are known."""
+        parts of the date are known. Note that durations are inclusive
+        (i.e., a closed interval)  and include both the earliest and latest
+        date rather than the difference between them."""
 
         # if precision is a single day, duration is one day
         # no matter when it is or what else is known
@@ -405,6 +484,8 @@ class Undate:
         # given a possible range, calculate min/max values for a string
         # with a missing digit
 
+        # TODO: test this method directly
+
         # assuming two digit only (i.e., month or day)
         possible_values = [f"{n:02}" for n in range(min_val, max_val + 1)]
         # ensure input value has two digits
@@ -429,92 +510,3 @@ class Undate:
         min_val = int("".join(new_min_val))
         max_val = int("".join(new_max_val))
         return (min_val, max_val)
-
-
-class UndateInterval:
-    """A date range between two uncertain dates.
-
-    :param earliest: Earliest undate
-    :type earliest: `undate.Undate`
-    :param latest: Latest undate
-    :type latest:  `undate.Undate`
-    :param label: A string to label a specific undate interval, similar to labels of `undate.Undate`.
-    :type label: `str`
-    """
-
-    # date range between two uncertain dates
-    earliest: Union[Undate, None]
-    latest: Union[Undate, None]
-    label: Union[str, None]
-
-    def __init__(
-        self,
-        earliest: Optional[Undate] = None,
-        latest: Optional[Undate] = None,
-        label: Optional[str] = None,
-    ):
-        # for now, assume takes two undate objects
-        self.earliest = earliest
-        self.latest = latest
-        self.label = label
-
-    def __str__(self) -> str:
-        # using EDTF syntax for open ranges
-        return "%s/%s" % (self.earliest or "..", self.latest or "")
-
-    def format(self, format) -> str:
-        """format this undate interval as a string using the specified format;
-        for now, only supports named converters"""
-        converter_cls = BaseDateConverter.available_converters().get(format, None)
-        if converter_cls:
-            return converter_cls().to_string(self)
-
-        raise ValueError(f"Unsupported format '{format}'")
-
-    def __repr__(self) -> str:
-        if self.label:
-            return "<UndateInterval '%s' (%s)>" % (self.label, self)
-        return "<UndateInterval %s>" % self
-
-    def __eq__(self, other) -> bool:
-        # consider interval equal if both dates are equal
-        return self.earliest == other.earliest and self.latest == other.latest
-
-    def duration(self) -> Timedelta:
-        """Calculate the duration between two undates.
-
-        :returns: A duration
-        :rtype: Timedelta
-        """
-        # what is the duration of this date range?
-
-        # if range is open-ended, can't calculate
-        if self.earliest is None or self.latest is None:
-            return NotImplemented
-
-        # if both years are known, subtract end of range from beginning of start
-        if self.latest.known_year and self.earliest.known_year:
-            return self.latest.latest - self.earliest.earliest + ONE_DAY
-
-        # if neither year is known...
-        elif not self.latest.known_year and not self.earliest.known_year:
-            # under what circumstances can we assume that if both years
-            # are unknown the dates are in the same year or sequential?
-            duration = self.latest.earliest - self.earliest.earliest
-            # if we get a negative, we've wrapped from end of one year
-            # to the beginning of the next;
-            # recalculate assuming second date is in the subsequent year
-            if duration.days < 0:
-                end = self.latest.earliest + ONE_YEAR
-                duration = end - self.earliest.earliest
-
-            # add the additional day *after* checking for a negative
-            # or after recalculating with adjusted year
-            duration += ONE_DAY
-
-            return duration
-
-        else:
-            # is there any meaningful way to calculate duration
-            # if one year is known and the other is not?
-            raise NotImplementedError

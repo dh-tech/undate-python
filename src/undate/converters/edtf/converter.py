@@ -2,11 +2,12 @@ from typing import Optional, Union
 
 from lark.exceptions import UnexpectedCharacters
 
+from undate import Undate, UndateInterval
 from undate.converters.base import BaseDateConverter
 from undate.converters.edtf.parser import edtf_parser
 from undate.converters.edtf.transformer import EDTFTransformer
 from undate.date import DatePrecision
-from undate.undate import Undate, UndateInterval
+
 
 #: character for unspecified digits
 EDTF_UNSPECIFIED_DIGIT: str = "X"

@@ -7,9 +7,9 @@ name = "undate"
 description = "library for working with uncertain, fuzzy, or partially unknown dates and date intervals"
 readme = "README.md"
 license = { text = "Apache-2" }
-requires-python = ">= 3.9"
+requires-python = ">= 3.10"
 dynamic = ["version"]
-dependencies = ["lark", "numpy"]
+dependencies = ["lark[interegular]", "numpy", "convertdate", "strenum; python_version < '3.11'"]
 authors = [
     { name = "Rebecca Sutton Koeser" },
     { name = "Cole Crawford" },
@@ -29,9 +29,8 @@ keywords = [
     "digital-humanities",
 ]
 classifiers = [
-    "Development Status :: 2 - Pre-Alpha",
+    "Development Status :: 3 - Alpha",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -50,14 +49,14 @@ classifiers = [
 [project.optional-dependencies]
 docs = ["sphinx>=7.0.0", "alabaster", "myst-parser", "myst-parser[linkify]"]
 test = ["pytest>=7.2", "pytest-ordering", "pytest-cov"]
+notebooks = ["jupyterlab", "pandas", "treon"]
+check = ["undate[docs]", "undate[notebooks]", "mypy", "ruff"]
 dev = [
-    "ruff",
     "pre-commit>=2.20.0",
     "twine",
     "wheel",
     "build",
-    "mypy",
-    "treon",
+    "undate[check]",
     "undate[docs]",
     "undate[test]",
 ]

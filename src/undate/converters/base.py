@@ -1,10 +1,11 @@
 """
-:class:`undate.converters.BaseDateConverter` provides a base class for
+:class:`~undate.converters.BaseDateConverter` provides a base class for
 implementing date converters, which can provide support for
-parsing and generating dates in different formats and also converting
-dates between different calendars.
+parsing and generating dates in different formats.
+The converter subclass :class:`undate.converters.BaseCalendarConverter`
+provides additional functionality needed for calendar conversion.
 
-To add support for a new date format or calendar conversion:
+To add support for a new date converter:
 
 - Create a new file under ``undate/converters/``
     - For converters with sufficient complexity, you may want to create a submodule;
@@ -17,6 +18,26 @@ To add support for a new date format or calendar conversion:
 
 The new subclass should be loaded automatically and included in the converters
 returned by :meth:`BaseDateConverter.available_converters`
+
+To add support for a new calendar converter:
+
+- Create a new file under ``undate/converters/calendars/``
+    - For converters with sufficient complexity, you may want to create a submodule;
+      see ``undate.converters.calendars.islamic`` for an example.
+- Extend ``BaseCalendarConverter`` and implement ``parse`` and ``to_string``
+  formatter methods as desired/appropriate for your converter as well as the
+  additional methods for ``max_month``, ``max_day``, and conversion ``to_gregorian``
+  calendar.
+- Import your calendar in ``undate/converters/calendars/__init__.py`` and include in `__all__``
+- Add unit tests for the new calendar logic under ``tests/test_converters/calendars/``
+- Add the new calendar to the ``Calendar`` enum of supported calendars in
+  ``undate/undate.py`` and confirm that the `get_converter` method loads your
+  calendar converter correctly (an existing unit test should cover this).
+- Consider creating a notebook to demonstrate the use of the calendar
+  converter.
+
+Calendar converter subclasses are also automatically loaded and included
+in the list of available converters.
 
 -------------------
 """
@@ -90,6 +111,59 @@ class BaseDateConverter:
         """
         Dictionary of available converters keyed on name.
         """
+        return {c.name: c for c in cls.subclasses()}  # type: ignore
+
+    @classmethod
+    def subclasses(cls) -> set[Type["BaseDateConverter"]]:
+        """
+        Set of available converters classes. Includes descendant
+        subclasses, including calendar converters, but does not include
+        :class:`BaseCalendarConverter`.
+        """
         # ensure undate converters are imported
         cls.import_converters()
-        return {c.name: c for c in cls.__subclasses__()}  # type: ignore
+
+        # find all direct subclasses, excluding base calendar converter
+        direct_subclasses = cls.__subclasses__()
+        all_subclasses = set(direct_subclasses)
+        # recurse to find nested subclasses
+        for subc in direct_subclasses:
+            all_subclasses |= subc.subclasses()
+
+        # omit the calendar converter base class, which is not itself a converter
+        all_subclasses -= {BaseCalendarConverter}
+        return all_subclasses
+
+
+class BaseCalendarConverter(BaseDateConverter):
+    """Base class for calendar converters, with additional methods required
+    for calendars."""
+
+    #: Converter name. Subclasses must define a unique name.
+    name: str = "Base Calendar Converter"
+
+    def min_month(self) -> int:
+        """Smallest numeric month for this calendar."""
+        raise NotImplementedError
+
+    def max_month(self, year: int) -> int:
+        """Maximum numeric month for this calendar"""
+        raise NotImplementedError
+
+    def first_month(self) -> int:
+        """first month in this calendar; by default, returns :meth:`min_month`."""
+        return self.min_month()
+
+    def last_month(self, year: int) -> int:
+        """last month in this calendar; by default, returns :meth:`max_month`."""
+        return self.max_month(year)
+
+    def max_day(self, year: int, month: int) -> int:
+        """maximum numeric day for the specified year and month in this calendar"""
+        raise NotImplementedError
+
+    def to_gregorian(self, year, month, day) -> tuple[int, int, int]:
+        """Convert a date for this calendar specified by numeric year, month, and day,
+        into the Gregorian equivalent date. Should return a tuple of year, month, day.
+        """
+        raise NotImplementedError

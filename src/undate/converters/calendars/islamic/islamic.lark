@@ -1,0 +1,56 @@
+%import common.WS
+%ignore WS
+
+// only support day month year format for now
+// parser requires numeric day and year to be distinguished based on order
+islamic_date: day month year | month year | year
+
+// TODO: handle date ranges?
+
+// TODO: add support for qualifiers?
+// PGP dates use qualifiers like "first decade of" (for beginning of month)
+// "first third of", seasons (can look for more examples)
+
+year: /\d+/
+
+// months
+month: month_1
+     | month_2
+ 	 | month_3
+ 	 | month_4
+ 	 | month_5
+ 	 | month_6
+ 	 | month_7
+ 	 | month_8
+ 	 | month_9
+ 	 | month_10
+  	 | month_11
+ 	 | month_12
+// months have 29 or 30 days; we do not expect leading zeroes
+day: /[1-9]/ | /[12][0-9]/ | /30/
+
+// months, in order; from convertdate list
+// with variants from Princeton Geniza Project
+// support matching with and without accents
+// al-Muḥarram or Muḥarram
+month_1: /(al-)?Mu[ḥh]arram/
+month_2: /[ṢS]afar/
+// Rabīʿ al-ʾAwwal or Rabi' I
+month_3: /Rab[īi][ʿ'] (al-[`ʾ]Awwal|I)/
+// Rabīʿ ath-Thānī or Rabi' II
+month_4: /Rab[īi][ʿ'] (ath-Th[āa]n[īi]|II)/
+// Jumādā al-ʾAwwal or Jumādā I
+month_5: /Jum[āa]d[āa] (al-[ʾ`]Awwal|I)/
+// Jumādā ath-Thāniya or Jumādā II
+month_6: /Jum[āa]d[āa] (ath-Th[āa]niyah|II)/
+month_7: "Rajab"
+// Shaʿbān
+month_8: /Sha[ʿ']b[āa]n/
+month_9: /Rama[ḍd][āa]n/
+month_10: /Shaww[āa]l/
+// Zū al-Qaʿdah or Dhu l-Qa'da
+month_11: /(Z|Dh)[ūu] a?l-Qa[ʿ']dah?/
+// Zū al-Ḥijjah or Dhu l-Hijja
+month_12: /(Z|Dh)[ūu] a?l-[HḤ]ijjah?/
+
+
