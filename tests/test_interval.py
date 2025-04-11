@@ -144,7 +144,10 @@ class TestUndateInterval:
         assert jan_march_duration.days == 2
 
         # duration is not supported for open-ended intervals
-        assert UndateInterval(Undate(2000), None).duration() == NotImplemented
+        with pytest.raises(
+            NotImplementedError, match="Cannot calculate.*open-ended interval"
+        ):
+            assert UndateInterval(Undate(2000), None).duration()
 
         # one year set and the other not currently raises not implemented error
         with pytest.raises(NotImplementedError):

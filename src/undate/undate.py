@@ -198,8 +198,8 @@ class Undate:
                 # look for calendar by upper-case name
                 try:
                     calendar = Calendar[calendar.upper()]
-                except KeyError:
-                    raise ValueError(f"Calendar `{calendar}` is not supported")
+                except KeyError as err:
+                    raise ValueError(f"Calendar `{calendar}` is not supported") from err
             self.calendar = calendar
 
     def __str__(self) -> str:
@@ -292,15 +292,13 @@ class Undate:
         # in one format (i.e. X for missing digits).
         # If we support other formats, will need to normalize to common
         # internal format for comparison
-        if looks_equal:
+        if looks_equal and (
             # if any part of either date that is known is _partially_ known,
             # then these dates are not equal
-            if any(
-                [self.is_partially_known(p) for p in self.initial_values.keys()]
-            ) or any(
-                [other.is_partially_known(p) for p in other.initial_values.keys()]
-            ):
-                return False
+            any([self.is_partially_known(p) for p in self.initial_values.keys()])
+            or any([other.is_partially_known(p) for p in other.initial_values.keys()])
+        ):
+            return False
 
         return looks_equal
 

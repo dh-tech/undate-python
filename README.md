@@ -11,7 +11,7 @@ portions of EDTF (Extended Date Time Format), and parsing and conversion for dat
 
 *Undate was initially created as part of a [DH-Tech](https://dh-tech.github.io/) hackathon in November 2022.*
 
----
+* * * 
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.11068867.svg)](https://doi.org/10.5281/zenodo.11068867)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)

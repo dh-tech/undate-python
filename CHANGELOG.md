@@ -19,7 +19,6 @@
 - Dropped support for Python 3.9
 - Reorganized examples folder to avoid unnecessary nesting
   - ISMI data has been updated from older JSON data to examples in RDF (turtle)
-  -
 
 
 ## 0.3.1
