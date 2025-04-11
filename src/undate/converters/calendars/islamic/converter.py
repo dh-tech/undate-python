@@ -5,24 +5,24 @@ from lark.exceptions import UnexpectedCharacters
 
 from undate import Undate, UndateInterval
 from undate.converters.base import BaseCalendarConverter
-from undate.converters.calendars.hijri.parser import hijri_parser
-from undate.converters.calendars.hijri.transformer import HijriDateTransformer
+from undate.converters.calendars.islamic.parser import islamic_parser
+from undate.converters.calendars.islamic.transformer import IslamicDateTransformer
 
 
-class HijriDateConverter(BaseCalendarConverter):
+class IslamicDateConverter(BaseCalendarConverter):
     """
-    Converter for Hijri / Islamic calendar.
+    Converter for Islamic Hijri calendar.
 
-    Support for parsing Hijri dates and converting to Undate and UndateInterval
+    Support for parsing Islamic Hijri dates and converting to Undate and UndateInterval
     objects in the Gregorian calendar.
     """
 
-    #: converter name: Hijri
-    name: str = "Hijri"
-    calendar_name: str = "Hijrī"
+    #: converter name: Islamic
+    name: str = "Islamic"
+    calendar_name: str = "Islamic"
 
     def __init__(self):
-        self.transformer = HijriDateTransformer()
+        self.transformer = IslamicDateTransformer()
 
     def max_day(self, year: int, month: int) -> int:
         """maximum numeric day for the specified year and month in this calendar"""
@@ -44,9 +44,9 @@ class HijriDateConverter(BaseCalendarConverter):
 
     def parse(self, value: str) -> Union[Undate, UndateInterval]:
         """
-        Parse a Hijri date string and return an :class:`~undate.undate.Undate` or
+        Parse an Islamic/Hijri date string and return an :class:`~undate.undate.Undate` or
         :class:`~undate.undate.UndateInterval`.
-        The Hijri date string is preserved in the undate label.
+        The Islamic/Hijri date string is preserved in the undate label.
         """
         if not value:
             raise ValueError("Parsing empty string is not supported")
@@ -54,14 +54,14 @@ class HijriDateConverter(BaseCalendarConverter):
         # parse the input string, then transform to undate object
         try:
             # parse the string with our Hijri date parser
-            parsetree = hijri_parser.parse(value)
+            parsetree = islamic_parser.parse(value)
             # transform the parse tree into an undate or undate interval
             undate_obj = self.transformer.transform(parsetree)
             # set the original date as a label, with the calendar name
             undate_obj.label = f"{value} {self.calendar_name}"
             return undate_obj
         except UnexpectedCharacters as err:
-            raise ValueError(f"Could not parse '{value}' as a Hijri date") from err
+            raise ValueError(f"Could not parse '{value}' as an Islamic date") from err
 
     # do we need to support conversion the other direction?
     # i.e., generate a Hijri date from an abitrary undate or undate interval?

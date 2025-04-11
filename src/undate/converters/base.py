@@ -3,7 +3,7 @@
 implementing date converters, which can provide support for
 parsing and generating dates in different formats.
 The converter subclass :class:`undate.converters.BaseCalendarConverter`
-provides additional functionaly needed for calendar conversion.
+provides additional functionality needed for calendar conversion.
 
 To add support for a new date converter:
 
@@ -23,10 +23,10 @@ To add support for a new calendar converter:
 
 - Create a new file under ``undate/converters/calendars/``
     - For converters with sufficient complexity, you may want to create a submodule;
-      see ``undate.converters.calendars.hijri`` for an example.
+      see ``undate.converters.calendars.islamic`` for an example.
 - Extend ``BaseCalendarConverter`` and implement ``parse`` and ``to_string``
   formatter methods as desired/appropriate for your converter as well as the
-  additional methods for ``max_month``, ``max_day``, and convertion ``to_gregorian``
+  additional methods for ``max_month``, ``max_day``, and conversion ``to_gregorian``
   calendar.
 - Import your calendar in ``undate/converters/calendars/__init__.py`` and include in `__all__``
 - Add unit tests for the new calendar logic under ``tests/test_converters/calendars/``

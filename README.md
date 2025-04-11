@@ -158,7 +158,7 @@ Currently available converters are "ISO8601" and "EDTF" and supported calendars.
 
 ### Calendars
 
-All `Undate` objects are calendar aware, and date converters include support for parsing and working with dates from other calendars. The Gregorian calendar is used by default; currently `undate` supports the Hijri Islamic calendar and the Anno Mundi Hebrew calendar based on calendar convertion logic implemented in the [convertdate](https://convertdate.readthedocs.io/en/latest/)package. 
+All `Undate` objects are calendar aware, and date converters include support for parsing and working with dates from other calendars. The Gregorian calendar is used by default; currently `undate` supports the Islamic Hijri calendar and the Hebrew Anno Mundi calendar based on calendar conversion logic implemented in the [convertdate](https://convertdate.readthedocs.io/en/latest/)package. 
 
 Dates are stored with the year, month, day and appropriate precision for the original calendar; internally, earliest and latest dates are calculated in Gregorian / Proleptic Gregorian calendar for standardized comparison across dates from different calendars.
 

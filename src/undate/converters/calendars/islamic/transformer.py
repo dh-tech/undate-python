@@ -3,17 +3,17 @@ from lark import Transformer, Tree
 from undate import Undate, Calendar
 
 
-class HijriUndate(Undate):
-    """Undate convience subclass; sets default calendar to Hijri."""
+class IslamicUndate(Undate):
+    """Undate convience subclass; sets default calendar to Islamic."""
 
-    calendar = Calendar.HIJRI
+    calendar = Calendar.ISLAMIC
 
 
-class HijriDateTransformer(Transformer):
-    """Transform a Hijri date parse tree and return an Undate or
+class IslamicDateTransformer(Transformer):
+    """Transform an Islamic Hijri date parse tree and return an Undate or
     UndateInterval."""
 
-    def hijri_date(self, items):
+    def islamic_date(self, items):
         parts = {}
         for child in items:
             if child.data in ["year", "month", "day"]:
@@ -24,7 +24,7 @@ class HijriDateTransformer(Transformer):
 
         # initialize and return an undate with islamic year, month, day and
         # islamic calendar
-        return HijriUndate(**parts)
+        return IslamicUndate(**parts)
 
     # year translation is not needed since we want a tree with name year
     # this is equivalent to a no-op
