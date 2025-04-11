@@ -53,7 +53,7 @@ class IslamicDateConverter(BaseCalendarConverter):
 
         # parse the input string, then transform to undate object
         try:
-            # parse the string with our Hijri date parser
+            # parse the string with our Islamic Hijri date parser
             parsetree = islamic_parser.parse(value)
             # transform the parse tree into an undate or undate interval
             undate_obj = self.transformer.transform(parsetree)
@@ -64,4 +64,4 @@ class IslamicDateConverter(BaseCalendarConverter):
             raise ValueError(f"Could not parse '{value}' as an Islamic date") from err
 
     # do we need to support conversion the other direction?
-    # i.e., generate a Hijri date from an abitrary undate or undate interval?
+    # i.e., generate an Islamic Hijri date from an arbitrary undate or undate interval?
