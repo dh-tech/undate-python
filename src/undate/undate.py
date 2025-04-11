@@ -365,7 +365,7 @@ class Undate:
 
     @classmethod
     def to_undate(cls, other: object) -> "Undate":
-        """Converted arbitrary object to Undate, if possible. Raises TypeError
+        """Convert arbitrary object to Undate, if possible. Raises TypeError
         if conversion is not possible.
 
         Currently suppports:
@@ -376,6 +376,9 @@ class Undate:
             case Undate():
                 return other
             case datetime.date() | datetime.datetime():
+                return Undate(other.year, other.month, other.day)
+            case Date():
+                # handle conversion from internal Date class
                 return Undate(other.year, other.month, other.day)
 
             case _:

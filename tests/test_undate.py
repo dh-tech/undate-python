@@ -4,7 +4,7 @@ import pytest
 
 from undate import Undate, UndateInterval, Calendar
 from undate.converters.base import BaseCalendarConverter
-from undate.date import DatePrecision, Timedelta
+from undate.date import Date, DatePrecision, Timedelta
 
 
 class TestUndate:
@@ -151,6 +151,14 @@ class TestUndate:
         undate_from_dt = Undate.to_undate(now)
         assert isinstance(undate_from_dt, Undate)
         assert undate_from_dt == Undate(now.year, now.month, now.day)
+
+        # from internal Date object
+        y2k = Date(2000)
+        y2k_to_undate = Undate.to_undate(y2k)
+        assert isinstance(y2k_to_undate, Undate)
+        assert int(y2k_to_undate.year) == y2k.year
+        assert y2k_to_undate.month is None
+        assert y2k_to_undate.day is None
 
         # unsupported type
         with pytest.raises(TypeError):
