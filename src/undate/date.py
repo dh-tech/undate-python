@@ -49,6 +49,24 @@ class IntegerRange(portion.AbstractDiscreteInterval):
             raise ValueError(f"Lower value ({lower}) must be less than upper ({upper})")
         super().__init__(portion.closed(lower, upper))
 
+    def __sub__(self, other):
+        # portion default subtraction is to remove from the set, but
+        # we want to decrease the values
+        if isinstance(other, int):
+            return IntegerRange(self.lower - other, self.upper - other)
+        elif isinstance(other, IntegerRange):
+            # subtract the range respective endpoints
+            return IntegerRange(self.lower - other.lower, self.upper - other.upper)
+
+    def __add__(self, other):
+        # portion default subtraction is to remove from the set, but
+        # we want to decrease the values
+        if isinstance(other, int):
+            return IntegerRange(self.lower + other, self.upper + other)
+        elif isinstance(other, IntegerRange):
+            # the new range is the smallest possible value to the highest
+            return IntegerRange(self.lower + other.lower, self.upper - other.upper)
+
 
 @dataclass
 class Udelta:

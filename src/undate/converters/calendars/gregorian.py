@@ -40,7 +40,7 @@ class GregorianDateConverter(BaseCalendarConverter):
             _, max_day = monthrange(year, month)
         else:
             # if year and month are unknown, return maximum possible
-            # TODO: should this return a ufloat?
+            # TODO: should this return an IntervalRange?
             max_day = 31
 
         return max_day
