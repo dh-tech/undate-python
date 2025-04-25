@@ -2,7 +2,16 @@ import numpy as np
 import portion
 import pytest
 
-from undate.date import ONE_YEAR, Date, DatePrecision, Timedelta, Udelta, IntegerRange
+from undate.date import (
+    ONE_DAY,
+    ONE_YEAR,
+    ONE_MONTH_MAX,
+    Date,
+    DatePrecision,
+    Timedelta,
+    Udelta,
+    IntegerRange,
+)
 
 
 class TestDatePrecision:
@@ -94,7 +103,9 @@ class TestIntegerRange:
         assert 30 not in february_days
 
     def test_init_validation(self):
-        with pytest.raises(ValueError):
+        with pytest.raises(
+            ValueError, match=r"Lower value \(10\) must be less than upper \(4\)"
+        ):
             IntegerRange(10, 4)
 
     # TODO: test/implement comparisons
@@ -122,3 +133,49 @@ class TestUdelta:
         assert isinstance(unknown_month_duration.days, IntegerRange)
         assert unknown_month_duration.days.lower == 28
         assert unknown_month_duration.days.upper == 31
+
+    def test_init_validation(self):
+        with pytest.raises(ValueError, match="Must specify at least two values"):
+            Udelta(10)
+
+    def test_repr(self):
+        # default dataclass repr
+        assert repr(Udelta(28, 29)) == "Udelta(days=[28,29])"
+
+    def test_eq(self):
+        # uncertain deltas are not equivalent
+        udelt1 = Udelta(30, 31)
+        udelt2 = Udelta(30, 31)
+        # not equal to equivalent udelta range
+        assert udelt1 != udelt2
+        # equal to self
+        assert udelt1 is udelt1
+
+    def test_lt(self):
+        week_or_tenday = Udelta(7, 10)
+        # compare udelta with udelta
+        month = Udelta(28, 31)
+        # a week or ten-day is unambiguously less than a month
+        assert week_or_tenday < month
+        # compare udelta with Timedelta
+        # NOTE: currently requires this direction, until we update Timedelta
+        assert not week_or_tenday < ONE_DAY
+        # an uncertain  month is unambiguously less than a year
+        assert month < ONE_YEAR
+        # an uncertain  month may or may not be less than one month max
+        assert not month < ONE_MONTH_MAX
+
+    def test_gt(self):
+        week_or_tenday = Udelta(7, 10)
+        # compare udelta with udelta
+        month = Udelta(28, 31)
+        # a month is unambiguously longer than week or ten-day
+        assert month > week_or_tenday
+        # compare udelta with Timedelta
+        # NOTE: currently requires this direction, until we update Timedelta
+        # to support the reverse comparison
+        assert week_or_tenday > ONE_DAY
+        # an uncertain month is not greater than a year
+        assert not month > ONE_YEAR
+        # an uncertain  month may or may not be greater than one month max
+        assert not month > ONE_MONTH_MAX

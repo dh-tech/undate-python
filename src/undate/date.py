@@ -46,7 +46,7 @@ class IntegerRange(portion.AbstractDiscreteInterval):
     def __init__(self, lower: int, upper: int):
         # base init method takes one or more intervals; we want a single closed interval
         if not lower < upper:
-            raise ValueError(f"Lower value {lower} must be less than upper {upper}")
+            raise ValueError(f"Lower value ({lower}) must be less than upper ({upper})")
         super().__init__(portion.closed(lower, upper))
 
 
@@ -65,7 +65,36 @@ class Udelta:
     days: IntegerRange
 
     def __init__(self, *days: int):
+        if len(days) < 2:
+            raise ValueError(
+                "Must specify at least two values for an uncertain duration"
+            )
         self.days = IntegerRange(min(days), max(days))
+
+    # TODO: what does equality for an uncertain range mean?
+    # is an uncertain range ever equal to another uncertain range?
+
+    def __eq__(self, other: object) -> bool:
+        # is an uncertain duration ever *equal* another, even if the values are the same?
+        if other is self:
+            return True
+        return False
+
+    def __lt__(self, other: object) -> bool:
+        if isinstance(other, Timedelta):
+            return self.days < portion.singleton(other.days)
+        elif isinstance(other, Udelta):
+            return self.days < other.days
+
+        return NotImplemented
+
+    def __gt__(self, other: object) -> bool:
+        if isinstance(other, Timedelta):
+            return self.days > portion.singleton(other.days)
+        elif isinstance(other, Udelta):
+            return self.days > other.days
+
+        return NotImplemented
 
 
 #: timedelta for single day
