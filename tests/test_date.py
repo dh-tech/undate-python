@@ -123,13 +123,13 @@ class TestUnInt:
     def test_gt(self):
         ten_twelve = UnInt(10, 12)
         # compare with integer
-        assert 13 > ten_twelve
-        assert not 12 > ten_twelve
-        assert not 9 > ten_twelve
+        assert ten_twelve > 9
+        assert not ten_twelve > 12
+        assert not ten_twelve > 15
         # compare with unint
-        assert UnInt(13, 23) > ten_twelve
-        assert not UnInt(12, 24) > ten_twelve
-        assert not UnInt(2, 4) > ten_twelve
+        assert ten_twelve > UnInt(2, 4)
+        assert not ten_twelve > UnInt(12, 24)
+        assert not ten_twelve > UnInt(13, 23)
         # unsupported type
         with pytest.raises(TypeError):
             ten_twelve > "three"
@@ -137,13 +137,13 @@ class TestUnInt:
     def test_lt(self):
         ten_twelve = UnInt(10, 12)
         # compare with integer
-        assert 9 < ten_twelve
-        assert not 12 < ten_twelve
-        assert not 13 < ten_twelve
+        assert ten_twelve < 13
+        assert not ten_twelve < 12
+        assert not ten_twelve < 9
         # compare with unint
-        assert UnInt(2, 4) < ten_twelve
-        assert not UnInt(12, 24) < ten_twelve
-        assert not UnInt(13, 23) < ten_twelve
+        assert ten_twelve < UnInt(13, 23)
+        assert not ten_twelve < UnInt(12, 24)
+        assert not ten_twelve < UnInt(2, 4)
         # unsupported type
         with pytest.raises(TypeError):
             ten_twelve < "three"
