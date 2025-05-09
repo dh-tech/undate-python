@@ -20,7 +20,7 @@ except ImportError:
 from typing import Dict, Optional, Union
 
 from undate.converters.base import BaseDateConverter
-from undate.date import ONE_DAY, ONE_MONTH_MAX, Date, DatePrecision, Timedelta
+from undate.date import ONE_DAY, ONE_MONTH_MAX, Date, DatePrecision, Timedelta, UnDelta
 
 
 class Calendar(StrEnum):
@@ -439,13 +439,14 @@ class Undate:
         value = self.initial_values.get(part)
         return str(value) if value else None
 
-    def duration(self) -> Timedelta:
+    def duration(self) -> Timedelta | UnDelta:
         """What is the duration of this date?
         Calculate based on earliest and latest date within range,
         taking into account the precision of the date even if not all
         parts of the date are known. Note that durations are inclusive
         (i.e., a closed interval)  and include both the earliest and latest
-        date rather than the difference between them."""
+        date rather than the difference between them.  Returns a :class:`undate.date.Timedelta` when
+        possible, and an :class:`undate.date.UnDelta` when the duration is uncertain."""
 
         # if precision is a single day, duration is one day
         # no matter when it is or what else is known
@@ -456,20 +457,48 @@ class Undate:
         # calculate month duration within a single year (not min/max)
         if self.precision == DatePrecision.MONTH:
             latest = self.latest
+            # if year is unknown, calculate month duration in
+            # leap year and non-leap year, in case length varies
             if not self.known_year:
-                # if year is unknown, calculate month duration in
-                # a single year
-                latest = Date(self.earliest.year, self.latest.month, self.latest.day)
+                # TODO: should leap-year specific logic shift to the calendars,
+                # since it works differently depending on the calendar?
+                possible_years = [
+                    self.calendar_converter.LEAP_YEAR,
+                    self.calendar_converter.NON_LEAP_YEAR,
+                ]
+            # TODO: what about partially known years like 191X ?
+            else:
+                # otherwise, get possible durations for all possible months
+                # for a known year
+                possible_years = [self.earliest.year]
 
-                # latest = datetime.date(
-                #     self.earliest.year, self.latest.month, self.latest.day
-                # )
+            # for every possible month and year, get max days for that month,
+            possible_max_days = set()
+            # appease mypy, which says month values could be None here
+            if self.earliest.month is not None and self.latest.month is not None:
+                for possible_month in range(self.earliest.month, self.latest.month + 1):
+                    for year in possible_years:
+                        possible_max_days.add(
+                            self.calendar_converter.max_day(year, possible_month)
+                        )
+
+                # if there is more than one possible value for month length,
+                # whether due to leap year / non-leap year or ambiguous month,
+                # return an uncertain delta
+                if len(possible_max_days) > 1:
+                    return UnDelta(*possible_max_days)
+
+            # otherwise, calculate timedelta normally
+            max_day = list(possible_max_days)[0]
+            latest = Date(self.earliest.year, self.earliest.month, max_day)
+
             delta = latest - self.earliest + ONE_DAY
             # month duration can't ever be more than 31 days
             # (could we ever know if it's smaller?)
 
             # if granularity == month but not known month, duration = 31
             if delta.astype(int) > 31:
+                # FIXME: this depends on calendar!
                 return ONE_MONTH_MAX
             return delta
 
