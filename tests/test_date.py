@@ -120,6 +120,34 @@ class TestUnInt:
         # other types are assumed not in range
         assert "twenty-eight" not in anymonth_days
 
+    def test_gt(self):
+        ten_twelve = UnInt(10, 12)
+        # compare with integer
+        assert 13 > ten_twelve
+        assert not 12 > ten_twelve
+        assert not 9 > ten_twelve
+        # compare with unint
+        assert UnInt(13, 23) > ten_twelve
+        assert not UnInt(12, 24) > ten_twelve
+        assert not UnInt(2, 4) > ten_twelve
+        # unsupported type
+        with pytest.raises(TypeError):
+            ten_twelve > "three"
+
+    def test_lt(self):
+        ten_twelve = UnInt(10, 12)
+        # compare with integer
+        assert 9 < ten_twelve
+        assert not 12 < ten_twelve
+        assert not 13 < ten_twelve
+        # compare with unint
+        assert UnInt(2, 4) < ten_twelve
+        assert not UnInt(12, 24) < ten_twelve
+        assert not UnInt(13, 23) < ten_twelve
+        # unsupported type
+        with pytest.raises(TypeError):
+            ten_twelve < "three"
+
     def test_iterable(self):
         anymonth_days = UnInt(lower=28, upper=31)
         assert list(anymonth_days) == [28, 29, 30, 31]

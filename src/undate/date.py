@@ -57,9 +57,9 @@ class UnInt:
     def __gt__(self, other: object) -> bool:
         match other:
             case int():
-                return self.upper > other
+                return self.lower > other
             case UnInt():
-                return self.upper > other.lower
+                return self.lower > other.upper
             case _:
                 return NotImplemented
 
@@ -90,14 +90,14 @@ class UnInt:
             self, lower=op(self.lower, other_lower), upper=op(self.upper, other_upper)
         )
 
-    def __add__(self, other: object) -> bool:
+    def __add__(self, other: object) -> "UnInt":
         match other:
             case int():
                 # increase both values by the added amount
                 add_values = (other, other)
             case UnInt():
-                # subtract the upper and lower values by the other lower and upper
-                # to include the largest range of possible values
+                # add other lower value to current lower and other upper
+                # to current upper to include the largest range of possible values
                 # (when calculating with uncertain values, the uncertainty increases)
                 add_values = (other.lower, other.upper)
             case _:
@@ -105,7 +105,7 @@ class UnInt:
 
         return self._replace_with(*add_values, operator.add)
 
-    def __sub__(self, other):
+    def __sub__(self, other) -> "UnInt":
         match other:
             case int():
                 # decrease both values by the subtracted amount
@@ -147,14 +147,12 @@ class UnDelta:
         # specifies full UnInt initialization with upper and lower keywords
         return f"{self.__class__.__name__}(days=[{self.days.lower},{self.days.upper}])"
 
-    # TODO: what does equality for an uncertain range mean?
-    # is an uncertain range ever equal to another uncertain range?
-
     def __eq__(self, other: object) -> bool:
         # is an uncertain duration ever *equal* another, even if the values are the same?
-        if other is self:
-            return True
-        return False
+        # for now, make the assumption that we only want identity equality
+        # and not value equality; perhaps in future we can revisit
+        # or add functions to check value equality / equivalence / similarity
+        return other is self
 
     def __lt__(self, other: object) -> bool:
         match other:
