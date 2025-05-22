@@ -425,7 +425,7 @@ class Undate:
         year = self._get_date_part("year")
         if year:
             return f"{year:0>4}"
-        # if value is unset but date precision is month or greater, return unknown month
+        # if value is unset but date precision is year or greater, return unknown year
         elif self.precision >= DatePrecision.YEAR:
             return self.MISSING_DIGIT * 4
         return None
