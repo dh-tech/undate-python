@@ -106,7 +106,7 @@ class Date(np.ndarray):
 
     @property
     def weekday(self) -> Optional[int]:
-        """Equivalent to :meth:`datetime.date.weedkay`; returns day of week as an
+        """Equivalent to :meth:`datetime.date.weekday`; returns day of week as an
         integer where Monday is 0 and Sunday is 6. Only supported for dates
         with date unit in days.
         """
