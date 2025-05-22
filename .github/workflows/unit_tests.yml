@@ -52,7 +52,9 @@ jobs:
       - name: Run unit tests with code coverage reporting
         run: uv run pytest --cov=undate
         if: ${{ matrix.python == env.COV_PYTHON_VERSION }}
-      - name: Upload test coverage to Codecov
-        uses: codecov/codecov-action@v3
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         if: ${{ matrix.python == env.COV_PYTHON_VERSION }}
 
