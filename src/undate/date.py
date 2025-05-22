@@ -35,7 +35,7 @@ class Timedelta(np.ndarray):
 class UnInt:
     """An uncertain integer intended for use with uncertain durations (:class:`UnDelta`),
     to convey a range of possible integer values between an upper
-    and lower bound (inclusive). Supports comparison, addition and subtraction,
+    and lower bound (both inclusive). Supports comparison, addition and subtraction,
     checking if a value is included in the range, and iterating over numbers
     included in the range.
     """
