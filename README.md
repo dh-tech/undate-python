@@ -47,7 +47,7 @@ Often humanities and cultural data include imprecise or uncertain temporal infor
 An `undate.Undate` is analogous to python’s builtin `datetime.date` object, but with support for varying degrees of precision and unknown information.  You can initialize an undate with either strings or numbers for whichever parts of the date are known or partially known.  An `Undate` can take an optional label.
 
 ```python
-from undate.undate import Undate
+from undate import Undate
 
 november7 = Undate(2000, 11, 7)
 november = Undate(2000, 11)
@@ -135,13 +135,13 @@ NotImplementedError: Can't compare when one date falls within the other
 
 An `UndateInterval` is a date range between two `Undate` objects. Intervals can be open-ended, allow for optional labels, and can calculate duration if enough information is known
 ```python
->>> from undate.undate import UndateInterval
+>>> from undate import UndateInterval
 >>> UndateInterval(Undate(1900), Undate(2000))
 <UndateInterval 1900/2000>
 >>> UndateInterval(Undate(1801), Undate(1900), label="19th century")
 >>> UndateInterval(Undate(1801), Undate(1900), label="19th century").duration().days
 36524
-<UndateInterval '19th century' (1801/19000)>
+<UndateInterval '19th century' (1801/1900)>
 >>> UndateInterval(Undate(1901), Undate(2000), label="20th century")
 <UndateInterval '20th century' (1901/2000)>
 >>> UndateInterval(latest=Undate(2000))  # before 2000
