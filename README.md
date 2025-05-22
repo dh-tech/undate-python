@@ -25,6 +25,21 @@ portions of EDTF (Extended Date Time Format), and parsing and conversion for dat
 
 Read [Contributors](CONTRIBUTORS.md) for detailed contribution information.
 
+## Installation
+
+*Recommended*: use pip to install the latest published version from PyPI:
+
+```console
+pip install undate
+```
+
+To install a development version or specific tag or branch, you can install from GitHub.
+Use the `@name` notation to specify the branch or tag; e.g., to install development version:
+
+```console
+pip install git+https://github.com/dh-tech/undate-python@develop#egg=undate
+```
+
 ## Example Usage
 
 Often humanities and cultural data include imprecise or uncertain temporal information. We want to store that information but also work with it in a structured way, not just treat it as text for display.  Different projects may need to work with or convert between different date formats or even different calendars.
@@ -123,12 +138,12 @@ An `UndateInterval` is a date range between two `Undate` objects. Intervals can 
 >>> from undate.undate import UndateInterval
 >>> UndateInterval(Undate(1900), Undate(2000))
 <UndateInterval 1900/2000>
->>> UndateInterval(Undate(1900), Undate(2000), label="19th century")
->>> UndateInterval(Undate(1900), Undate(2000), label="19th century").duration().days
-36890
-<UndateInterval '19th century' (1900/2000)>
->>> UndateInterval(Undate(1900), Undate(2000), label="20th century")
-<UndateInterval '20th century' (1900/2000)>
+>>> UndateInterval(Undate(1801), Undate(1900), label="19th century")
+>>> UndateInterval(Undate(1801), Undate(1900), label="19th century").duration().days
+36524
+<UndateInterval '19th century' (1801/19000)>
+>>> UndateInterval(Undate(1901), Undate(2000), label="20th century")
+<UndateInterval '20th century' (1901/2000)>
 >>> UndateInterval(latest=Undate(2000))  # before 2000
 <UndateInterval ../2000>
 >>> UndateInterval(Undate(1900))  # after 1900
