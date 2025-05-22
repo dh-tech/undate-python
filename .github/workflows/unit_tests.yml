@@ -50,7 +50,7 @@ jobs:
 
       # run code coverage in one version only
       - name: Run unit tests with code coverage reporting
-        run: uv run pytest --cov=undate
+        run: uv run pytest --cov=.
         if: ${{ matrix.python == env.COV_PYTHON_VERSION }}
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
