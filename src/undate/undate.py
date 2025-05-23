@@ -20,7 +20,7 @@ except ImportError:
 from typing import Dict, Optional, Union
 
 from undate.converters.base import BaseDateConverter
-from undate.date import ONE_DAY, ONE_MONTH_MAX, Date, DatePrecision, Timedelta, UnDelta
+from undate.date import ONE_DAY, Date, DatePrecision, Timedelta, UnDelta
 
 
 class Calendar(StrEnum):
@@ -466,7 +466,9 @@ class Undate:
                     self.calendar_converter.LEAP_YEAR,
                     self.calendar_converter.NON_LEAP_YEAR,
                 ]
-            # TODO: what about partially known years like 191X ?
+            # TODO: handle partially known years like 191X,
+            # switch to representative years (depends on calendar)
+            # (to be implemented as part of ambiguous year duration)
             else:
                 # otherwise, get possible durations for all possible months
                 # for a known year
@@ -474,7 +476,9 @@ class Undate:
 
             # for every possible month and year, get max days for that month,
             possible_max_days = set()
-            # appease mypy, which says month values could be None here
+            # appease mypy, which says month values could be None here;
+            # Date object allows optional month, but earliest/latest initialization
+            # should always be day-precision dates
             if self.earliest.month is not None and self.latest.month is not None:
                 for possible_month in range(self.earliest.month, self.latest.month + 1):
                     for year in possible_years:
@@ -488,22 +492,16 @@ class Undate:
                 if len(possible_max_days) > 1:
                     return UnDelta(*possible_max_days)
 
-            # otherwise, calculate timedelta normally
-            max_day = list(possible_max_days)[0]
-            latest = Date(self.earliest.year, self.earliest.month, max_day)
+                # otherwise, calculate timedelta normally based on maximum day
+                max_day = list(possible_max_days)[0]
+                latest = Date(self.earliest.year, self.earliest.month, max_day)
 
-            delta = latest - self.earliest + ONE_DAY
-            # month duration can't ever be more than 31 days
-            # (could we ever know if it's smaller?)
+                return latest - self.earliest + ONE_DAY
 
-            # if granularity == month but not known month, duration = 31
-            if delta.astype(int) > 31:
-                # FIXME: this depends on calendar!
-                return ONE_MONTH_MAX
-            return delta
+        # TODO: handle year precision + unknown/partially known year
+        # (will be handled in separate branch)
 
         # otherwise, calculate based on earliest/latest range
-
         # subtract earliest from latest and add a day to count start day
         return self.latest - self.earliest + ONE_DAY
 
