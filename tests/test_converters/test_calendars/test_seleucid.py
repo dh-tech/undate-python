@@ -54,6 +54,8 @@ class TestSeleucidDateConverter:
         assert date.label == f"{date_str} {SeleucidDateConverter.calendar_name}"
 
 
+# TODO: update validation error to say seleucid instead of hebrew
+
 #     seleucid_year = 1458
 #     converted_date = convert_seleucid_date(f"Tishri {seleucid_year}")
 #     converted_date_am = convert_hebrew_date(
