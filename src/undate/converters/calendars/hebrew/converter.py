@@ -28,9 +28,13 @@ class HebrewDateConverter(BaseCalendarConverter):
         """Smallest numeric month for this calendar."""
         return 1
 
-    def max_month(self, year: int) -> int:
+    def max_month(self, year: int = None) -> int: # Added default None for year
         """Maximum numeric month for this calendar. In Hebrew calendar, this is 12 or 13
-        depending on whether it is a leap year."""
+        depending on whether it is a leap year.
+        If year is None, defaults to 12 (non-leap year)."""
+        if year is None:
+            # Default to a non-leap year's number of months if year is not specified
+            return 12 
         return hebrew.year_months(year)
 
     def first_month(self) -> int:
@@ -42,10 +46,24 @@ class HebrewDateConverter(BaseCalendarConverter):
         Elul is the month before Tishri."""
         return hebrew.ELUL
 
-    def max_day(self, year: int, month: int) -> int:
+    def max_day(self, year: int = None, month: int = None) -> int: # Added default None
         """maximum numeric day for the specified year and month in this calendar"""
         # NOTE: unreleased v2.4.1 of convertdate standardizes month_days to month_length
-        return hebrew.month_days(year, month)
+        
+        # Handle None year/month by defaulting to a common non-leap scenario
+        # Default year to a known non-leap year if None, e.g. 5783
+        # Default month to Nisan (1) if None, as it's the first biblical month and always has 30 days.
+        effective_year = year if year is not None else 5783 # 5783 is a non-leap year
+        effective_month = month if month is not None else hebrew.NISAN # Nisan is 1
+
+        # Ensure year is not None for leap check if month is Adar related and year was originally None
+        if year is None and (effective_month == 12 or effective_month == 13): # Adar, Adar I or Adar II
+             # hebrew.month_days needs a concrete year to determine leap month lengths correctly.
+             # We've defaulted to 5783 (non-leap).
+             pass
+
+
+        return hebrew.month_days(effective_year, effective_month)
 
     def to_gregorian(self, year: int, month: int, day: int) -> tuple[int, int, int]:
         """Convert a Hebrew date, specified by year, month, and day,

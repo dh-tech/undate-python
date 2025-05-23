@@ -24,9 +24,15 @@ class IslamicDateConverter(BaseCalendarConverter):
     def __init__(self):
         self.transformer = IslamicDateTransformer()
 
-    def max_day(self, year: int, month: int) -> int:
-        """maximum numeric day for the specified year and month in this calendar"""
-        return islamic.month_length(year, month)
+    def max_day(self, year: int = None, month: int = None) -> int: # Added default None
+        """maximum numeric day for the specified year and month in this calendar.
+        If year or month is None, defaults will be used (non-leap year, month 1)."""
+        # Default year to a known non-leap year if None (e.g., 1446 AH)
+        effective_year = year if year is not None else 1446 
+        # Default month to 1 (Muharram) if None
+        effective_month = month if month is not None else 1
+        
+        return islamic.month_length(effective_year, effective_month)
 
     def min_month(self) -> int:
         """smallest numeric month for this calendar."""

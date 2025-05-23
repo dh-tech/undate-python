@@ -1,5 +1,11 @@
+from typing import Union # Added for type hints
+from lark.exceptions import UnexpectedCharacters # Added for specific exception
+from undate import Undate, UndateInterval # Added for type hints
+
 from undate.converters.calendars import HebrewDateConverter
 from undate.undate import Calendar
+# Moved hebrew_parser import to top level for use in parse method
+from undate.converters.calendars.hebrew.parser import hebrew_parser
 
 
 class SeleucidDateConverter(HebrewDateConverter):
@@ -15,6 +21,31 @@ class SeleucidDateConverter(HebrewDateConverter):
         # override hebrew calendar to initialize undates with seleucid
         # calendar; this triggers Seleucid calendar to_gregorian method use
         self.transformer.calendar = Calendar.SELEUCID
+        # The parser is inherited from HebrewDateConverter. If Seleucid has a distinct
+        # string format that hebrew_parser can't handle, a seleucid_parser would be needed.
+        # For now, assume string format compatibility for parsing, error message is the primary fix.
+        # Ensure transformer is correctly set up from parent and then modified
+        super().__init__() # Call parent __init__ first
+        self.transformer.calendar = Calendar.SELEUCID
+
+
+    def max_month(self, year: int = None) -> int:
+        """Maximum numeric month for this calendar. Adjusted for Seleucid year."""
+        if year is not None:
+            am_year = year + self.SELEUCID_OFFSET
+        else:
+            am_year = None # Let parent handle None AM year if applicable (it defaults to non-leap)
+        return super().max_month(am_year)
+
+    def max_day(self, year: int = None, month: int = None) -> int:
+        """Maximum numeric day for the specified year and month. Adjusted for Seleucid year."""
+        if year is not None:
+            am_year = year + self.SELEUCID_OFFSET
+        else:
+            am_year = None # Parent's max_day handles None year by defaulting
+        
+        # Parent's max_day handles None month by defaulting, so pass month as is.
+        return super().max_day(am_year, month)
 
     def to_gregorian(self, year: int, month: int, day: int) -> tuple[int, int, int]:
         """Convert a Seleucid date, specified by year, month, and day,
@@ -22,3 +53,24 @@ class SeleucidDateConverter(HebrewDateConverter):
         logic with :attr:`SELEUCID_OFFSET`. Returns a tuple of year, month, day.
         """
         return super().to_gregorian(year + self.SELEUCID_OFFSET, month, day)
+
+    def parse(self, value: str) -> Union[Undate, UndateInterval]:
+        """
+        Parse a Seleucid date string and return an :class:`~undate.undate.Undate` or
+        :class:`~undate.undate.UndateInterval`.
+        The Seleucid date string is preserved in the undate label.
+        Uses Hebrew parser logic with Seleucid calendar context.
+        """
+        if not value:
+            raise ValueError("Parsing empty string is not supported")
+
+        try:
+            # Uses the hebrew_parser (imported at module level)
+            # and self.transformer (calendar set to SELEUCID in __init__)
+            parsetree = hebrew_parser.parse(value)
+            undate_obj = self.transformer.transform(parsetree)
+            undate_obj.label = f"{value} {self.calendar_name}"
+            return undate_obj
+        except UnexpectedCharacters as err:
+            # Catch specific parsing error and raise with custom message
+            raise ValueError(f"Could not parse '{value}' as a Seleucid date") from err

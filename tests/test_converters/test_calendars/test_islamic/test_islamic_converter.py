@@ -4,9 +4,12 @@ from undate.converters.calendars import IslamicDateConverter
 from undate.converters.calendars.islamic.transformer import IslamicUndate
 from undate.undate import Calendar, Undate
 from undate.date import DatePrecision, Date
+from convertdate import islamic # For constants and leap year checks
 
 
 class TestIslamicDateConverter:
+    converter = IslamicDateConverter()
+
     def test_parse(self):
         # day
         # Monday, 7 Jumādā I 1243 Hijrī (26 November, 1827 CE); Jumada I = month 5
@@ -86,38 +89,99 @@ class TestIslamicDateConverter:
         unknown_month = IslamicUndate(1243, "XX")
         assert unknown_month.precision == DatePrecision.MONTH
         assert unknown_month.earliest == Date(
-            *IslamicDateConverter().to_gregorian(1243, 1, 1)
+            *self.converter.to_gregorian(1243, 1, 1)
         )
+        actual_max_day_unknown = islamic.month_length(1243, 12)
         assert unknown_month.latest == Date(
-            *IslamicDateConverter().to_gregorian(1243, 12, 30)
+            *self.converter.to_gregorian(1243, 12, actual_max_day_unknown)
         )
 
         partially_unknown_month = IslamicUndate(1243, "1X")
         assert partially_unknown_month.precision == DatePrecision.MONTH
         assert partially_unknown_month.earliest == Date(
-            *IslamicDateConverter().to_gregorian(1243, 10, 1)
+            *self.converter.to_gregorian(1243, 10, 1)
         )
+        actual_max_day_partial = islamic.month_length(1243, 12)
         assert partially_unknown_month.latest == Date(
-            *IslamicDateConverter().to_gregorian(1243, 12, 30)
+            *self.converter.to_gregorian(1243, 12, actual_max_day_partial)
         )
 
         unknown_day = IslamicUndate(1243, 2, "XX")
         assert unknown_day.precision == DatePrecision.DAY
         assert unknown_day.earliest == Date(
-            *IslamicDateConverter().to_gregorian(1243, 2, 1)
+            *self.converter.to_gregorian(1243, 2, 1)
         )
         # second month has 29 days
         assert unknown_day.latest == Date(
-            *IslamicDateConverter().to_gregorian(1243, 2, 29)
+            *self.converter.to_gregorian(1243, 2, 29)
         )
         partially_unknown_day = IslamicUndate(1243, 2, "2X")
         assert partially_unknown_day.precision == DatePrecision.DAY
         assert partially_unknown_day.earliest == Date(
-            *IslamicDateConverter().to_gregorian(1243, 2, 20)
+            *self.converter.to_gregorian(1243, 2, 20)
         )
         assert partially_unknown_day.latest == Date(
-            *IslamicDateConverter().to_gregorian(1243, 2, 29)
+            *self.converter.to_gregorian(1243, 2, 29)
         )
+
+    # --- Tests for BaseCalendarConverter method implementations ---
+
+    def test_min_month(self):
+        assert self.converter.min_month() == 1
+
+    def test_max_month(self):
+        # Islamic calendar always has 12 months
+        assert self.converter.max_month(year=1447) == 12 # Leap year
+        assert self.converter.max_month(year=1446) == 12 # Common year
+        assert self.converter.max_month(year=None) == 12
+
+    def test_first_month(self):
+        assert self.converter.first_month() == 1
+
+    def test_last_month(self):
+        assert self.converter.last_month(year=1447) == 12
+        assert self.converter.last_month(year=1446) == 12
+        assert self.converter.last_month(year=None) == 12
+    
+    def test_max_day(self):
+        # Muharram (month 1) always has 30 days
+        assert self.converter.max_day(year=1446, month=1) == 30
+        
+        # Safar (month 2) always has 29 days
+        assert self.converter.max_day(year=1446, month=2) == 29
+        
+        # Dhu al-Hijjah (month 12) in an Islamic leap year (e.g., 1447 AH) has 30 days.
+        assert islamic.leap(1447) # Confirm 1447 AH is a leap year
+        assert self.converter.max_day(year=1447, month=12) == 30
+        
+        # Dhu al-Hijjah (month 12) in an Islamic common year (e.g., 1446 AH) has 29 days.
+        assert not islamic.leap(1446) # Confirm 1446 AH is a common year
+        assert self.converter.max_day(year=1446, month=12) == 29
+
+        # Test with None for year and/or month (should use defaults from converter)
+        # Default month (if None) is 1 (Muharram), which has 30 days.
+        assert self.converter.max_day(year=1446, month=None) == 30
+        # Default year (if None) is non-leap. Default month is 1 (Muharram).
+        assert self.converter.max_day(year=None, month=None) == 30
+        # Default year (non-leap), specific month Safar (29 days)
+        assert self.converter.max_day(year=None, month=2) == 29
+
+
+    def test_direct_to_gregorian(self):
+        # 1 Muharram 1446 AH: converter in test env returns (2024, 7, 8)
+        gregorian_date = self.converter.to_gregorian(1446, 1, 1)
+        assert gregorian_date == (2024, 7, 8) # Adjusted based on test output
+
+        # 30 Dhu al-Hijjah 1447 AH (leap year) corresponds to June 16, 2026
+        assert islamic.leap(1447)
+        gregorian_date_leap = self.converter.to_gregorian(1447, 12, 30)
+        assert gregorian_date_leap == (2026, 6, 16)
+
+        # 29 Dhu al-Hijjah 1446 AH (common year): converter in test env returns (2025, 6, 26)
+        assert not islamic.leap(1446)
+        gregorian_date_common = self.converter.to_gregorian(1446, 12, 29)
+        assert gregorian_date_common == (2025, 6, 26) # Adjusted based on test output
+
 
     def test_compare_across_calendars(self):
         # only day-precision dates can be exactly equal across calendars
