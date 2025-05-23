@@ -1,5 +1,11 @@
+from typing import Union # Added for type hints
+from lark.exceptions import UnexpectedCharacters # Added for specific exception
+from undate import Undate, UndateInterval # Added for type hints
+
 from undate.converters.calendars import HebrewDateConverter
 from undate.undate import Calendar
+# Moved hebrew_parser import to top level for use in parse method
+from undate.converters.calendars.hebrew.parser import hebrew_parser
 
 
 class SeleucidDateConverter(HebrewDateConverter):
@@ -18,6 +24,10 @@ class SeleucidDateConverter(HebrewDateConverter):
         # The parser is inherited from HebrewDateConverter. If Seleucid has a distinct
         # string format that hebrew_parser can't handle, a seleucid_parser would be needed.
         # For now, assume string format compatibility for parsing, error message is the primary fix.
+        # Ensure transformer is correctly set up from parent and then modified
+        super().__init__() # Call parent __init__ first
+        self.transformer.calendar = Calendar.SELEUCID
+
 
     def max_month(self, year: int = None) -> int:
         """Maximum numeric month for this calendar. Adjusted for Seleucid year."""
@@ -44,28 +54,23 @@ class SeleucidDateConverter(HebrewDateConverter):
         """
         return super().to_gregorian(year + self.SELEUCID_OFFSET, month, day)
 
-    def parse(self, value: str): # Add type hint later if copying from parent
+    def parse(self, value: str) -> Union[Undate, UndateInterval]:
         """
         Parse a Seleucid date string and return an :class:`~undate.undate.Undate` or
         :class:`~undate.undate.UndateInterval`.
         The Seleucid date string is preserved in the undate label.
-        This method overrides the parent to provide a Seleucid-specific error message.
+        Uses Hebrew parser logic with Seleucid calendar context.
         """
-        if not value: # Copied from HebrewDateConverter.parse
+        if not value:
             raise ValueError("Parsing empty string is not supported")
 
-        # Import the parser used by the parent class directly
-        from undate.converters.calendars.hebrew.parser import hebrew_parser
         try:
-            # Uses the hebrew_parser and self.transformer (calendar set to SELEUCID in __init__)
-            parsetree = hebrew_parser.parse(value) 
+            # Uses the hebrew_parser (imported at module level)
+            # and self.transformer (calendar set to SELEUCID in __init__)
+            parsetree = hebrew_parser.parse(value)
             undate_obj = self.transformer.transform(parsetree)
             undate_obj.label = f"{value} {self.calendar_name}"
             return undate_obj
-        except Exception as err: # Catching broader Exception to be safe, can refine
-            # Check if it's an UnexpectedCharacters error if lark is used by hebrew_parser
-            from lark.exceptions import UnexpectedCharacters
-            if isinstance(err, UnexpectedCharacters):
-                 raise ValueError(f"Could not parse '{value}' as a Seleucid date") from err
-            # Re-raise other errors or handle them if they are expected
-            raise # Re-raise if not the specific parsing error we want to customize
+        except UnexpectedCharacters as err:
+            # Catch specific parsing error and raise with custom message
+            raise ValueError(f"Could not parse '{value}' as a Seleucid date") from err

@@ -2,7 +2,7 @@ import pytest
 import sys
 import importlib
 from unittest.mock import patch, MagicMock
-from typing import Type # For type hinting
+# from typing import Type # For type hinting <-- Removed
 
 from undate.converters.base import BaseDateConverter, BaseCalendarConverter
 from undate.converters.calendars.gregorian import GregorianDateConverter
@@ -241,7 +241,7 @@ class {dummy_class_name}(BaseDateConverter):
         import undate.converters
         converters_path = undate.converters.__path__ # This is a list of paths
 
-        original_iter_modules = importlib.import_module('pkgutil').iter_modules
+        # original_iter_modules = importlib.import_module('pkgutil').iter_modules <-- Removed
 
         def simplified_mock_iter_modules(path=None, prefix=''):
             # We expect import_converters to call iter_modules with the path to undate.converters
