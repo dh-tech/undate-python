@@ -298,11 +298,17 @@ class TestUndate:
         # how to compare mixed precision where dates overlap?
         # if the second date falls *within* earliest/latest,
         # then it is not clearly less; not implemented?
-        with pytest.raises(NotImplementedError, match="date falls within the other"):
+        with pytest.raises(
+            NotImplementedError,
+            match="one date \\(2022-05\\) falls within the other \\(2022\\)",
+        ):
             assert Undate(2022) < Undate(2022, 5)
 
         # same if we attempt to compare in the other direction
-        with pytest.raises(NotImplementedError, match="date falls within the other"):
+        with pytest.raises(
+            NotImplementedError,
+            match="one date \\(2022-05\\) falls within the other \\(2022\\)",
+        ):
             assert Undate(2022, 5) < Undate(2022)
 
     testdata_contains = [

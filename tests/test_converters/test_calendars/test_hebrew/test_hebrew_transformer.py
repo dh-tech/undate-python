@@ -26,6 +26,12 @@ testcases = [
     ("5362", HebrewUndate(5362), DatePrecision.YEAR),
     # add when we support parsing ranges:
     # Adar I and Adar II 5453 : (1693 CE)
+    # support weekdays included in text
+    ("Thursday, 12 Sivan 4795", HebrewUndate(4795, 3, 12), DatePrecision.DAY),
+    # with or without comma
+    ("Thursday 12 Sivan 4795", HebrewUndate(4795, 3, 12), DatePrecision.DAY),
+    # huh, current parsing completely ignores whitespace; do we want that?
+    ("Thursday12Sivan4795", HebrewUndate(4795, 3, 12), DatePrecision.DAY),
 ]
 
 
