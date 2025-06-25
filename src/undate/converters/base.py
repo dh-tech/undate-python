@@ -148,6 +148,16 @@ class BaseCalendarConverter(BaseDateConverter):
     #: Converter name. Subclasses must define a unique name.
     name: str = "Base Calendar Converter"
 
+    #: arbitrary known non-leap year
+    NON_LEAP_YEAR: int
+    #: arbitrary known leap year
+    LEAP_YEAR: int
+
+    # minimum year for this calendar, if there is one
+    MIN_YEAR: None | int = None
+    # maximum year for this calendar, if there is one
+    MAX_YEAR: None | int = None
+
     def min_month(self) -> int:
         """Smallest numeric month for this calendar."""
         raise NotImplementedError

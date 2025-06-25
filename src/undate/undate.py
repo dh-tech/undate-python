@@ -128,11 +128,11 @@ class Undate:
                 min_year = int(str(year).replace(self.MISSING_DIGIT, "0"))
                 max_year = int(str(year).replace(self.MISSING_DIGIT, "9"))
         else:
-            # use the configured min/max allowable years if we
-            # don't have any other bounds
-            # TODO: make calendar-specific? these are min/max for gregorian
-            min_year = self.MIN_ALLOWABLE_YEAR
-            max_year = self.MAX_ALLOWABLE_YEAR
+            # if we don't have any other bounds,
+            # use calendar-specific min year if there is one, otherwise use
+            # the configured min/max allowable years
+            min_year = self.calendar_converter.MIN_YEAR or self.MIN_ALLOWABLE_YEAR
+            max_year = self.calendar_converter.MAX_YEAR or self.MAX_ALLOWABLE_YEAR
 
         # if month is passed in as a string but completely unknown,
         # treat as unknown/none (date precision already set in init)
@@ -191,6 +191,9 @@ class Undate:
         # be used for comparison
         self.earliest = Date(
             *self.calendar_converter.to_gregorian(min_year, earliest_month, min_day)
+        )
+        print(
+            f"initializing latest, year={max_year} month={latest_month} day={max_day}"
         )
         self.latest = Date(
             *self.calendar_converter.to_gregorian(max_year, latest_month, max_day)

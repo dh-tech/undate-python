@@ -26,6 +26,11 @@ class IslamicDateConverter(BaseCalendarConverter):
     #: arbitrary known leap year
     LEAP_YEAR: int = 1458
 
+    # minimum year for islamic calendar is 1 AH, does not go negative
+    MIN_YEAR: None | int = 1
+    # convertdate gives a month 34 for numpy max year 2.5^16, so scale it back a bit
+    MAX_YEAR = int(2.5e12)
+
     def __init__(self):
         self.transformer = IslamicDateTransformer()
 
@@ -71,6 +76,9 @@ class IslamicDateConverter(BaseCalendarConverter):
         """Convert a Hijri date, specified by year, month, and day,
         to the Gregorian equivalent date. Returns a tuple of year, month, day.
         """
+        print(
+            f"islamic.to_gregorian(year={year}, month={month}, day={day}) = {islamic.to_gregorian(year, month, day)}"
+        )
         return islamic.to_gregorian(year, month, day)
 
     def parse(self, value: str) -> Union[Undate, UndateInterval]:

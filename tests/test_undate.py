@@ -467,11 +467,13 @@ class TestUndate:
         # year duration logic should work in other calendars
         # islamic
         assert Undate("108X", calendar="Islamic").duration().days == UnInt(354, 355)
-        # NOTE: completely unknown years is not yet supported for other calendars, will cause an error
-        # assert Undate("XXXX", calendar="Islamic").duration().days == UnInt(354, 355)
+        # completely unknown years is calculated based on representative years
+        assert Undate("XXXX", calendar="Islamic").duration().days == UnInt(354, 355)
         assert Undate("536X", calendar="Hebrew").duration().days == UnInt(353, 385)
         # different set of years could vary
         assert Undate("53X2", calendar="Hebrew").duration().days == UnInt(354, 385)
+        # fully unknown year also works for Hebrew calendar
+        assert Undate("XXX", calendar="Hebrew").duration().days == UnInt(353, 385)
 
     def test_known_year(self):
         assert Undate(2022).known_year is True
