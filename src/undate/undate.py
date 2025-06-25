@@ -197,7 +197,7 @@ class Undate:
         to change calendar."""
         if calendar is not None:
             # if not passed as a Calendar instance, do a lookup
-            if not isinstance(calendar, Calendar):
+            if isinstance(calendar, str):
                 # look for calendar by upper-case name
                 try:
                     calendar = Calendar[calendar.upper()]

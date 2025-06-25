@@ -130,6 +130,16 @@ class TestUndate:
         with pytest.raises(ValueError, match="Calendar `foobar` is not supported"):
             Undate(848, calendar="foobar")
 
+    def test_as_calendar(self):
+        # changes calendar *without* converting dates
+        assert Undate(1243, 5, 7).as_calendar(Calendar.ISLAMIC) == Undate(
+            1243, 5, 7, calendar=Calendar.ISLAMIC
+        )
+        # should also work with string
+        assert Undate(1243, 5, 7).as_calendar("islamic") == Undate(
+            1243, 5, 7, calendar=Calendar.ISLAMIC
+        )
+
     def test_init_invalid(self):
         with pytest.raises(ValueError):
             Undate("19??")
