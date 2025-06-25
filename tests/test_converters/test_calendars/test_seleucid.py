@@ -53,6 +53,12 @@ class TestSeleucidDateConverter:
         assert date.latest == Date(1146, 10, 15)
         assert date.label == f"{date_str} {SeleucidDateConverter.calendar_name}"
 
+    def test_days_in_year(self):
+        converter = SeleucidDateConverter()
+        assert converter.days_in_year(2350) == 354
+        assert converter.days_in_year(2349) == 385
+        assert converter.days_in_year(2351) == 355
+
 
 # TODO: update validation error to say seleucid instead of hebrew
 

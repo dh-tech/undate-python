@@ -35,10 +35,15 @@ class Calendar(StrEnum):
     def get_converter(calendar) -> BaseCalendarConverter:
         # calendar converter must be available with a name matching
         # the title-case name of the calendar enum entry
-        converter_cls = BaseDateConverter.available_converters()[calendar.value.title()]
+        try:
+            converter_cls = BaseDateConverter.available_converters()[
+                calendar.value.title()
+            ]
+        except KeyError:
+            raise ValueError(f"Unknown calendar '{calendar}'")
         if not issubclass(converter_cls, BaseCalendarConverter):
             raise ValueError(
-                f"Requested converter {converter_cls} is not a CalendarConverter"
+                f"Requested converter '{calendar.value.title()}' is not a CalendarConverter"
             )
         return converter_cls()
 

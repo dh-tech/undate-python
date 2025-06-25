@@ -1,9 +1,11 @@
 from datetime import date, datetime
+from enum import auto
 
 import pytest
 
 from undate import Undate, UndateInterval, Calendar
-from undate.converters.base import BaseCalendarConverter
+from undate.undate import StrEnum  # import whichever version is used there
+from undate.converters.base import BaseCalendarConverter, BaseDateConverter
 from undate.date import Date, DatePrecision, Timedelta, UnDelta, UnInt
 
 
@@ -545,3 +547,25 @@ def test_calendar_get_converter():
         converter = Calendar.get_converter(cal)
         assert isinstance(converter, BaseCalendarConverter)
         assert converter.name.lower() == cal.name.lower()
+
+    class BogusCalendar(StrEnum):
+        """Unsupported calendars"""
+
+        FOOBAR = auto()
+        DUMMY = auto()
+
+    # test error handling
+    # ensure we raise a ValueError when an invalid calendar is requested
+    with pytest.raises(ValueError, match="Unknown calendar"):
+        Calendar.get_converter(BogusCalendar.FOOBAR)
+
+    class DummyFormatter(BaseDateConverter):
+        name = "Dummy"
+
+    # also error if you request a converter that is not a calendar converter
+    # NOTE: this fails because get_converter converts the enum to title case...
+    # can't be tested with any of the existing non-calendar converters
+    with pytest.raises(
+        ValueError, match="Requested converter 'Dummy' is not a CalendarConverter"
+    ):
+        Calendar.get_converter(BogusCalendar.DUMMY)
