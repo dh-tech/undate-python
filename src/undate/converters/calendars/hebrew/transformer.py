@@ -13,6 +13,8 @@ class HebrewDateTransformer(Transformer):
     """Transform a Hebrew date parse tree and return an Undate or
     UndateInterval."""
 
+    calendar = Calendar.HEBREW
+
     def hebrew_date(self, items):
         parts = {}
         for child in items:
@@ -22,9 +24,9 @@ class HebrewDateTransformer(Transformer):
                 value = int(child.children[0])
                 parts[str(child.data)] = value
 
-        # initialize and return an undate with islamic year, month, day and
-        # islamic calendar
-        return HebrewUndate(**parts)
+        # initialize and return an undate with year, month, day and
+        # configured calendar (hebrew by default)
+        return Undate(**parts, calendar=self.calendar)
 
     # year translation is not needed since we want a tree with name year
     # this is equivalent to a no-op

@@ -130,6 +130,16 @@ class TestUndate:
         with pytest.raises(ValueError, match="Calendar `foobar` is not supported"):
             Undate(848, calendar="foobar")
 
+    def test_as_calendar(self):
+        # changes calendar *without* converting dates
+        assert Undate(1243, 5, 7).as_calendar(Calendar.ISLAMIC) == Undate(
+            1243, 5, 7, calendar=Calendar.ISLAMIC
+        )
+        # should also work with string
+        assert Undate(1243, 5, 7).as_calendar("islamic") == Undate(
+            1243, 5, 7, calendar=Calendar.ISLAMIC
+        )
+
     def test_init_invalid(self):
         with pytest.raises(ValueError):
             Undate("19??")
@@ -298,11 +308,17 @@ class TestUndate:
         # how to compare mixed precision where dates overlap?
         # if the second date falls *within* earliest/latest,
         # then it is not clearly less; not implemented?
-        with pytest.raises(NotImplementedError, match="date falls within the other"):
+        with pytest.raises(
+            NotImplementedError,
+            match="one date \\(2022-05\\) falls within the other \\(2022\\)",
+        ):
             assert Undate(2022) < Undate(2022, 5)
 
         # same if we attempt to compare in the other direction
-        with pytest.raises(NotImplementedError, match="date falls within the other"):
+        with pytest.raises(
+            NotImplementedError,
+            match="one date \\(2022-05\\) falls within the other \\(2022\\)",
+        ):
             assert Undate(2022, 5) < Undate(2022)
 
     testdata_contains = [

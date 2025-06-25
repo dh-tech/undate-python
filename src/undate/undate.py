@@ -29,6 +29,7 @@ class Calendar(StrEnum):
     GREGORIAN = auto()
     HEBREW = auto()
     ISLAMIC = auto()
+    SELEUCID = auto()
 
     @staticmethod
     def get_converter(calendar):
@@ -96,7 +97,6 @@ class Undate:
         if calendar is not None:
             self.set_calendar(calendar)
         self.calendar_converter = Calendar.get_converter(self.calendar)
-
         self.calculate_earliest_latest(year, month, day)
 
         if converter is None:
@@ -192,15 +192,31 @@ class Undate:
         )
 
     def set_calendar(self, calendar: Union[str, Calendar]):
+        """Find calendar by name if passed as string and set on the object.
+        Only intended for use at initialization time; use :meth:`as_calendar`
+        to change calendar."""
         if calendar is not None:
             # if not passed as a Calendar instance, do a lookup
-            if not isinstance(calendar, Calendar):
+            if isinstance(calendar, str):
                 # look for calendar by upper-case name
                 try:
                     calendar = Calendar[calendar.upper()]
                 except KeyError as err:
                     raise ValueError(f"Calendar `{calendar}` is not supported") from err
             self.calendar = calendar
+
+    def as_calendar(self, calendar: Union[str, Calendar]):
+        """Return a new :class:`Undate` object with the same year, month, day, and labels
+        used to initialize the current object, but with a different calendar.  Note that this
+        does NOT do calendar conversion, but reinterprets current numeric year, month, day values
+        according to the new calendar."""
+        return Undate(
+            year=self.initial_values.get("year"),
+            month=self.initial_values.get("month"),
+            day=self.initial_values.get("day"),
+            label=self.label,
+            calendar=calendar,
+        )
 
     def __str__(self) -> str:
         # if any portion of the date is partially known, construct
@@ -319,8 +335,12 @@ class Undate:
         # (e.g., single date within the same year)
         # comparison for those cases is not currently supported
         elif other in self or self in other:
+            # sort by precision, most precise first
+            by_precision = sorted(
+                [self, other], key=lambda x: x.precision, reverse=True
+            )
             raise NotImplementedError(
-                "Can't compare when one date falls within the other"
+                f"Can't compare when one date ({by_precision[0]}) falls within the other ({by_precision[1]})"
             )
         # NOTE: unsupported comparisons are supposed to return NotImplemented
         # However, doing that in this case results in a confusing TypeError!
@@ -405,7 +425,7 @@ class Undate:
         year = self._get_date_part("year")
         if year:
             return f"{year:0>4}"
-        # if value is unset but date precision is month or greater, return unknown month
+        # if value is unset but date precision is year or greater, return unknown year
         elif self.precision >= DatePrecision.YEAR:
             return self.MISSING_DIGIT * 4
         return None

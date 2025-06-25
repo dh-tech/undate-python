@@ -1,3 +1,5 @@
+import datetime
+
 import numpy as np
 from undate.date import ONE_YEAR, Date, DatePrecision, Timedelta
 
@@ -50,6 +52,31 @@ class TestDate:
         assert Date(2001).day is None
         assert Date(2010, 5).day is None
         assert Date(2021, 6, 15).day == 15
+
+    def test_weekday(self):
+        # thursday
+        assert Date(2025, 1, 2).weekday == 3
+        assert Date(2025, 1, 2).weekday == datetime.date(2025, 1, 2).weekday()
+        # friday
+        assert Date(2025, 1, 3).weekday == 4
+        assert Date(2025, 1, 3).weekday == datetime.date(2025, 1, 3).weekday()
+        # saturday
+        assert Date(2025, 1, 4).weekday == 5
+        assert Date(2025, 1, 4).weekday == datetime.date(2025, 1, 4).weekday()
+        # sunday
+        assert Date(2025, 1, 5).weekday == 6
+        assert Date(2025, 1, 5).weekday == datetime.date(2025, 1, 5).weekday()
+        # monday
+        assert Date(2025, 1, 6).weekday == 0
+        assert Date(2025, 1, 6).weekday == datetime.date(2025, 1, 6).weekday()
+        # tuesday
+        assert Date(2025, 1, 7).weekday == 1
+        assert Date(2025, 1, 7).weekday == datetime.date(2025, 1, 7).weekday()
+
+        # when a date is not day-level precision, no weekday is returned
+        yearonly_date = Date(2025)
+        assert yearonly_date.dtype == "datetime64[Y]"
+        assert yearonly_date.weekday is None
 
     def test_substract(self):
         # date - date = timedelta
