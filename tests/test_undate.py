@@ -1,5 +1,6 @@
 from datetime import date, datetime
 from enum import auto
+from unittest import mock
 
 import pytest
 
@@ -415,6 +416,24 @@ class TestUndate:
         # for an uncertain year, returns first leap year and non-leap year in range
         assert Undate("190X").representative_years == [1900, 1904]
         assert Undate("19XX").representative_years == [1900, 1904]
+        # works for other calendars
+        assert Undate("481X", calendar="Hebrew").representative_years == [
+            4810,
+            4811,
+            4812,
+            4813,
+            4816,
+            4818,
+        ]
+
+        # use mock to simulate a calendar without representative years filtering
+        with mock.patch(
+            "undate.converters.calendars.HebrewDateConverter.representative_years"
+        ) as mock_representative_years:
+            mock_representative_years.side_effect = NotImplementedError
+            assert Undate("481X", calendar="Hebrew").representative_years == list(
+                range(4810, 4820)
+            )
 
     def test_duration(self):
         day_duration = Undate(2022, 11, 7).duration()

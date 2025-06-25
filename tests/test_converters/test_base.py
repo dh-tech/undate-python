@@ -91,3 +91,5 @@ class TestBaseCalendarConverter:
             BaseCalendarConverter().max_day(1900, 12)
         with pytest.raises(NotImplementedError):
             BaseCalendarConverter().to_gregorian(1900, 12, 31)
+        with pytest.raises(NotImplementedError):
+            BaseCalendarConverter().representative_years([1900, 1901])
