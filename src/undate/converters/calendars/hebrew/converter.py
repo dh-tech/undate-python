@@ -21,6 +21,11 @@ class HebrewDateConverter(BaseCalendarConverter):
     name: str = "Hebrew"
     calendar_name: str = "Anno Mundi"
 
+    #: arbitrary known non-leap year; 4816 is a non-leap year with 353 days (minimum possible)
+    NON_LEAP_YEAR: int = 4816
+    #: arbitrary known leap year; 4837 is a leap year with 385 days (maximum possible)
+    LEAP_YEAR: int = 4837
+
     def __init__(self):
         self.transformer = HebrewDateTransformer()
 
@@ -50,6 +55,32 @@ class HebrewDateConverter(BaseCalendarConverter):
     def days_in_year(self, year: int) -> int:
         """the number of days in the specified year for this calendar"""
         return int(hebrew.year_days(year))
+
+    def representative_years(self, years: None | list[int] = None) -> list[int]:
+        """Takes a list of years and returns a subset with all possible variations in number of days.
+        If no years are specified, returns ...
+        """
+
+        year_lengths = set()
+        max_year_lengths = 6  # there are 6 different possible length years
+
+        # if years is unset or list is empty
+        if not years:
+            # NOTE: this does not cover all possible lengths, but should cover min/max
+            return [self.LEAP_YEAR, self.NON_LEAP_YEAR]
+
+        rep_years = []
+        for year in years:
+            days = self.days_in_year(year)
+            if days not in year_lengths:
+                year_lengths.add(days)
+                rep_years.append(year)
+
+            # stop if we find one example of each type of year
+            if len(year_lengths) == max_year_lengths:
+                break
+
+        return rep_years
 
     def to_gregorian(self, year: int, month: int, day: int) -> tuple[int, int, int]:
         """Convert a Hebrew date, specified by year, month, and day,
