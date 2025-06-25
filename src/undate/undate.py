@@ -500,7 +500,13 @@ class Undate:
         """A list of representative years for this date."""
         try:
             # todo: filter by calendar to minimum needed
-            return list(self.possible_years)
+            try:
+                return self.calendar_converter.representative_years(
+                    list(self.possible_years)
+                )
+            except NotImplementedError:
+                # if calendar converter does not support representative years, return all years
+                return list(self.possible_years)
         except ValueError:
             return [
                 self.calendar_converter.LEAP_YEAR,

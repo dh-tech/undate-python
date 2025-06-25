@@ -408,19 +408,11 @@ class TestUndate:
             Undate("XXXX").possible_years
 
     def test_representative_years(self):
+        # single year is returned as is
         assert Undate("1991").representative_years == [1991]
-        assert Undate("190X").representative_years == [
-            1900,
-            1901,
-            1902,
-            1903,
-            1904,
-            1905,
-            1906,
-            1907,
-            1908,
-            1909,
-        ]
+        # for an uncertain year, returns first leap year and non-leap year in range
+        assert Undate("190X").representative_years == [1900, 1904]
+        assert Undate("19XX").representative_years == [1900, 1904]
 
     def test_duration(self):
         day_duration = Undate(2022, 11, 7).duration()

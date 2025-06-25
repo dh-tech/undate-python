@@ -181,6 +181,14 @@ class BaseCalendarConverter(BaseDateConverter):
         # add 1 because the difference doesn't include the end point
         return (year_end - year_start).days + 1
 
+    def representative_years(self, years: None | list[int] = None) -> list[int]:
+        """Returns a list of representative years within the specified list.
+        Result should include one for each type of variant year for this
+        calendar (e.g., leap year and non-leap year). If no years are specified,
+        returns a list of representative years for the current calendar.
+        """
+        raise NotImplementedError
+
     def to_gregorian(self, year, month, day) -> tuple[int, int, int]:
         """Convert a date for this calendar specified by numeric year, month, and day,
         into the Gregorian equivalent date. Should return a tuple of year, month, day.
