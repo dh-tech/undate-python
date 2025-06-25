@@ -73,6 +73,11 @@ class TestDate:
         assert Date(2025, 1, 7).weekday == 1
         assert Date(2025, 1, 7).weekday == datetime.date(2025, 1, 7).weekday()
 
+        # when a date is not day-level precision, no weekday is returned
+        yearonly_date = Date(2025)
+        assert yearonly_date.dtype == "datetime64[Y]"
+        assert yearonly_date.weekday is None
+
     def test_substract(self):
         # date - date = timedelta
         date_difference = Date(2024, 1, 2) - Date(2024, 1, 1)
