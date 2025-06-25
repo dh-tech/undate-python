@@ -21,6 +21,11 @@ class IslamicDateConverter(BaseCalendarConverter):
     name: str = "Islamic"
     calendar_name: str = "Islamic"
 
+    #: arbitrary known non-leap year
+    NON_LEAP_YEAR: int = 1457
+    #: arbitrary known leap year
+    LEAP_YEAR: int = 1458
+
     def __init__(self):
         self.transformer = IslamicDateTransformer()
 
@@ -35,6 +40,32 @@ class IslamicDateConverter(BaseCalendarConverter):
     def max_month(self, year: int) -> int:
         """maximum numeric month for this calendar"""
         return 12
+
+    def representative_years(self, years: None | list[int] = None) -> list[int]:
+        """Takes a list of years and returns a subset with one leap year and one non-leap year.
+        If no years are specified, returns a known leap year and non-leap year.
+        """
+
+        # if years is unset or list is empty
+        if not years:
+            return [self.LEAP_YEAR, self.NON_LEAP_YEAR]
+        found_leap = False
+        found_non_leap = False
+        rep_years = []
+        for year in years:
+            if islamic.leap(year):
+                if not found_leap:
+                    found_leap = True
+                    rep_years.append(year)
+            else:
+                if not found_non_leap:
+                    found_non_leap = True
+                    rep_years.append(year)
+            # stop as soon as we've found one example of each type of year
+            if found_leap and found_non_leap:
+                break
+
+        return rep_years
 
     def to_gregorian(self, year: int, month: int, day: int) -> tuple[int, int, int]:
         """Convert a Hijri date, specified by year, month, and day,

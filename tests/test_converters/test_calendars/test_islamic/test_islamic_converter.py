@@ -152,3 +152,23 @@ class TestIslamicDateConverter:
         )
         expected_gregorian_years = [33, 1049, 1350, 1479, 1495, 1995]
         assert [d.earliest.year for d in sorted_dates] == expected_gregorian_years
+
+    def test_representative_years(self):
+        converter = IslamicDateConverter()
+        # single year is not filtered
+        # 1458 is a leap year; 1457 and 1459 are not
+        assert converter.representative_years([1457]) == [1457]
+        # multiple non-leap years, returns just the first
+        assert converter.representative_years([1457, 1459]) == [1457]
+        # next leap year is 2028; returns first leap year and first non-leap year, in input order
+        assert converter.representative_years([1457, 1458, 1459]) == [1457, 1458]
+
+        # if no years are provided, returns a known leap year and non-leap years
+        assert converter.representative_years() == [
+            converter.LEAP_YEAR,
+            converter.NON_LEAP_YEAR,
+        ]
+        assert converter.representative_years([]) == [
+            converter.LEAP_YEAR,
+            converter.NON_LEAP_YEAR,
+        ]
