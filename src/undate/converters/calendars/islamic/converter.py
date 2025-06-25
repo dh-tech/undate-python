@@ -76,9 +76,7 @@ class IslamicDateConverter(BaseCalendarConverter):
         """Convert a Hijri date, specified by year, month, and day,
         to the Gregorian equivalent date. Returns a tuple of year, month, day.
         """
-        print(
-            f"islamic.to_gregorian(year={year}, month={month}, day={day}) = {islamic.to_gregorian(year, month, day)}"
-        )
+        # NOTE: this results in weird numbers for months when year gets sufficiently high
         return islamic.to_gregorian(year, month, day)
 
     def parse(self, value: str) -> Union[Undate, UndateInterval]:

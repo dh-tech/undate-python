@@ -407,7 +407,7 @@ class TestUndate:
         with pytest.raises(
             ValueError, match="cannot be returned for completely unknown year"
         ):
-            Undate("XXXX").possible_years
+            assert Undate("XXXX").possible_years
 
     def test_representative_years(self):
         # single year is returned as is

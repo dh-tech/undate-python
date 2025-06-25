@@ -39,8 +39,8 @@ class Calendar(StrEnum):
             converter_cls = BaseDateConverter.available_converters()[
                 calendar.value.title()
             ]
-        except KeyError:
-            raise ValueError(f"Unknown calendar '{calendar}'")
+        except KeyError as err:
+            raise ValueError(f"Unknown calendar '{calendar}'") from err
         if not issubclass(converter_cls, BaseCalendarConverter):
             raise ValueError(
                 f"Requested converter '{calendar.value.title()}' is not a CalendarConverter"
@@ -196,9 +196,6 @@ class Undate:
         # be used for comparison
         self.earliest = Date(
             *self.calendar_converter.to_gregorian(min_year, earliest_month, min_day)
-        )
-        print(
-            f"initializing latest, year={max_year} month={latest_month} day={max_day}"
         )
         self.latest = Date(
             *self.calendar_converter.to_gregorian(max_year, latest_month, max_day)
@@ -495,13 +492,12 @@ class Undate:
             # convert place to 1, 10, 100, 1000, etc.
             step = 10 ** (missing_digit_place - 1)
             return range(earliest_year, latest_year + 1, step)
-        else:  # year is fully unknown
-            # returning range from min year to max year is not useful in any scenario!
-            raise ValueError(
-                "Possible years cannot be returned for completely unknown year"
-            )
 
-        return []  # shouldn't get here, but mypy complains
+        # otherwise, year is fully unknown
+        # returning range from min year to max year is not useful in any scenario!
+        raise ValueError(
+            "Possible years cannot be returned for completely unknown year"
+        )
 
     @property
     def representative_years(self) -> list[int]:
