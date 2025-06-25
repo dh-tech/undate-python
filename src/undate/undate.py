@@ -422,7 +422,9 @@ class Undate:
         return isinstance(self.initial_values[part], int)
 
     def is_partially_known(self, part: str) -> bool:
+        # TODO: should XX / XXXX really be considered partially known? other code seems to assume this, so we'll preserve the behavior
         return isinstance(self.initial_values[part], str)
+        # and self.initial_values[part].replace(self.MISSING_DIGIT, "") != ""
 
     @property
     def year(self) -> Optional[str]:
@@ -464,6 +466,47 @@ class Undate:
         value = self.initial_values.get(part)
         return str(value) if value else None
 
+    @property
+    def possible_years(self) -> list[int] | range:
+        """A list or range of possible years for this date in the original calendar.
+        Returns a list with a single year for dates with fully-known years."""
+        if self.known_year:
+            return [self.earliest.year]
+
+        step = 1
+        if (
+            self.is_partially_known("year")
+            and str(self.year).replace(self.MISSING_DIGIT, "") != ""
+        ):
+            # determine the smallest step size for the missing digit
+            earliest_year = int(str(self.year).replace(self.MISSING_DIGIT, "0"))
+            latest_year = int(str(self.year).replace(self.MISSING_DIGIT, "9"))
+            missing_digit_place = len(str(self.year)) - str(self.year).rfind(
+                self.MISSING_DIGIT
+            )
+            # convert place to 1, 10, 100, 1000, etc.
+            step = 10 ** (missing_digit_place - 1)
+            return range(earliest_year, latest_year + 1, step)
+        else:  # year is fully unknown
+            # returning range from min year to max year is not useful in any scenario!
+            raise ValueError(
+                "Possible years cannot be returned for completely unknown year"
+            )
+
+        return []  # shouldn't get here, but mypy complains
+
+    @property
+    def representative_years(self) -> list[int]:
+        """A list of representative years for this date."""
+        try:
+            # todo: filter by calendar to minimum needed
+            return list(self.possible_years)
+        except ValueError:
+            return [
+                self.calendar_converter.LEAP_YEAR,
+                self.calendar_converter.NON_LEAP_YEAR,
+            ]
+
     def duration(self) -> Timedelta | UnDelta:
         """What is the duration of this date?
         Calculate based on earliest and latest date within range,
@@ -478,24 +521,6 @@ class Undate:
         if self.precision == DatePrecision.DAY:
             return ONE_DAY
 
-        # if year is unknown or partially unknown, month and year duration both need to calculate for
-        # variant years (leap year, non-leap year), since length may vary
-        possible_years = [self.earliest.year]
-        if self.is_partially_known("year"):
-            # if year is partially known (e.g. 191X), get all possible years in range
-            # TODO: refactor into a function/property; combine/extract from missing digit min/max method
-            possible_years = [
-                int(str(self.year).replace(self.MISSING_DIGIT, str(digit)))
-                for digit in range(0, 10)
-            ]
-            # TODO: once this is working, make more efficient by only getting representative years from the calendar
-        elif not self.known_year:  # completely unknown year
-            # TODO: should leap-year specific logic shift to the calendars,
-            # since it works differently depending on the calendar?
-            possible_years = [
-                self.calendar_converter.LEAP_YEAR,
-                self.calendar_converter.NON_LEAP_YEAR,
-            ]
         possible_max_days = set()
 
         # if precision is month and year is unknown,
@@ -507,7 +532,7 @@ class Undate:
             # should always be day-precision dates
             if self.earliest.month is not None and self.latest.month is not None:
                 for possible_month in range(self.earliest.month, self.latest.month + 1):
-                    for year in possible_years:
+                    for year in self.representative_years:
                         possible_max_days.add(
                             self.calendar_converter.max_day(year, possible_month)
                         )
@@ -517,7 +542,8 @@ class Undate:
             # this is currently hebrew-specific due to the way the start/end of year wraps for that calendar
             # with contextlib.suppress(NotImplementedError):
             possible_max_days = {
-                self.calendar_converter.days_in_year(y) for y in possible_years
+                self.calendar_converter.days_in_year(y)
+                for y in self.representative_years
             }
 
         # if there is more than one possible value for number of days

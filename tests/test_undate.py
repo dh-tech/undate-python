@@ -393,6 +393,35 @@ class TestUndate:
         # someyear = Undate("1XXX")
         # assert sorted([d1991, someyear]) == [someyear, d1991]
 
+    def test_possible_years(self):
+        assert Undate(1991).possible_years == [1991]
+        assert Undate("190X").possible_years == range(1900, 1910)
+        assert Undate("19XX").possible_years == range(1900, 2000)
+        # uses step when missing digit is not last digit
+        assert Undate("19X1").possible_years == range(1901, 1992, 10)
+        assert Undate("2X25").possible_years == range(2025, 2926, 100)
+        assert Undate("1XXX").possible_years == range(1000, 2000)
+        # completely unknown year raises value error, because the range is not useful
+        with pytest.raises(
+            ValueError, match="cannot be returned for completely unknown year"
+        ):
+            Undate("XXXX").possible_years
+
+    def test_representative_years(self):
+        assert Undate("1991").representative_years == [1991]
+        assert Undate("190X").representative_years == [
+            1900,
+            1901,
+            1902,
+            1903,
+            1904,
+            1905,
+            1906,
+            1907,
+            1908,
+            1909,
+        ]
+
     def test_duration(self):
         day_duration = Undate(2022, 11, 7).duration()
         assert isinstance(day_duration, Timedelta)
