@@ -48,6 +48,8 @@ import pkgutil
 from functools import cache
 from typing import Dict, Type
 
+from undate.date import Date
+
 logger = logging.getLogger(__name__)
 
 
@@ -57,6 +59,10 @@ class BaseDateConverter:
 
     #: Converter name. Subclasses must define a unique name.
     name: str = "Base Converter"
+
+    # provisional...
+    LEAP_YEAR = 0
+    NON_LEAP_YEAR = 0
 
     def parse(self, value: str):
         """
@@ -163,8 +169,17 @@ class BaseCalendarConverter(BaseDateConverter):
         raise NotImplementedError
 
     def days_in_year(self, year: int) -> int:
-        """number of days in the specified year in this calendar"""
-        raise NotImplementedError
+        """Number of days in the specified year in this calendar. The default implementation
+        uses min and max month and max day methods along with Gregorian conversion method
+        to calculate the number of days in the specified year.
+        """
+        year_start = Date(*self.to_gregorian(year, self.min_month(), 1))
+        last_month = self.max_month(year)
+        year_end = Date(
+            *self.to_gregorian(year, last_month, self.max_day(year, last_month))
+        )
+        # add 1 because the difference doesn't include the end point
+        return (year_end - year_start).days + 1
 
     def to_gregorian(self, year, month, day) -> tuple[int, int, int]:
         """Convert a date for this calendar specified by numeric year, month, and day,

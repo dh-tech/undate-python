@@ -22,3 +22,7 @@ class SeleucidDateConverter(HebrewDateConverter):
         logic with :attr:`SELEUCID_OFFSET`. Returns a tuple of year, month, day.
         """
         return super().to_gregorian(year + self.SELEUCID_OFFSET, month, day)
+
+    def days_in_year(self, year: int) -> int:
+        """the number of days in the specified year for this calendar"""
+        return super().days_in_year(year + self.SELEUCID_OFFSET)

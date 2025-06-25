@@ -19,7 +19,7 @@ except ImportError:
 # Pre 3.10 requires Union for multiple types, e.g. Union[int, None] instead of int | None
 from typing import Dict, Optional, Union
 
-from undate.converters.base import BaseDateConverter
+from undate.converters.base import BaseCalendarConverter, BaseDateConverter
 from undate.date import ONE_DAY, Date, DatePrecision, Timedelta, UnDelta
 
 
@@ -32,10 +32,14 @@ class Calendar(StrEnum):
     SELEUCID = auto()
 
     @staticmethod
-    def get_converter(calendar):
+    def get_converter(calendar) -> BaseCalendarConverter:
         # calendar converter must be available with a name matching
         # the title-case name of the calendar enum entry
         converter_cls = BaseDateConverter.available_converters()[calendar.value.title()]
+        if not issubclass(converter_cls, BaseCalendarConverter):
+            raise ValueError(
+                f"Requested converter {converter_cls} is not a CalendarConverter"
+            )
         return converter_cls()
 
 
@@ -492,13 +496,12 @@ class Undate:
                 self.calendar_converter.LEAP_YEAR,
                 self.calendar_converter.NON_LEAP_YEAR,
             ]
-        possible_max_days = None
+        possible_max_days = set()
 
         # if precision is month and year is unknown,
         # calculate month duration within a single year (not min/max)
         if self.precision == DatePrecision.MONTH:
             # for every possible month and year, get max days for that month,
-            possible_max_days = set()
             # appease mypy, which says month values could be None here;
             # Date object allows optional month, but earliest/latest initialization
             # should always be day-precision dates
@@ -511,40 +514,17 @@ class Undate:
 
         # if precision is year but year is unknown, return an uncertain delta
         elif self.precision == DatePrecision.YEAR:
-            possible_max_days = set()
             # this is currently hebrew-specific due to the way the start/end of year wraps for that calendar
-            try:
-                possible_max_days = set(
-                    [self.calendar_converter.days_in_year(y) for y in possible_years]
-                )
-            except NotImplementedError:
-                pass
-
-            if not possible_max_days:
-                for year in possible_years:
-                    # TODO: shift logic to calendars for parity with Hebrew?
-                    year_start = Date(
-                        *self.calendar_converter.to_gregorian(
-                            year, self.calendar_converter.min_month(), 1
-                        )
-                    )
-                    last_month = self.calendar_converter.max_month(year)
-                    year_end = Date(
-                        *self.calendar_converter.to_gregorian(
-                            year,
-                            last_month,
-                            self.calendar_converter.max_day(year, last_month),
-                        )
-                    )
-
-                    year_days = (year_end - year_start).days + 1
-                    possible_max_days.add(year_days)
+            # with contextlib.suppress(NotImplementedError):
+            possible_max_days = {
+                self.calendar_converter.days_in_year(y) for y in possible_years
+            }
 
         # if there is more than one possible value for number of days
         # due to range including lear year / non-leap year, return an uncertain delta
-        if possible_max_days and len(possible_max_days) > 1:
-            return UnDelta(*possible_max_days)
-        else:
+        if possible_max_days:
+            if len(possible_max_days) > 1:
+                return UnDelta(*possible_max_days)
             return Timedelta(possible_max_days.pop())
 
         # otherwise, subtract earliest from latest and add a day to include start day in the count
