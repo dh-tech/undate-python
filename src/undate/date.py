@@ -1,7 +1,9 @@
 from enum import IntEnum
+from dataclasses import dataclass, replace
+import operator
 
 # Pre 3.10 requires Union for multiple types, e.g. Union[int, None] instead of int | None
-from typing import Optional, Union
+from typing import Optional, Union, Iterable
 
 import numpy as np
 
@@ -27,6 +29,144 @@ class Timedelta(np.ndarray):
     def days(self) -> int:
         """number of days, as an integer"""
         return int(self.astype("datetime64[D]").astype("int"))
+
+
+@dataclass
+class UnInt:
+    """An uncertain integer intended for use with uncertain durations (:class:`UnDelta`),
+    to convey a range of possible integer values between an upper
+    and lower bound (both inclusive). Supports comparison, addition and subtraction,
+    checking if a value is included in the range, and iterating over numbers
+    included in the range.
+    """
+
+    lower: int
+    upper: int
+
+    def __post_init__(self):
+        # validate that lower value is less than upper
+        if not self.lower < self.upper:
+            raise ValueError(
+                f"Lower value ({self.lower}) must be less than upper ({self.upper})"
+            )
+
+    def __iter__(self) -> Iterable:
+        # yield all integers in range from lower to upper, inclusive
+        yield from range(self.lower, self.upper + 1)
+
+    def __gt__(self, other: object) -> bool:
+        match other:
+            case int():
+                return self.lower > other
+            case UnInt():
+                return self.lower > other.upper
+            case _:
+                return NotImplemented
+
+    def __lt__(self, other: object) -> bool:
+        match other:
+            case int():
+                return self.upper < other
+            case UnInt():
+                return self.upper < other.lower
+            case _:
+                return NotImplemented
+
+    def __contains__(self, other: object) -> bool:
+        match other:
+            case int():
+                return other >= self.lower and other <= self.upper
+            case UnInt():
+                return other.lower >= self.lower and other.upper <= self.upper
+            case _:
+                # unsupported type: return false
+                return False
+
+    def _replace_with(self, other_lower, other_upper, op):
+        """Create and return a new instance of UnInt using the specified
+        operator (e.g. add, subtract) and other values to modify the values in
+        the current UnInt instance."""
+        return replace(
+            self, lower=op(self.lower, other_lower), upper=op(self.upper, other_upper)
+        )
+
+    def __add__(self, other: object) -> "UnInt":
+        match other:
+            case int():
+                # increase both values by the added amount
+                add_values = (other, other)
+            case UnInt():
+                # add other lower value to current lower and other upper
+                # to current upper to include the largest range of possible values
+                # (when calculating with uncertain values, the uncertainty increases)
+                add_values = (other.lower, other.upper)
+            case _:
+                return NotImplemented
+
+        return self._replace_with(*add_values, operator.add)
+
+    def __sub__(self, other) -> "UnInt":
+        match other:
+            case int():
+                # decrease both values by the subtracted amount
+                sub_values = (other, other)
+            case UnInt():
+                # to determine the largest range of possible values,
+                # subtract the other upper value from current lower
+                # and other lower value from current upper
+                sub_values = (other.upper, other.lower)
+            case _:
+                return NotImplemented
+
+        return self._replace_with(*sub_values, operator.sub)
+
+
+@dataclass
+class UnDelta:
+    """
+    An uncertain timedelta, for durations where the number of days is uncertain.
+    Initialize with a list of possible durations in days as integers, which are used
+    to calculate a value for duration in :attr:`days` as an
+    instance of :class:`UnInt`.
+    """
+
+    # NOTE: we will probably need other timedelta-like logic here besides days...
+
+    #: possible durations days, as an instance of :class:`UnInt`
+    days: UnInt
+
+    def __init__(self, *days: int):
+        if len(days) < 2:
+            raise ValueError(
+                "Must specify at least two values for an uncertain duration"
+            )
+        self.days = UnInt(min(days), max(days))
+
+    def __repr__(self):
+        # customize string representation  for simpler notation; default
+        # specifies full UnInt initialization with upper and lower keywords
+        return f"{self.__class__.__name__}(days=[{self.days.lower},{self.days.upper}])"
+
+    def __eq__(self, other: object) -> bool:
+        # is an uncertain duration ever *equal* another, even if the values are the same?
+        # for now, make the assumption that we only want identity equality
+        # and not value equality; perhaps in future we can revisit
+        # or add functions to check value equality / equivalence / similarity
+        return other is self
+
+    def __lt__(self, other: object) -> bool:
+        match other:
+            case Timedelta() | UnDelta():
+                return self.days < other.days
+            case _:
+                return NotImplemented
+
+    def __gt__(self, other: object) -> bool:
+        match other:
+            case Timedelta() | UnDelta():
+                return self.days > other.days
+            case _:
+                return NotImplemented
 
 
 #: timedelta for single day

@@ -4,7 +4,7 @@ import pytest
 
 from undate import Undate, UndateInterval, Calendar
 from undate.converters.base import BaseCalendarConverter
-from undate.date import Date, DatePrecision, Timedelta
+from undate.date import Date, DatePrecision, Timedelta, UnDelta, UnInt
 
 
 class TestUndate:
@@ -420,10 +420,23 @@ class TestUndate:
         # month in unknown year
         assert Undate(month=6).duration().days == 30
         # partially known month
-        assert Undate(year=1900, month="1X").duration().days == 31
-        # what about february?
-        # could vary with leap years, but assume non-leapyear
-        assert Undate(month=2).duration().days == 28
+        # 1X = October, November, or December = 30 or 31 days
+        # should return a Undelta object
+        unknown_month_duration = Undate(year=1900, month="1X").duration()
+        assert isinstance(unknown_month_duration, UnDelta)
+        assert unknown_month_duration.days == UnInt(30, 31)
+
+        # completely unknown month should also return a Undelta object
+        unknown_month_duration = Undate(year=1900, month="XX").duration()
+        assert isinstance(unknown_month_duration, UnDelta)
+        # possible range is 28 to 31 days
+        assert unknown_month_duration.days == UnInt(28, 31)
+
+        # the number of days in February of an unknown year is uncertain, since
+        # it could vary with leap years; either 28 or 29 days
+        feb_duration = Undate(month=2).duration()
+        assert isinstance(feb_duration, UnDelta)
+        assert feb_duration.days == UnInt(28, 29)
 
     def test_known_year(self):
         assert Undate(2022).known_year is True
