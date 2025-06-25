@@ -438,6 +438,20 @@ class TestUndate:
         assert isinstance(feb_duration, UnDelta)
         assert feb_duration.days == UnInt(28, 29)
 
+    def test_partiallyknownyear_duration(self):
+        assert Undate("190X").duration().days == UnInt(365, 366)
+        assert Undate("XXXX").duration().days == UnInt(365, 366)
+        # if possible years don't include any leap years, duration is not ambiguous
+        assert Undate("19X1").duration().days == 365
+        # year duration logic should work in other calendars
+        # islamic
+        assert Undate("108X", calendar="Islamic").duration().days == UnInt(354, 355)
+        # NOTE: completely unknown years is not yet supported for other calendars, will cause an error
+        # assert Undate("XXXX", calendar="Islamic").duration().days == UnInt(354, 355)
+        #
+        print(Undate("536X", calendar="Hebrew").duration())
+        assert Undate("536X", calendar="Hebrew").duration().days == UnInt(353, 385)
+
     def test_known_year(self):
         assert Undate(2022).known_year is True
         assert Undate(month=2, day=5).known_year is False

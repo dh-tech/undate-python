@@ -126,6 +126,7 @@ class Undate:
         else:
             # use the configured min/max allowable years if we
             # don't have any other bounds
+            # TODO: make calendar-specific? these are min/max for gregorian
             min_year = self.MIN_ALLOWABLE_YEAR
             max_year = self.MAX_ALLOWABLE_YEAR
 
@@ -166,7 +167,7 @@ class Undate:
         else:
             # if we have no day or partial day, calculate min / max
             min_day = 1  # is min day ever anything other than 1 ?
-            rel_year = year if year and isinstance(year, int) else None
+            rel_year = year if year and isinstance(year, int) else max_year
             # use month if it is an integer; otherwise use previusly determined
             # max month (which may not be 12 depending if partially unknown)
             rel_month = month if month and isinstance(month, int) else latest_month
@@ -473,27 +474,29 @@ class Undate:
         if self.precision == DatePrecision.DAY:
             return ONE_DAY
 
+        # if year is unknown or partially unknown, month and year duration both need to calculate for
+        # variant years (leap year, non-leap year), since length may vary
+        possible_years = [self.earliest.year]
+        if self.is_partially_known("year"):
+            # if year is partially known (e.g. 191X), get all possible years in range
+            # TODO: refactor into a function/property; combine/extract from missing digit min/max method
+            possible_years = [
+                int(str(self.year).replace(self.MISSING_DIGIT, str(digit)))
+                for digit in range(0, 10)
+            ]
+            # TODO: once this is working, make more efficient by only getting representative years from the calendar
+        elif not self.known_year:  # completely unknown year
+            # TODO: should leap-year specific logic shift to the calendars,
+            # since it works differently depending on the calendar?
+            possible_years = [
+                self.calendar_converter.LEAP_YEAR,
+                self.calendar_converter.NON_LEAP_YEAR,
+            ]
+        possible_max_days = None
+
         # if precision is month and year is unknown,
         # calculate month duration within a single year (not min/max)
         if self.precision == DatePrecision.MONTH:
-            latest = self.latest
-            # if year is unknown, calculate month duration in
-            # leap year and non-leap year, in case length varies
-            if not self.known_year:
-                # TODO: should leap-year specific logic shift to the calendars,
-                # since it works differently depending on the calendar?
-                possible_years = [
-                    self.calendar_converter.LEAP_YEAR,
-                    self.calendar_converter.NON_LEAP_YEAR,
-                ]
-            # TODO: handle partially known years like 191X,
-            # switch to representative years (depends on calendar)
-            # (to be implemented as part of ambiguous year duration)
-            else:
-                # otherwise, get possible durations for all possible months
-                # for a known year
-                possible_years = [self.earliest.year]
-
             # for every possible month and year, get max days for that month,
             possible_max_days = set()
             # appease mypy, which says month values could be None here;
@@ -506,23 +509,45 @@ class Undate:
                             self.calendar_converter.max_day(year, possible_month)
                         )
 
-                # if there is more than one possible value for month length,
-                # whether due to leap year / non-leap year or ambiguous month,
-                # return an uncertain delta
-                if len(possible_max_days) > 1:
-                    return UnDelta(*possible_max_days)
+        # if precision is year but year is unknown, return an uncertain delta
+        elif self.precision == DatePrecision.YEAR:
+            possible_max_days = set()
+            # this is currently hebrew-specific due to the way the start/end of year wraps for that calendar
+            try:
+                possible_max_days = set(
+                    [self.calendar_converter.days_in_year(y) for y in possible_years]
+                )
+            except NotImplementedError:
+                pass
 
-                # otherwise, calculate timedelta normally based on maximum day
-                max_day = list(possible_max_days)[0]
-                latest = Date(self.earliest.year, self.earliest.month, max_day)
+            if not possible_max_days:
+                for year in possible_years:
+                    # TODO: shift logic to calendars for parity with Hebrew?
+                    year_start = Date(
+                        *self.calendar_converter.to_gregorian(
+                            year, self.calendar_converter.min_month(), 1
+                        )
+                    )
+                    last_month = self.calendar_converter.max_month(year)
+                    year_end = Date(
+                        *self.calendar_converter.to_gregorian(
+                            year,
+                            last_month,
+                            self.calendar_converter.max_day(year, last_month),
+                        )
+                    )
 
-                return latest - self.earliest + ONE_DAY
+                    year_days = (year_end - year_start).days + 1
+                    possible_max_days.add(year_days)
 
-        # TODO: handle year precision + unknown/partially known year
-        # (will be handled in separate branch)
+        # if there is more than one possible value for number of days
+        # due to range including lear year / non-leap year, return an uncertain delta
+        if possible_max_days and len(possible_max_days) > 1:
+            return UnDelta(*possible_max_days)
+        else:
+            return Timedelta(possible_max_days.pop())
 
-        # otherwise, calculate based on earliest/latest range
-        # subtract earliest from latest and add a day to count start day
+        # otherwise, subtract earliest from latest and add a day to include start day in the count
         return self.latest - self.earliest + ONE_DAY
 
     def _missing_digit_minmax(

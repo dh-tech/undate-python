@@ -47,6 +47,10 @@ class HebrewDateConverter(BaseCalendarConverter):
         # NOTE: unreleased v2.4.1 of convertdate standardizes month_days to month_length
         return hebrew.month_days(year, month)
 
+    def days_in_year(self, year: int) -> int:
+        """the number of days in the specified year for this calendar"""
+        return int(hebrew.year_days(year))
+
     def to_gregorian(self, year: int, month: int, day: int) -> tuple[int, int, int]:
         """Convert a Hebrew date, specified by year, month, and day,
         to the Gregorian equivalent date. Returns a tuple of year, month, day.

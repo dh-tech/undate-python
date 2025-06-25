@@ -162,6 +162,10 @@ class BaseCalendarConverter(BaseDateConverter):
         """maximum numeric day for the specified year and month in this calendar"""
         raise NotImplementedError
 
+    def days_in_year(self, year: int) -> int:
+        """number of days in the specified year in this calendar"""
+        raise NotImplementedError
+
     def to_gregorian(self, year, month, day) -> tuple[int, int, int]:
         """Convert a date for this calendar specified by numeric year, month, and day,
         into the Gregorian equivalent date. Should return a tuple of year, month, day.
