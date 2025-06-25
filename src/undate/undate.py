@@ -258,7 +258,7 @@ class Undate:
         """format this undate as a string using the specified format;
         for now, only supports named converters"""
         converter_cls = BaseDateConverter.available_converters().get(format, None)
-        if converter_cls:
+        if converter_cls is not None:
             # NOTE: some parsers may return intervals; is that ok here?
             return converter_cls().to_string(self)
 
