@@ -13,8 +13,13 @@ class TestGregorianDateConverter:
     def test_max_month(self):
         assert GregorianDateConverter().max_month(2025) == 12
 
-    # todo: test max day
-    #
+    def test_max_day(self):
+        converter = GregorianDateConverter()
+        assert converter.max_day(2025, 1) == 31
+        assert converter.max_day(2025, 2) == 28
+        assert converter.max_day(converter.LEAP_YEAR, 2) == 29
+        assert converter.max_day(2025, 12) == 31
+
     def test_representative_years(self):
         converter = GregorianDateConverter()
         # single year is not filtered
@@ -24,7 +29,7 @@ class TestGregorianDateConverter:
         # next leap year is 2028; returns first leap year and first non-leap year, in input order
         assert converter.representative_years([2025, 2026, 2028, 2029]) == [2025, 2028]
 
-        # if no years are provided, returns a known leap year and non-leap years
+        # if no years are provided, returns a known leap year and non-leap year
         assert converter.representative_years() == [
             converter.LEAP_YEAR,
             converter.NON_LEAP_YEAR,
