@@ -153,3 +153,37 @@ class TestHebrewDateConverter:
         )
         expected_gregorian_years = [-3261, 33, 1056, 1350, 1655, 1995]
         assert [d.earliest.year for d in sorted_dates] == expected_gregorian_years
+
+    def test_days_in_year(self):
+        converter = HebrewDateConverter()
+        assert converter.days_in_year(4816) == 353
+        assert converter.days_in_year(4817) == 355
+        assert converter.days_in_year(4818) == 384
+        assert converter.days_in_year(4819) == 355
+
+    def test_representative_years(self):
+        converter = HebrewDateConverter()
+        # single year is not filtered
+        assert converter.representative_years([4816]) == [4816]
+        # 4816 has 353 days; 4817 has 355; 4818 has 384; 4819 has 355
+        assert converter.representative_years([4816, 4817, 4818, 4819]) == [
+            4816,
+            4817,
+            4818,
+        ]
+        assert converter.representative_years([4816, 4817, 4818, 4819, 4837]) == [
+            4816,
+            4817,
+            4818,
+            4837,
+        ]
+
+        # if no years are provided, returns a known leap year and non-leap years
+        assert converter.representative_years() == [
+            converter.LEAP_YEAR,
+            converter.NON_LEAP_YEAR,
+        ]
+        assert converter.representative_years([]) == [
+            converter.LEAP_YEAR,
+            converter.NON_LEAP_YEAR,
+        ]
