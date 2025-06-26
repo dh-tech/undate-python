@@ -1,10 +1,13 @@
 from datetime import date, datetime
+from enum import auto
+from unittest import mock
 
 import pytest
 
 from undate import Undate, UndateInterval, Calendar
-from undate.converters.base import BaseCalendarConverter
-from undate.date import Date, DatePrecision, Timedelta
+from undate.undate import StrEnum  # import whichever version is used there
+from undate.converters.base import BaseCalendarConverter, BaseDateConverter
+from undate.date import Date, DatePrecision, Timedelta, UnDelta, UnInt
 
 
 class TestUndate:
@@ -129,6 +132,16 @@ class TestUndate:
         # invalid
         with pytest.raises(ValueError, match="Calendar `foobar` is not supported"):
             Undate(848, calendar="foobar")
+
+    def test_as_calendar(self):
+        # changes calendar *without* converting dates
+        assert Undate(1243, 5, 7).as_calendar(Calendar.ISLAMIC) == Undate(
+            1243, 5, 7, calendar=Calendar.ISLAMIC
+        )
+        # should also work with string
+        assert Undate(1243, 5, 7).as_calendar("islamic") == Undate(
+            1243, 5, 7, calendar=Calendar.ISLAMIC
+        )
 
     def test_init_invalid(self):
         with pytest.raises(ValueError):
@@ -298,11 +311,17 @@ class TestUndate:
         # how to compare mixed precision where dates overlap?
         # if the second date falls *within* earliest/latest,
         # then it is not clearly less; not implemented?
-        with pytest.raises(NotImplementedError, match="date falls within the other"):
+        with pytest.raises(
+            NotImplementedError,
+            match="one date \\(2022-05\\) falls within the other \\(2022\\)",
+        ):
             assert Undate(2022) < Undate(2022, 5)
 
         # same if we attempt to compare in the other direction
-        with pytest.raises(NotImplementedError, match="date falls within the other"):
+        with pytest.raises(
+            NotImplementedError,
+            match="one date \\(2022-05\\) falls within the other \\(2022\\)",
+        ):
             assert Undate(2022, 5) < Undate(2022)
 
     testdata_contains = [
@@ -377,6 +396,45 @@ class TestUndate:
         # someyear = Undate("1XXX")
         # assert sorted([d1991, someyear]) == [someyear, d1991]
 
+    def test_possible_years(self):
+        assert Undate(1991).possible_years == [1991]
+        assert Undate("190X").possible_years == range(1900, 1910)
+        assert Undate("19XX").possible_years == range(1900, 2000)
+        # uses step when missing digit is not last digit
+        assert Undate("19X1").possible_years == range(1901, 1992, 10)
+        assert Undate("2X25").possible_years == range(2025, 2926, 100)
+        assert Undate("1XXX").possible_years == range(1000, 2000)
+        # completely unknown year raises value error, because the range is not useful
+        with pytest.raises(
+            ValueError, match="cannot be returned for completely unknown year"
+        ):
+            assert Undate("XXXX").possible_years
+
+    def test_representative_years(self):
+        # single year is returned as is
+        assert Undate("1991").representative_years == [1991]
+        # for an uncertain year, returns first leap year and non-leap year in range
+        assert Undate("190X").representative_years == [1900, 1904]
+        assert Undate("19XX").representative_years == [1900, 1904]
+        # works for other calendars
+        assert Undate("481X", calendar="Hebrew").representative_years == [
+            4810,
+            4811,
+            4812,
+            4813,
+            4816,
+            4818,
+        ]
+
+        # use mock to simulate a calendar without representative years filtering
+        with mock.patch(
+            "undate.converters.calendars.HebrewDateConverter.representative_years"
+        ) as mock_representative_years:
+            mock_representative_years.side_effect = NotImplementedError
+            assert Undate("481X", calendar="Hebrew").representative_years == list(
+                range(4810, 4820)
+            )
+
     def test_duration(self):
         day_duration = Undate(2022, 11, 7).duration()
         assert isinstance(day_duration, Timedelta)
@@ -404,10 +462,39 @@ class TestUndate:
         # month in unknown year
         assert Undate(month=6).duration().days == 30
         # partially known month
-        assert Undate(year=1900, month="1X").duration().days == 31
-        # what about february?
-        # could vary with leap years, but assume non-leapyear
-        assert Undate(month=2).duration().days == 28
+        # 1X = October, November, or December = 30 or 31 days
+        # should return a Undelta object
+        unknown_month_duration = Undate(year=1900, month="1X").duration()
+        assert isinstance(unknown_month_duration, UnDelta)
+        assert unknown_month_duration.days == UnInt(30, 31)
+
+        # completely unknown month should also return a Undelta object
+        unknown_month_duration = Undate(year=1900, month="XX").duration()
+        assert isinstance(unknown_month_duration, UnDelta)
+        # possible range is 28 to 31 days
+        assert unknown_month_duration.days == UnInt(28, 31)
+
+        # the number of days in February of an unknown year is uncertain, since
+        # it could vary with leap years; either 28 or 29 days
+        feb_duration = Undate(month=2).duration()
+        assert isinstance(feb_duration, UnDelta)
+        assert feb_duration.days == UnInt(28, 29)
+
+    def test_partiallyknownyear_duration(self):
+        assert Undate("190X").duration().days == UnInt(365, 366)
+        assert Undate("XXXX").duration().days == UnInt(365, 366)
+        # if possible years don't include any leap years, duration is not ambiguous
+        assert Undate("19X1").duration().days == 365
+        # year duration logic should work in other calendars
+        # islamic
+        assert Undate("108X", calendar="Islamic").duration().days == UnInt(354, 355)
+        # completely unknown years is calculated based on representative years
+        assert Undate("XXXX", calendar="Islamic").duration().days == UnInt(354, 355)
+        assert Undate("536X", calendar="Hebrew").duration().days == UnInt(353, 385)
+        # different set of years could vary
+        assert Undate("53X2", calendar="Hebrew").duration().days == UnInt(354, 385)
+        # fully unknown year also works for Hebrew calendar
+        assert Undate("XXX", calendar="Hebrew").duration().days == UnInt(353, 385)
 
     def test_known_year(self):
         assert Undate(2022).known_year is True
@@ -479,3 +566,25 @@ def test_calendar_get_converter():
         converter = Calendar.get_converter(cal)
         assert isinstance(converter, BaseCalendarConverter)
         assert converter.name.lower() == cal.name.lower()
+
+    class BogusCalendar(StrEnum):
+        """Unsupported calendars"""
+
+        FOOBAR = auto()
+        DUMMY = auto()
+
+    # test error handling
+    # ensure we raise a ValueError when an invalid calendar is requested
+    with pytest.raises(ValueError, match="Unknown calendar"):
+        Calendar.get_converter(BogusCalendar.FOOBAR)
+
+    class DummyFormatter(BaseDateConverter):
+        name = "Dummy"
+
+    # also error if you request a converter that is not a calendar converter
+    # NOTE: this fails because get_converter converts the enum to title case...
+    # can't be tested with any of the existing non-calendar converters
+    with pytest.raises(
+        ValueError, match="Requested converter 'Dummy' is not a CalendarConverter"
+    ):
+        Calendar.get_converter(BogusCalendar.DUMMY)

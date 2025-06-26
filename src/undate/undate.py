@@ -19,8 +19,8 @@ except ImportError:
 # Pre 3.10 requires Union for multiple types, e.g. Union[int, None] instead of int | None
 from typing import Dict, Optional, Union
 
-from undate.converters.base import BaseDateConverter
-from undate.date import ONE_DAY, ONE_MONTH_MAX, Date, DatePrecision, Timedelta
+from undate.converters.base import BaseCalendarConverter, BaseDateConverter
+from undate.date import ONE_DAY, Date, DatePrecision, Timedelta, UnDelta
 
 
 class Calendar(StrEnum):
@@ -29,12 +29,22 @@ class Calendar(StrEnum):
     GREGORIAN = auto()
     HEBREW = auto()
     ISLAMIC = auto()
+    SELEUCID = auto()
 
     @staticmethod
-    def get_converter(calendar):
+    def get_converter(calendar) -> BaseCalendarConverter:
         # calendar converter must be available with a name matching
         # the title-case name of the calendar enum entry
-        converter_cls = BaseDateConverter.available_converters()[calendar.value.title()]
+        try:
+            converter_cls = BaseDateConverter.available_converters()[
+                calendar.value.title()
+            ]
+        except KeyError as err:
+            raise ValueError(f"Unknown calendar '{calendar}'") from err
+        if not issubclass(converter_cls, BaseCalendarConverter):
+            raise ValueError(
+                f"Requested converter '{calendar.value.title()}' is not a CalendarConverter"
+            )
         return converter_cls()
 
 
@@ -96,7 +106,6 @@ class Undate:
         if calendar is not None:
             self.set_calendar(calendar)
         self.calendar_converter = Calendar.get_converter(self.calendar)
-
         self.calculate_earliest_latest(year, month, day)
 
         if converter is None:
@@ -124,10 +133,11 @@ class Undate:
                 min_year = int(str(year).replace(self.MISSING_DIGIT, "0"))
                 max_year = int(str(year).replace(self.MISSING_DIGIT, "9"))
         else:
-            # use the configured min/max allowable years if we
-            # don't have any other bounds
-            min_year = self.MIN_ALLOWABLE_YEAR
-            max_year = self.MAX_ALLOWABLE_YEAR
+            # if we don't have any other bounds,
+            # use calendar-specific min year if there is one, otherwise use
+            # the configured min/max allowable years
+            min_year = self.calendar_converter.MIN_YEAR or self.MIN_ALLOWABLE_YEAR
+            max_year = self.calendar_converter.MAX_YEAR or self.MAX_ALLOWABLE_YEAR
 
         # if month is passed in as a string but completely unknown,
         # treat as unknown/none (date precision already set in init)
@@ -166,7 +176,7 @@ class Undate:
         else:
             # if we have no day or partial day, calculate min / max
             min_day = 1  # is min day ever anything other than 1 ?
-            rel_year = year if year and isinstance(year, int) else None
+            rel_year = year if year and isinstance(year, int) else max_year
             # use month if it is an integer; otherwise use previusly determined
             # max month (which may not be 12 depending if partially unknown)
             rel_month = month if month and isinstance(month, int) else latest_month
@@ -192,15 +202,31 @@ class Undate:
         )
 
     def set_calendar(self, calendar: Union[str, Calendar]):
+        """Find calendar by name if passed as string and set on the object.
+        Only intended for use at initialization time; use :meth:`as_calendar`
+        to change calendar."""
         if calendar is not None:
             # if not passed as a Calendar instance, do a lookup
-            if not isinstance(calendar, Calendar):
+            if isinstance(calendar, str):
                 # look for calendar by upper-case name
                 try:
                     calendar = Calendar[calendar.upper()]
                 except KeyError as err:
                     raise ValueError(f"Calendar `{calendar}` is not supported") from err
             self.calendar = calendar
+
+    def as_calendar(self, calendar: Union[str, Calendar]):
+        """Return a new :class:`Undate` object with the same year, month, day, and labels
+        used to initialize the current object, but with a different calendar.  Note that this
+        does NOT do calendar conversion, but reinterprets current numeric year, month, day values
+        according to the new calendar."""
+        return Undate(
+            year=self.initial_values.get("year"),
+            month=self.initial_values.get("month"),
+            day=self.initial_values.get("day"),
+            label=self.label,
+            calendar=calendar,
+        )
 
     def __str__(self) -> str:
         # if any portion of the date is partially known, construct
@@ -242,7 +268,7 @@ class Undate:
         """format this undate as a string using the specified format;
         for now, only supports named converters"""
         converter_cls = BaseDateConverter.available_converters().get(format, None)
-        if converter_cls:
+        if converter_cls is not None:
             # NOTE: some parsers may return intervals; is that ok here?
             return converter_cls().to_string(self)
 
@@ -319,8 +345,12 @@ class Undate:
         # (e.g., single date within the same year)
         # comparison for those cases is not currently supported
         elif other in self or self in other:
+            # sort by precision, most precise first
+            by_precision = sorted(
+                [self, other], key=lambda x: x.precision, reverse=True
+            )
             raise NotImplementedError(
-                "Can't compare when one date falls within the other"
+                f"Can't compare when one date ({by_precision[0]}) falls within the other ({by_precision[1]})"
             )
         # NOTE: unsupported comparisons are supposed to return NotImplemented
         # However, doing that in this case results in a confusing TypeError!
@@ -397,7 +427,9 @@ class Undate:
         return isinstance(self.initial_values[part], int)
 
     def is_partially_known(self, part: str) -> bool:
+        # TODO: should XX / XXXX really be considered partially known? other code seems to assume this, so we'll preserve the behavior
         return isinstance(self.initial_values[part], str)
+        # and self.initial_values[part].replace(self.MISSING_DIGIT, "") != ""
 
     @property
     def year(self) -> Optional[str]:
@@ -405,7 +437,7 @@ class Undate:
         year = self._get_date_part("year")
         if year:
             return f"{year:0>4}"
-        # if value is unset but date precision is month or greater, return unknown month
+        # if value is unset but date precision is year or greater, return unknown year
         elif self.precision >= DatePrecision.YEAR:
             return self.MISSING_DIGIT * 4
         return None
@@ -439,43 +471,99 @@ class Undate:
         value = self.initial_values.get(part)
         return str(value) if value else None
 
-    def duration(self) -> Timedelta:
+    @property
+    def possible_years(self) -> list[int] | range:
+        """A list or range of possible years for this date in the original calendar.
+        Returns a list with a single year for dates with fully-known years."""
+        if self.known_year:
+            return [self.earliest.year]
+
+        step = 1
+        if (
+            self.is_partially_known("year")
+            and str(self.year).replace(self.MISSING_DIGIT, "") != ""
+        ):
+            # determine the smallest step size for the missing digit
+            earliest_year = int(str(self.year).replace(self.MISSING_DIGIT, "0"))
+            latest_year = int(str(self.year).replace(self.MISSING_DIGIT, "9"))
+            missing_digit_place = len(str(self.year)) - str(self.year).rfind(
+                self.MISSING_DIGIT
+            )
+            # convert place to 1, 10, 100, 1000, etc.
+            step = 10 ** (missing_digit_place - 1)
+            return range(earliest_year, latest_year + 1, step)
+
+        # otherwise, year is fully unknown
+        # returning range from min year to max year is not useful in any scenario!
+        raise ValueError(
+            "Possible years cannot be returned for completely unknown year"
+        )
+
+    @property
+    def representative_years(self) -> list[int]:
+        """A list of representative years for this date."""
+        try:
+            # todo: filter by calendar to minimum needed
+            try:
+                return self.calendar_converter.representative_years(
+                    list(self.possible_years)
+                )
+            except NotImplementedError:
+                # if calendar converter does not support representative years, return all years
+                return list(self.possible_years)
+        except ValueError:
+            return [
+                self.calendar_converter.LEAP_YEAR,
+                self.calendar_converter.NON_LEAP_YEAR,
+            ]
+
+    def duration(self) -> Timedelta | UnDelta:
         """What is the duration of this date?
         Calculate based on earliest and latest date within range,
         taking into account the precision of the date even if not all
         parts of the date are known. Note that durations are inclusive
         (i.e., a closed interval)  and include both the earliest and latest
-        date rather than the difference between them."""
+        date rather than the difference between them.  Returns a :class:`undate.date.Timedelta` when
+        possible, and an :class:`undate.date.UnDelta` when the duration is uncertain."""
 
         # if precision is a single day, duration is one day
         # no matter when it is or what else is known
         if self.precision == DatePrecision.DAY:
             return ONE_DAY
 
+        possible_max_days = set()
+
         # if precision is month and year is unknown,
         # calculate month duration within a single year (not min/max)
         if self.precision == DatePrecision.MONTH:
-            latest = self.latest
-            if not self.known_year:
-                # if year is unknown, calculate month duration in
-                # a single year
-                latest = Date(self.earliest.year, self.latest.month, self.latest.day)
+            # for every possible month and year, get max days for that month,
+            # appease mypy, which says month values could be None here;
+            # Date object allows optional month, but earliest/latest initialization
+            # should always be day-precision dates
+            if self.earliest.month is not None and self.latest.month is not None:
+                for possible_month in range(self.earliest.month, self.latest.month + 1):
+                    for year in self.representative_years:
+                        possible_max_days.add(
+                            self.calendar_converter.max_day(year, possible_month)
+                        )
 
-                # latest = datetime.date(
-                #     self.earliest.year, self.latest.month, self.latest.day
-                # )
-            delta = latest - self.earliest + ONE_DAY
-            # month duration can't ever be more than 31 days
-            # (could we ever know if it's smaller?)
+        # if precision is year but year is unknown, return an uncertain delta
+        elif self.precision == DatePrecision.YEAR:
+            # this is currently hebrew-specific due to the way the start/end of year wraps for that calendar
+            # with contextlib.suppress(NotImplementedError):
+            possible_max_days = {
+                self.calendar_converter.days_in_year(y)
+                for y in self.representative_years
+            }
 
-            # if granularity == month but not known month, duration = 31
-            if delta.astype(int) > 31:
-                return ONE_MONTH_MAX
-            return delta
+        # if there is more than one possible value for number of days
+        # due to range including lear year / non-leap year, return an uncertain delta
+        if possible_max_days:
+            if len(possible_max_days) > 1:
+                return UnDelta(*possible_max_days)
+            return Timedelta(possible_max_days.pop())
 
-        # otherwise, calculate based on earliest/latest range
-
-        # subtract earliest from latest and add a day to count start day
+        # otherwise, subtract earliest from latest and add a day to include start day in the count
         return self.latest - self.earliest + ONE_DAY
 
     def _missing_digit_minmax(

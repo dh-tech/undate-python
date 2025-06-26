@@ -9,7 +9,12 @@ readme = "README.md"
 license = { text = "Apache-2" }
 requires-python = ">= 3.10"
 dynamic = ["version"]
-dependencies = ["lark[interegular]", "numpy", "convertdate", "strenum; python_version < '3.11'"]
+dependencies = [
+    "lark[interegular]",
+    "numpy",
+    "convertdate",
+    "strenum; python_version < '3.11'",
+]
 authors = [
     { name = "Rebecca Sutton Koeser" },
     { name = "Cole Crawford" },
@@ -29,7 +34,7 @@ keywords = [
     "digital-humanities",
 ]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -49,7 +54,7 @@ classifiers = [
 [project.optional-dependencies]
 docs = ["sphinx>=7.0.0", "alabaster", "myst-parser", "myst-parser[linkify]"]
 test = ["pytest>=7.2", "pytest-ordering", "pytest-cov"]
-notebooks = ["jupyterlab", "pandas", "treon"]
+notebooks = ["jupyterlab", "pandas", "treon", "altair"]
 check = ["undate[docs]", "undate[notebooks]", "mypy", "ruff"]
 dev = [
     "pre-commit>=2.20.0",

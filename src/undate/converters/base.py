@@ -48,6 +48,8 @@ import pkgutil
 from functools import cache
 from typing import Dict, Type
 
+from undate.date import Date
+
 logger = logging.getLogger(__name__)
 
 
@@ -57,6 +59,10 @@ class BaseDateConverter:
 
     #: Converter name. Subclasses must define a unique name.
     name: str = "Base Converter"
+
+    # provisional...
+    LEAP_YEAR = 0
+    NON_LEAP_YEAR = 0
 
     def parse(self, value: str):
         """
@@ -142,6 +148,16 @@ class BaseCalendarConverter(BaseDateConverter):
     #: Converter name. Subclasses must define a unique name.
     name: str = "Base Calendar Converter"
 
+    #: arbitrary known non-leap year
+    NON_LEAP_YEAR: int
+    #: arbitrary known leap year
+    LEAP_YEAR: int
+
+    # minimum year for this calendar, if there is one
+    MIN_YEAR: None | int = None
+    # maximum year for this calendar, if there is one
+    MAX_YEAR: None | int = None
+
     def min_month(self) -> int:
         """Smallest numeric month for this calendar."""
         raise NotImplementedError
@@ -160,6 +176,27 @@ class BaseCalendarConverter(BaseDateConverter):
 
     def max_day(self, year: int, month: int) -> int:
         """maximum numeric day for the specified year and month in this calendar"""
+        raise NotImplementedError
+
+    def days_in_year(self, year: int) -> int:
+        """Number of days in the specified year in this calendar. The default implementation
+        uses min and max month and max day methods along with Gregorian conversion method
+        to calculate the number of days in the specified year.
+        """
+        year_start = Date(*self.to_gregorian(year, self.min_month(), 1))
+        last_month = self.max_month(year)
+        year_end = Date(
+            *self.to_gregorian(year, last_month, self.max_day(year, last_month))
+        )
+        # add 1 because the difference doesn't include the end point
+        return (year_end - year_start).days + 1
+
+    def representative_years(self, years: None | list[int] = None) -> list[int]:
+        """Returns a list of representative years within the specified list.
+        Result should include one for each type of variant year for this
+        calendar (e.g., leap year and non-leap year). If no years are specified,
+        returns a list of representative years for the current calendar.
+        """
         raise NotImplementedError
 
     def to_gregorian(self, year, month, day) -> tuple[int, int, int]:
