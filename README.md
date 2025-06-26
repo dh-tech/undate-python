@@ -5,13 +5,13 @@
 **undate** is a python library for working with uncertain or partially known dates.
 
 > [!WARNING]
-> This is alpha software and is not yet feature complete! Use with caution and give us feedback.
-> Currently `undate` supports parsing and formatting dates in ISO8601, some 
-portions of EDTF (Extended Date Time Format), and parsing and conversion for dates in Hebrew Anno Mundi and Islamic Hijri calendars
+> This is beta software and is not yet feature complete! Use with caution and give us feedback.
+> Currently `undate` supports parsing and formatting dates in ISO8601, some
+> portions of EDTF (Extended Date Time Format), and parsing and conversion for dates in Hebrew Anno Mundi and Islamic Hijri calendars.
 
-*Undate was initially created as part of a [DH-Tech](https://dh-tech.github.io/) hackathon in November 2022.*
+_Undate was initially created as part of a [DH-Tech](https://dh-tech.github.io/) hackathon in November 2022._
 
-* * * 
+---
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.11068867.svg)](https://doi.org/10.5281/zenodo.11068867)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
@@ -19,15 +19,18 @@ portions of EDTF (Extended Date Time Format), and parsing and conversion for dat
 [![unit tests](https://github.com/dh-tech/undate-python/actions/workflows/unit_tests.yml/badge.svg)](https://github.com/dh-tech/undate-python/actions/workflows/unit_tests.yml)
 [![codecov](https://codecov.io/gh/dh-tech/undate-python/branch/main/graph/badge.svg?token=GE7HZE8C9D)](https://codecov.io/gh/dh-tech/undate-python)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+
 [![All Contributors](https://img.shields.io/badge/all_contributors-5-orange.svg?style=flat-square)](CONTRIBUTORS.md)
+
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Read [Contributors](CONTRIBUTORS.md) for detailed contribution information.
 
 ## Installation
 
-*Recommended*: use pip to install the latest published version from PyPI:
+_Recommended_: use pip to install the latest published version from PyPI:
 
 ```console
 pip install undate
@@ -50,7 +53,7 @@ date formats or even different calendars.
 
 An `undate.Undate` is analogous to python’s builtin `datetime.date`
 object, but with support for varying degrees of precision and unknown
-information.  You can initialize an `Undate` with either strings or
+information. You can initialize an `Undate` with either strings or
 numbers for whichever parts of the date are known or partially known.
 An `Undate` can take an optional label.
 
@@ -94,7 +97,7 @@ If enough information is known, an `Undate` object can report on its duration:
 ```
 
 If enough of the date is known and the precision supports it, you can
-check if one date falls within another date: 
+check if one date falls within another date:
 
 ```python
 >>> november7 = Undate(2000, 11, 7)
@@ -151,7 +154,7 @@ NotImplementedError: Can't compare when one date falls within the other
 
 An `UndateInterval` is a date range between two `Undate` objects.
 Intervals can be open-ended, allow for optional labels, and can
-calculate duration if enough information is known.  `UndateIntervals`
+calculate duration if enough information is known. `UndateIntervals`
 are inclusive (i.e., a closed interval), and include both the earliest
 and latest date as part of the range.
 
@@ -200,8 +203,8 @@ All `Undate` objects are calendar aware, and date converters include
 support for parsing and working with dates from other calendars. The
 Gregorian calendar is used by default; currently `undate` supports the
 Islamic Hijri calendar and the Hebrew Anno Mundi calendar based on
-calendar conversion logic implemented in the 
-[convertdate](https://convertdate.readthedocs.io/en/latest/) package. 
+calendar conversion logic implemented in the
+[convertdate](https://convertdate.readthedocs.io/en/latest/) package.
 
 Dates are stored with the year, month, day and appropriate precision for
 the original calendar; internally, earliest and latest dates are
@@ -227,7 +230,7 @@ comparison across dates from different calendars.
 [<Undate '26 Tammuz 4816 Anno Mundi' 4816-04-26 (Hebrew)>, <Undate 'Rajab 495 Hijrī' 0495-07 (Islamic)>, <Undate 2001 (Gregorian)>]
 ```
 
-* * * 
+---
 
 For more examples, refer to the code notebooks included in the[examples]
 (https://github.com/dh-tech/undate-python/tree/main/examples/) in this
