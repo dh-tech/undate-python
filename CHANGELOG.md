@@ -1,5 +1,21 @@
 # Change Log
 
+## 0.5
+
+- New `UnDelta` and `UnInt` classes for uncertain durations
+  - `Undate.duration` now returns either a `Timedelta` or an `UnDelta` if the duration is ambiguous
+- New properties `possible_years` and `representative_years` on `Undate` class, used for calculating durations for uncertain years and months
+- New `weekday` method on class `undate.date.Date`
+- Calendar converter improvements:
+  - Calendar converter classes can optional provide minimum and maximum years for uncertain dates
+  - New calendar methods `days_in_year` and `representative_years`
+  - Hebrew date parser now allows for week days, along with additional month variants
+  - Preliminary Seleucide calendar converter class, based on Hebrew calendar with a year offset
+  - New method `as_calendar` on `Undate` class, to set calendar without doing any conversion
+- Readme examples have been improved and extended
+- New example notebook testing Hebrew, Islamic, and Seleucid date parsing and conversion with Princeton Geniza Project data
+- bugfix: duration for uncertain years previously returned the duration from earliest to latest possible dates in range; now returns an `UnDelta` with the possible durations for the possible years in the given calendar
+
 ## 0.4
 
 - Undate is now Calendar aware / Calendar explicit; default is Gregorian
@@ -19,7 +35,6 @@
 - Dropped support for Python 3.9
 - Reorganized examples folder to avoid unnecessary nesting
   - ISMI data has been updated from older JSON data to examples in RDF (turtle)
-
 
 ## 0.3.1
 
@@ -49,7 +64,7 @@ Update readthedocs config for current installation
 
 ### numpy impact
 
-Performance differences seem to be negligible, but it does increase payload size.  The virtualenv for installing version 0.2 was 14MB; when installing the newer version with numpy, the virtualenv is 46MB (the numpy folder in site packages is 31MB on its own).
+Performance differences seem to be negligible, but it does increase payload size. The virtualenv for installing version 0.2 was 14MB; when installing the newer version with numpy, the virtualenv is 46MB (the numpy folder in site packages is 31MB on its own).
 
 ## 0.2
 
