@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.5.1
+- Correct license identifier in CITATION.cff so it is valid
+
 ## 0.5
 
 - New `UnDelta` and `UnInt` classes for uncertain durations
