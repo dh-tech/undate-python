@@ -1,4 +1,4 @@
-__version__ = "0.5.0"
+__version__ = "0.5.1"
 
 from undate.date import DatePrecision
 from undate.undate import Undate, Calendar
