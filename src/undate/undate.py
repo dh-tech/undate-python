@@ -300,6 +300,10 @@ class Undate:
             # with this type
             return NotImplemented
 
+        # if either date has an unknown year, then not equal
+        if not self.known_year or not other.known_year:
+            return False
+
         # if both dates are fully known, then earliest/latest check
         # is sufficient (and will work across calendars!)
 

@@ -233,7 +233,8 @@ class TestUndate:
         assert Undate(2022) == Undate(2022)
         assert Undate(2022, 10) == Undate(2022, 10)
         assert Undate(2022, 10, 1) == Undate(2022, 10, 1)
-        assert Undate(month=2, day=7) == Undate(month=2, day=7)
+        # dates without a known year cannot known to be equal
+        assert not Undate(month=2, day=7) == Undate(month=2, day=7)
 
         # something we can't convert for comparison should return NotImplemented
         assert Undate(2022).__eq__("not a date") == NotImplemented
@@ -259,6 +260,8 @@ class TestUndate:
         # partially unknown dates should NOT be considered equal
         assert Undate("19XX") != Undate("19XX")
         assert Undate(1980, "XX") != Undate(1980, "XX")
+        # same dates with unknown years should not be considered equal
+        assert Undate(month=2, day=7) != Undate(month=2, day=7)
 
     testdata_lt_gt = [
         # dates to test for gt/lt comparison: earlier date, later date
@@ -528,7 +531,10 @@ class TestUndate:
 
         assert Undate.parse("1984", "ISO8601") == Undate(1984)
         assert Undate.parse("1984-04", "ISO8601") == Undate(1984, 4)
-        assert Undate.parse("--12-31", "ISO8601") == Undate(month=12, day=31)
+        # dates with unknown year are not equal; compare repr string
+        assert repr(Undate.parse("--12-31", "ISO8601")) == repr(
+            Undate(month=12, day=31)
+        )
 
         # unsupported format
         with pytest.raises(ValueError, match="Unsupported format"):
