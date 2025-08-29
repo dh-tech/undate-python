@@ -547,25 +547,25 @@ class Undate:
             # Date object allows optional month, but earliest/latest initialization
             # should always be day-precision dates
 
-            # FIXME: earliest/latest are gregorian! need to use months from the original calendar,
-            # not converted months
+            # use months from the original calendar, not months from
+            # earliest/latest dates, which have been converted to Gregorian
             initial_month_value = self.initial_values["month"]
             # if integer, month is fully known and is the only possible value
             possible_months: list[int] | range
             if isinstance(initial_month_value, int):
                 possible_months = [initial_month_value]
             elif isinstance(initial_month_value, str):
-                # earliest possible month for missing digit
-                earliest_month = int(
-                    initial_month_value.replace(self.MISSING_DIGIT, "0")
+                # determine earliest and latest possible months
+                # based on missing digits and calendar
+                year = (
+                    self.year
+                    if isinstance(self.year, int)
+                    else self.calendar_converter.LEAP_YEAR
                 )
-                # latest possible month for missing digit, but no greater than
-                # calendar max month
-                latest_month = min(
-                    self.calendar_converter.max_month(
-                        self.calendar_converter.LEAP_YEAR
-                    ),
-                    int(initial_month_value.replace(self.MISSING_DIGIT, "9")),
+                earliest_month, latest_month = self._missing_digit_minmax(
+                    initial_month_value,
+                    self.calendar_converter.min_month(),
+                    self.calendar_converter.max_month(year),
                 )
                 possible_months = range(earliest_month, latest_month + 1)
 
