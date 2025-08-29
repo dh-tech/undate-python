@@ -189,11 +189,12 @@ class TestUndate:
         # unset year
         assert Undate(month=12, day=31).year == "XXXX"
 
-        # NOTE: no longer supported to inistalize undate with no date information
+        # NOTE: no longer supported to initialize undate with no date information
         # force method to hit conditional for date precision
-        # some_century = Undate()
-        # some_century.precision = DatePrecision.CENTURY
-        # assert some_century.year is None
+        some_century = Undate(year="X")
+        some_century.initial_values["year"] = None
+        some_century.precision = DatePrecision.CENTURY
+        assert some_century.year is None
 
     def test_month_property(self):
         # one, two digit month
@@ -324,6 +325,9 @@ class TestUndate:
         assert not some_january >= year100
 
     def test_lt_notimplemented(self):
+        # unsupported type should bail out and return NotImplemented
+        assert Undate(2022).__lt__("foo") == NotImplemented
+
         # how to compare mixed precision where dates overlap?
         # if the second date falls *within* earliest/latest,
         # then it is not clearly less; not implemented?
@@ -355,6 +359,9 @@ class TestUndate:
     @pytest.mark.parametrize("date1,date2", testdata_contains)
     def test_contains(self, date1, date2):
         assert date1 in date2
+
+        # unsupported type should bail out and return NotImplemented
+        assert Undate(2022).__contains__("foo") == NotImplemented
 
     testdata_not_contains = [
         # dates not in range

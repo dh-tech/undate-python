@@ -573,8 +573,15 @@ class Undate:
         if self.precision == DatePrecision.DAY:
             return ONE_DAY
 
-        possible_max_days = set()
+        # if year is known and no values are partially known,
+        # we can calculate a time delta based on earliest + latest
+        if self.known_year and not any(
+            [self.is_partially_known(part) for part in ["year", "month", "day"]]
+        ):
+            #  subtract earliest from latest and add a day to include start day in the count
+            return self.latest - self.earliest + ONE_DAY
 
+        possible_max_days = set()
         # if precision is month and year is unknown,
         # calculate month duration within a single year (not min/max)
         if self.precision == DatePrecision.MONTH:
@@ -600,13 +607,9 @@ class Undate:
 
         # if there is more than one possible value for number of days
         # due to range including lear year / non-leap year, return an uncertain delta
-        if possible_max_days:
-            if len(possible_max_days) > 1:
-                return UnDelta(*possible_max_days)
-            return Timedelta(possible_max_days.pop())
-
-        # otherwise, subtract earliest from latest and add a day to include start day in the count
-        return self.latest - self.earliest + ONE_DAY
+        if len(possible_max_days) > 1:
+            return UnDelta(*possible_max_days)
+        return Timedelta(possible_max_days.pop())
 
     def _missing_digit_minmax(
         self, value: str, min_val: int, max_val: int
