@@ -334,6 +334,10 @@ class Undate:
 
     def __lt__(self, other: object) -> bool:
         other = self._comparison_type(other)
+        if other is NotImplemented:
+            # return NotImplemented to indicate comparison is not supported
+            # with this type
+            return NotImplemented
 
         # if either date has a completely unknown year, then we can't compare
         if self.unknown_year or other.unknown_year:
@@ -394,6 +398,10 @@ class Undate:
         # if the two dates are strictly equal, don't consider
         # either one as containing the other
         other = self._comparison_type(other)
+        if other is NotImplemented:
+            # return NotImplemented to indicate comparison is not supported
+            # with this type
+            return NotImplemented
 
         if self == other:
             return False
