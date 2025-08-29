@@ -410,6 +410,9 @@ class TestUndate:
         ):
             assert Undate("XXXX").possible_years
 
+        # non-gregorian years should return in original calendar
+        assert Undate(401, calendar="Hebrew").possible_years == [401]
+
     def test_representative_years(self):
         # single year is returned as is
         assert Undate("1991").representative_years == [1991]
@@ -452,6 +455,20 @@ class TestUndate:
         assert year_duration.days == 365
         leapyear_duration = Undate(2024).duration()
         assert leapyear_duration.days == 366
+
+    def test_duration_month_nongregorian(self):
+        # known-months for non-gregorian calendars should not be uncertain
+        assert Undate(1288, 4, calendar="Seleucid").duration().days == 29
+        assert Undate(1548, 5, calendar="Seleucid").duration().days == 30
+        assert Undate(4791, 11, calendar="Hebrew").duration().days == 30
+        assert Undate(4808, 10, calendar="Hebrew").duration().days == 29
+        assert Undate(942, 1, calendar="Islamic").duration().days == 30
+        assert Undate(984, 8, calendar="Islamic").duration().days == 29
+
+        # in some cases month length may vary by year
+        assert Undate(month=4, calendar="Seleucid").duration().days == 29
+        assert Undate(month=8, calendar="Hebrew").duration().days == UnInt(29, 30)
+        assert Undate(month=1, calendar="Islamic").duration().days == 30
 
     def test_partiallyknown_duration(self):
         # day in unknown month/year
