@@ -71,7 +71,7 @@ class TestUndateInterval:
         fancy_epoch = UndateInterval(Undate(2022), Undate(2023), label="Fancy Epoch")
         assert (
             repr(fancy_epoch)
-            == f'undate.UndateInterval(earliest={repr(fancy_epoch.earliest)}, latest={repr(fancy_epoch.latest)}, label="Fancy Epoch")'
+            == f"undate.UndateInterval(earliest={repr(fancy_epoch.earliest)}, latest={repr(fancy_epoch.latest)}, label='Fancy Epoch')"
         )
         assert eval(repr(fancy_epoch)) == fancy_epoch
 

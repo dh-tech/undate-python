@@ -73,7 +73,7 @@ class UndateInterval:
         init_opts = {
             "earliest": repr(self.earliest) if self.earliest else None,
             "latest": repr(self.latest) if self.latest else None,
-            "label": f'"{self.label}"' if self.label else None,
+            "label": f"{self.label!r}" if self.label else None,
         }
         init_str = ", ".join(
             [f"{key}={val}" for key, val in init_opts.items() if val is not None]
