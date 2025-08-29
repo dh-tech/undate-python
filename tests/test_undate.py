@@ -36,26 +36,26 @@ class TestUndate:
         # repr string should provide sufficient details to initialize
         assert (
             repr(nov2022)
-            == 'undate.Undate(year=2022, month=11, day=7, calendar="gregorian")'
+            == 'undate.Undate(year=2022, month=11, day=7, calendar="Gregorian")'
         )
         # eval on repr string should be equivalent to the object
         assert eval(repr(nov2022)) == nov2022
         nov2022_labeled = Undate(2022, 11, 7, label="A Special Day")
         assert (
             repr(nov2022_labeled)
-            == 'undate.Undate(year=2022, month=11, day=7, label="A Special Day", calendar="gregorian")'
+            == 'undate.Undate(year=2022, month=11, day=7, label="A Special Day", calendar="Gregorian")'
         )
         assert eval(repr(nov2022_labeled)) == nov2022_labeled
         # different calendar, missing fields
         islamic_date = Undate(484, calendar=Calendar.ISLAMIC)
-        assert repr(islamic_date) == 'undate.Undate(year=484, calendar="islamic")'
+        assert repr(islamic_date) == 'undate.Undate(year=484, calendar="Islamic")'
         assert eval(repr(islamic_date)) == islamic_date
 
         # test string values for month/day
         unknown_year = Undate(month="1X", day="3X")
         assert (
             repr(unknown_year)
-            == 'undate.Undate(month="1X", day="3X", calendar="gregorian")'
+            == 'undate.Undate(month="1X", day="3X", calendar="Gregorian")'
         )
         # unknown dates aren't equal, but string representation should match
         assert str(eval(repr(unknown_year))) == str(unknown_year)

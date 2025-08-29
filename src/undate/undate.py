@@ -253,7 +253,7 @@ class Undate:
         init_opts = {k: v for k, v in self.initial_values.items() if v is not None}
         if self.label:
             init_opts["label"] = self.label
-        init_opts["calendar"] = str(self.calendar)
+        init_opts["calendar"] = self.calendar.value.title()
         init_params = []
         for key, val in init_opts.items():
             if isinstance(val, str):
