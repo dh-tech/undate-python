@@ -250,8 +250,16 @@ class Undate:
         return self.converter.to_string(self)
 
     def __repr__(self) -> str:
-        label_str = f" '{self.label}'" if self.label else ""
-        return f"<Undate{label_str} {self} ({self.calendar.name.title()})>"
+        init_opts = {k: v for k, v in self.initial_values.items() if v is not None}
+        if self.label:
+            init_opts["label"] = self.label
+        init_opts["calendar"] = str(self.calendar)
+        init_params = []
+        for key, val in init_opts.items():
+            if isinstance(val, str):
+                val = f'"{val}"'
+            init_params.append(f"{key}={val}")
+        return f"undate.Undate({', '.join(init_params)})"
 
     @classmethod
     def parse(cls, date_string, format) -> Union["Undate", UndateInterval]:
