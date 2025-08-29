@@ -238,7 +238,7 @@ class TestUnDelta:
         feb_undelt = UnDelta(28, 29)
         assert repr(feb_undelt) == "undate.UnDelta(28,29)"
         # can't compare directly because uncertain deltas aren't equal,
-        # but compare vlaues
+        # but compare values
         assert eval(repr(feb_undelt.days.lower)) == feb_undelt.days.lower
         assert eval(repr(feb_undelt.days.upper)) == feb_undelt.days.upper
 

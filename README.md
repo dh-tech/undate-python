@@ -121,7 +121,7 @@ earliest and latest possible dates for comparison purposes so you can
 sort dates and compare with equals, greater than, and less than. You
 can also compare with python `datetime.date` objects.
 
-```Python console
+```python 
 >>> november7_2020 = Undate(2020, 11, 7)
 >>> november_2001 = Undate(2001, 11)
 >>> year2k = Undate(2000)
@@ -193,7 +193,7 @@ undate.Undate(year=2002, month=5, calendar="Gregorian")
 undate.Undate(month=5, day=3, calendar="Gregorian")
 >>> Undate.parse("--05-03", "ISO8601").format("EDTF")
 'XXXX-05-03'
->>>  Undate.parse("1800/1900", format="EDTF")
+>>> Undate.parse("1800/1900", format="EDTF")
 undate.UndateInterval(earliest=undate.Undate(year=1800, calendar="Gregorian"), latest=undate.Undate(year=1900, calendar="Gregorian"))
 ```
 
@@ -233,8 +233,8 @@ undate.Undate(year=2001, calendar="Gregorian")
 ---
 
 For more examples, refer to the code notebooks included in the 
-[examples](https://github.com/dh-tech/undate-python/tree/main/examples/) in this
-repository.
+[examples](https://github.com/dh-tech/undate-python/tree/main/examples/) 
+directory in this repository.
 
 ## Documentation
 
