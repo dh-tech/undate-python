@@ -121,13 +121,13 @@ earliest and latest possible dates for comparison purposes so you can
 sort dates and compare with equals, greater than, and less than. You
 can also compare with python `datetime.date` objects.
 
-```python
+```Python console
 >>> november7_2020 = Undate(2020, 11, 7)
 >>> november_2001 = Undate(2001, 11)
 >>> year2k = Undate(2000)
 >>> ad100 = Undate(100)
 >>> sorted([november7_2020, november_2001, year2k, ad100])
-[<Undate 0100>, <Undate 2000>, <Undate 2001-11>, <Undate 2020-11-07>]
+[undate.Undate(year=100, calendar="Gregorian"), undate.Undate(year=2000, calendar="Gregorian"), undate.Undate(year=2001, month=11, calendar="Gregorian"), undate.Undate(year=2020, month=11, day=7, calendar="Gregorian")]
 >>> november7_2020 > november_2001
 True
 >>> year2k < ad100
@@ -161,17 +161,17 @@ and latest date as part of the range.
 ```python
 >>> from undate import UndateInterval
 >>> UndateInterval(Undate(1900), Undate(2000))
-<UndateInterval 1900/2000>
+undate.UndateInterval(earliest=undate.Undate(year=1900, calendar="Gregorian"), latest=undate.Undate(year=2000, calendar="Gregorian"))
 >>> UndateInterval(Undate(1801), Undate(1900), label="19th century")
+undate.UndateInterval(earliest=undate.Undate(year=1801, calendar="Gregorian"), latest=undate.Undate(year=1900, calendar="Gregorian"), label="19th century")
 >>> UndateInterval(Undate(1801), Undate(1900), label="19th century").duration().days
 36524
-<UndateInterval '19th century' (1801/1900)>
 >>> UndateInterval(Undate(1901), Undate(2000), label="20th century")
-<UndateInterval '20th century' (1901/2000)>
+undate.UndateInterval(earliest=undate.Undate(year=1901, calendar="Gregorian"), latest=undate.Undate(year=2000, calendar="Gregorian"), label="20th century")
 >>> UndateInterval(latest=Undate(2000))  # before 2000
-<UndateInterval ../2000>
+undate.UndateInterval(latest=undate.Undate(year=2000, calendar="Gregorian"))
 >>> UndateInterval(Undate(1900))  # after 1900
-<UndateInterval 1900/>
+undate.UndateInterval(earliest=undate.Undate(year=1900, calendar="Gregorian"))
 >>> UndateInterval(Undate(1900), Undate(2000), label="19th century").duration().days
 36890
 >>> UndateInterval(Undate(2000, 1, 1), Undate(2000, 1,31)).duration().days
@@ -186,15 +186,15 @@ are "ISO8601" and "EDTF" and supported calendars.
 ```python
 >>> from undate import Undate
 >>> Undate.parse("2002", "ISO8601")
-<Undate 2002>
+undate.Undate(year=2002, calendar="Gregorian")
 >>> Undate.parse("2002-05", "EDTF")
-<Undate 2002-05>
+undate.Undate(year=2002, month=5, calendar="Gregorian")
 >>> Undate.parse("--05-03", "ISO8601")
-<Undate --05-03>
+undate.Undate(month=5, day=3, calendar="Gregorian")
 >>> Undate.parse("--05-03", "ISO8601").format("EDTF")
 'XXXX-05-03'
->>> Undate.parse("1800/1900")
-<UndateInterval 1800/1900>
+>>>  Undate.parse("1800/1900", format="EDTF")
+undate.UndateInterval(earliest=undate.Undate(year=1800, calendar="Gregorian"), latest=undate.Undate(year=1900, calendar="Gregorian"))
 ```
 
 ### Calendars
@@ -215,25 +215,25 @@ comparison across dates from different calendars.
 >>> from undate import Undate
 >>> tammuz4816 = Undate.parse("26 Tammuz 4816", "Hebrew")
 >>> tammuz4816
-<Undate '26 Tammuz 4816 Anno Mundi' 4816-04-26 (Hebrew)>
+undate.Undate(year=4816, month=4, day=26, label="26 Tammuz 4816 Anno Mundi", calendar="Hebrew")
 >>> rajab495 = Undate.parse("Rajab 495", "Islamic")
 >>> rajab495
-<Undate 'Rajab 495 Hijrī' 0495-07 (Islamic)>
+undate.Undate(year=495, month=7, label="Rajab 495 Islamic", calendar="Islamic")
 >>> y2k = Undate.parse("2001", "EDTF")
 >>> y2k
-<Undate 2001 (Gregorian)>
+undate.Undate(year=2001, calendar="Gregorian")
 >>> [str(d.earliest) for d in [rajab495, tammuz4816, y2k]]
 ['1102-04-28', '1056-07-17', '2001-01-01']
 >>> [str(d.precision) for d in [rajab495, tammuz4816, y2k]]
 ['MONTH', 'DAY', 'YEAR']
 >>> sorted([rajab495, tammuz4816, y2k])
-[<Undate '26 Tammuz 4816 Anno Mundi' 4816-04-26 (Hebrew)>, <Undate 'Rajab 495 Hijrī' 0495-07 (Islamic)>, <Undate 2001 (Gregorian)>]
+[undate.Undate(year=4816, month=4, day=26, label="26 Tammuz 4816 Anno Mundi", calendar="Hebrew"), undate.Undate(year=495, month=7, label="Rajab 495 Islamic", calendar="Islamic"), undate.Undate(year=2001, calendar="Gregorian")]
 ```
 
 ---
 
-For more examples, refer to the code notebooks included in the[examples]
-(https://github.com/dh-tech/undate-python/tree/main/examples/) in this
+For more examples, refer to the code notebooks included in the 
+[examples](https://github.com/dh-tech/undate-python/tree/main/examples/) in this
 repository.
 
 ## Documentation
