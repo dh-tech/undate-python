@@ -29,12 +29,36 @@ class TestUndate:
         # assert str(Undate(2022, day=7)) == "2022-XX-07"   @ currently returns 2022-07
 
     def test_repr(self):
-        assert repr(Undate(2022, 11, 7)) == "<Undate 2022-11-07 (Gregorian)>"
+        # import undate to test eval of fully-qualified undate repr string
+        import undate  # noqa: F401
+
+        nov2022 = Undate(2022, 11, 7)
+        # repr string should provide sufficient details to initialize
         assert (
-            repr(Undate(2022, 11, 7, label="A Special Day"))
-            == "<Undate 'A Special Day' 2022-11-07 (Gregorian)>"
+            repr(nov2022)
+            == "undate.Undate(year=2022, month=11, day=7, calendar='Gregorian')"
         )
-        assert repr(Undate(484, calendar=Calendar.ISLAMIC)) == "<Undate 0484 (Islamic)>"
+        # eval on repr string should be equivalent to the object
+        assert eval(repr(nov2022)) == nov2022
+        nov2022_labeled = Undate(2022, 11, 7, label="A Special Day")
+        assert (
+            repr(nov2022_labeled)
+            == "undate.Undate(year=2022, month=11, day=7, label='A Special Day', calendar='Gregorian')"
+        )
+        assert eval(repr(nov2022_labeled)) == nov2022_labeled
+        # different calendar, missing fields
+        islamic_date = Undate(484, calendar=Calendar.ISLAMIC)
+        assert repr(islamic_date) == "undate.Undate(year=484, calendar='Islamic')"
+        assert eval(repr(islamic_date)) == islamic_date
+
+        # test string values for month/day
+        unknown_year = Undate(month="1X", day="3X")
+        assert (
+            repr(unknown_year)
+            == "undate.Undate(month='1X', day='3X', calendar='Gregorian')"
+        )
+        # unknown dates aren't equal, but string representation should match
+        assert str(eval(repr(unknown_year))) == str(unknown_year)
 
     def test_init_str(self):
         assert Undate("2000").earliest.year == 2000

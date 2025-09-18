@@ -56,14 +56,33 @@ class TestUndateInterval:
         assert open_end.format("ISO8601") == "2000/"
 
     def test_repr(self):
+        # import undate to test eval of fully-qualified repr string
+        import undate  # noqa: F401
+
+        # interval with start and end
+        closed_interval = UndateInterval(Undate(2022), Undate(2023))
         assert (
-            repr(UndateInterval(Undate(2022), Undate(2023)))
-            == "<UndateInterval 2022/2023>"
+            repr(closed_interval)
+            == f"undate.UndateInterval(earliest={repr(closed_interval.earliest)}, latest={repr(closed_interval.latest)})"
+        )
+        # should be able to evaluate repr string to get an equivalent object
+        assert eval(repr(closed_interval)) == closed_interval
+        # interval with a label
+        fancy_epoch = UndateInterval(Undate(2022), Undate(2023), label="Fancy Epoch")
+        assert (
+            repr(fancy_epoch)
+            == f"undate.UndateInterval(earliest={repr(fancy_epoch.earliest)}, latest={repr(fancy_epoch.latest)}, label='Fancy Epoch')"
+        )
+        assert eval(repr(fancy_epoch)) == fancy_epoch
+
+        open_interval = UndateInterval(
+            Undate(33),
         )
         assert (
-            repr(UndateInterval(Undate(2022), Undate(2023), label="Fancy Epoch"))
-            == "<UndateInterval 'Fancy Epoch' (2022/2023)>"
+            repr(open_interval)
+            == f"undate.UndateInterval(earliest={repr(open_interval.earliest)})"
         )
+        assert eval(repr(open_interval)) == open_interval
 
     def test_str_open_range(self):
         # 900 -
