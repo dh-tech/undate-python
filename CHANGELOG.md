@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.5.2
+- repr for Undate, UndateInterval, and UnDelta now produce fully-qualified, constructor-style strings with deterministic field ordering.
+- Added Undate.unknown_year property and is_unknown() method to check for fully-unknown year/month/day.
+- bugfix: comparisons (eq, gt, lt) and contains (in) now return False when year is unknown
+- bugfix: month durations for non-Gregorian dates now returns an integer when month length is known
+
 ## 0.5.1
 - Correct license identifier in CITATION.cff so it is valid
 
