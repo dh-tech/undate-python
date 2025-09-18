@@ -7,8 +7,10 @@ class TestISO8601DateFormat:
         assert ISO8601DateFormat().parse("2002") == Undate(2002)
         assert ISO8601DateFormat().parse("1991-05") == Undate(1991, 5)
         assert ISO8601DateFormat().parse("1991-05-03") == Undate(1991, 5, 3)
-        # missing year but month/day known
-        assert ISO8601DateFormat().parse("--05-03") == Undate(month=5, day=3)
+        # missing year but month/day known; compare repr string
+        assert repr(ISO8601DateFormat().parse("--05-03")) == repr(
+            Undate(month=5, day=3)
+        )
 
     def test_parse_singledate_unequal(self):
         assert ISO8601DateFormat().parse("2002") != Undate(2003)

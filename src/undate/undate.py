@@ -300,6 +300,10 @@ class Undate:
             # with this type
             return NotImplemented
 
+        # if either date has an unknown year, then not equal
+        if not self.known_year or not other.known_year:
+            return False
+
         # if both dates are fully known, then earliest/latest check
         # is sufficient (and will work across calendars!)
 
@@ -330,6 +334,14 @@ class Undate:
 
     def __lt__(self, other: object) -> bool:
         other = self._comparison_type(other)
+        if other is NotImplemented:
+            # return NotImplemented to indicate comparison is not supported
+            # with this type
+            return NotImplemented
+
+        # if either date has a completely unknown year, then we can't compare
+        if self.unknown_year or other.unknown_year:
+            return False
 
         # if this date ends before the other date starts,
         # return true (this date is earlier, so it is less)
@@ -366,17 +378,36 @@ class Undate:
         # define gt ourselves so we can support > comparison with datetime.date,
         # but rely on existing less than implementation.
         # strictly greater than must rule out equals
+
+        # if either date has a completely unknown year, then we can't compare
+        # NOTE: this means that gt and lt will both be false when comparing
+        # with a date with an unknown year...
+        if self.unknown_year or isinstance(other, Undate) and other.unknown_year:
+            return False
+
         return not (self < other or self == other)
 
     def __le__(self, other: object) -> bool:
+        # if either date has a completely unknown year, then we can't compare
+        if self.unknown_year or isinstance(other, Undate) and other.unknown_year:
+            return False
+
         return self == other or self < other
 
     def __contains__(self, other: object) -> bool:
         # if the two dates are strictly equal, don't consider
         # either one as containing the other
         other = self._comparison_type(other)
+        if other is NotImplemented:
+            # return NotImplemented to indicate comparison is not supported
+            # with this type
+            return NotImplemented
 
         if self == other:
+            return False
+
+        # if either date has a completely unknown year, then we can't determine
+        if self.unknown_year or other.unknown_year:
             return False
 
         return all(
@@ -415,10 +446,16 @@ class Undate:
 
     @property
     def known_year(self) -> bool:
+        "year is fully known"
         return self.is_known("year")
 
+    @property
+    def unknown_year(self) -> bool:
+        "year is completely unknown"
+        return self.is_unknown("year")
+
     def is_known(self, part: str) -> bool:
-        """Check if a part of the date (year, month, day) is known.
+        """Check if a part of the date (year, month, day) is fully known.
         Returns False if unknown or only partially known."""
         # TODO: should we use constants or enum for values?
 
@@ -426,8 +463,13 @@ class Undate:
         # if we have a string, then it is only partially known; return false
         return isinstance(self.initial_values[part], int)
 
+    def is_unknown(self, part: str) -> bool:
+        """Check if a part of the date (year, month, day) is completely unknown."""
+        return self.initial_values.get(part) is None
+
     def is_partially_known(self, part: str) -> bool:
-        # TODO: should XX / XXXX really be considered partially known? other code seems to assume this, so we'll preserve the behavior
+        # TODO: should XX / XXXX really be considered partially known?
+        # other code seems to assume this, so we'll preserve the behavior
         return isinstance(self.initial_values[part], str)
         # and self.initial_values[part].replace(self.MISSING_DIGIT, "") != ""
 
@@ -537,8 +579,15 @@ class Undate:
         if self.precision == DatePrecision.DAY:
             return ONE_DAY
 
-        possible_max_days = set()
+        # if year is known and no values are partially known,
+        # we can calculate a time delta based on earliest + latest
+        if self.known_year and not any(
+            [self.is_partially_known(part) for part in ["year", "month", "day"]]
+        ):
+            #  subtract earliest from latest and add a day to include start day in the count
+            return self.latest - self.earliest + ONE_DAY
 
+        possible_max_days = set()
         # if precision is month and year is unknown,
         # calculate month duration within a single year (not min/max)
         if self.precision == DatePrecision.MONTH:
@@ -584,13 +633,9 @@ class Undate:
 
         # if there is more than one possible value for number of days
         # due to range including lear year / non-leap year, return an uncertain delta
-        if possible_max_days:
-            if len(possible_max_days) > 1:
-                return UnDelta(*possible_max_days)
-            return Timedelta(possible_max_days.pop())
-
-        # otherwise, subtract earliest from latest and add a day to include start day in the count
-        return self.latest - self.earliest + ONE_DAY
+        if len(possible_max_days) > 1:
+            return UnDelta(*possible_max_days)
+        return Timedelta(possible_max_days.pop())
 
     def _missing_digit_minmax(
         self, value: str, min_val: int, max_val: int

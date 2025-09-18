@@ -189,11 +189,12 @@ class TestUndate:
         # unset year
         assert Undate(month=12, day=31).year == "XXXX"
 
-        # NOTE: no longer supported to inistalize undate with no date information
+        # NOTE: no longer supported to initialize undate with no date information
         # force method to hit conditional for date precision
-        # some_century = Undate()
-        # some_century.precision = DatePrecision.CENTURY
-        # assert some_century.year is None
+        some_century = Undate(year="X")
+        some_century.initial_values["year"] = None
+        some_century.precision = DatePrecision.CENTURY
+        assert some_century.year is None
 
     def test_month_property(self):
         # one, two digit month
@@ -233,7 +234,8 @@ class TestUndate:
         assert Undate(2022) == Undate(2022)
         assert Undate(2022, 10) == Undate(2022, 10)
         assert Undate(2022, 10, 1) == Undate(2022, 10, 1)
-        assert Undate(month=2, day=7) == Undate(month=2, day=7)
+        # dates without a known year cannot known to be equal
+        assert not Undate(month=2, day=7) == Undate(month=2, day=7)
 
         # something we can't convert for comparison should return NotImplemented
         assert Undate(2022).__eq__("not a date") == NotImplemented
@@ -259,6 +261,8 @@ class TestUndate:
         # partially unknown dates should NOT be considered equal
         assert Undate("19XX") != Undate("19XX")
         assert Undate(1980, "XX") != Undate(1980, "XX")
+        # same dates with unknown years should not be considered equal
+        assert Undate(month=2, day=7) != Undate(month=2, day=7)
 
     testdata_lt_gt = [
         # dates to test for gt/lt comparison: earlier date, later date
@@ -307,7 +311,23 @@ class TestUndate:
         assert earlier <= later
         assert later >= earlier
 
+    def test_gt_lt_unknown_years(self):
+        # unknown years cannot be compared on either side...
+        year100 = Undate(100)
+        some_january = Undate(month=1)
+        assert not year100 < some_january
+        assert not year100 <= some_january
+        assert not year100 > some_january
+        assert not year100 >= some_january
+        assert not some_january < year100
+        assert not some_january <= year100
+        assert not some_january > year100
+        assert not some_january >= year100
+
     def test_lt_notimplemented(self):
+        # unsupported type should bail out and return NotImplemented
+        assert Undate(2022).__lt__("foo") == NotImplemented
+
         # how to compare mixed precision where dates overlap?
         # if the second date falls *within* earliest/latest,
         # then it is not clearly less; not implemented?
@@ -340,6 +360,9 @@ class TestUndate:
     def test_contains(self, date1, date2):
         assert date1 in date2
 
+        # unsupported type should bail out and return NotImplemented
+        assert Undate(2022).__contains__("foo") == NotImplemented
+
     testdata_not_contains = [
         # dates not in range
         (Undate(1980), Undate(2020)),
@@ -359,6 +382,9 @@ class TestUndate:
         (Undate(1980, "XX"), Undate(1980, "XX")),
         # - partially unknown month to unknown month
         (Undate(1801, "1X"), Undate(1801, "XX")),
+        # fully unknown year
+        (Undate(month=6, day=1), Undate(2022)),
+        (Undate(1950), Undate(day=31)),
     ]
 
     @pytest.mark.parametrize("date1,date2", testdata_not_contains)
@@ -514,6 +540,7 @@ class TestUndate:
         assert Undate("XXX", calendar="Hebrew").duration().days == UnInt(353, 385)
 
     def test_known_year(self):
+        # known OR partially known
         assert Undate(2022).known_year is True
         assert Undate(month=2, day=5).known_year is False
         # partially known year is not known
@@ -535,6 +562,34 @@ class TestUndate:
         assert Undate(month=1, day="X5").is_known("day") is False
         assert Undate(month=1, day="XX").is_known("day") is False
 
+    def test_unknown_year(self):
+        # fully unknown year
+        assert Undate(month=2, day=5).unknown_year is True
+        # known or partially known years = all false for unknown
+        assert Undate(2022).unknown_year is False
+        # partially known year is not unknown
+        assert Undate("19XX").unknown_year is False
+        # fully known string year should be known
+        assert Undate("1900").unknown_year is False
+
+    def test_is_unknown_month(self):
+        # fully unknown month
+        assert Undate(2022).is_unknown("month") is True
+        assert Undate(day=10).is_unknown("month") is True
+        assert Undate(2022, 2).is_unknown("month") is False
+        assert Undate(2022, "5").is_unknown("month") is False
+        assert Undate(2022, "1X").is_unknown("month") is False
+        assert Undate(2022, "XX").is_unknown("month") is False
+
+    def test_is_unknown_day(self):
+        # fully unknown day
+        assert Undate(1984).is_unknown("day") is True
+        assert Undate(month=5).is_unknown("day") is True
+        assert Undate(month=1, day=3).is_unknown("day") is False
+        assert Undate(month=1, day="5").is_unknown("day") is False
+        assert Undate(month=1, day="X5").is_unknown("day") is False
+        assert Undate(month=1, day="XX").is_unknown("day") is False
+
     def test_parse(self):
         assert Undate.parse("1984", "EDTF") == Undate(1984)
         assert Undate.parse("1984-04", "EDTF") == Undate(1984, 4)
@@ -545,7 +600,10 @@ class TestUndate:
 
         assert Undate.parse("1984", "ISO8601") == Undate(1984)
         assert Undate.parse("1984-04", "ISO8601") == Undate(1984, 4)
-        assert Undate.parse("--12-31", "ISO8601") == Undate(month=12, day=31)
+        # dates with unknown year are not equal; compare repr string
+        assert repr(Undate.parse("--12-31", "ISO8601")) == repr(
+            Undate(month=12, day=31)
+        )
 
         # unsupported format
         with pytest.raises(ValueError, match="Unsupported format"):
