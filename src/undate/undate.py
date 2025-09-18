@@ -475,29 +475,35 @@ class Undate:
     def possible_years(self) -> list[int] | range:
         """A list or range of possible years for this date in the original calendar.
         Returns a list with a single year for dates with fully-known years."""
-        if self.known_year:
-            return [self.earliest.year]
+        # get the initial value passed in for year in original calendar
+        initial_year_value = self.initial_values["year"]
+        # if integer, year is fully known and is the only possible value
+        if isinstance(initial_year_value, int):
+            return [initial_year_value]
 
-        step = 1
+        # if year is None or string with all unknown digits, bail out
         if (
-            self.is_partially_known("year")
-            and str(self.year).replace(self.MISSING_DIGIT, "") != ""
+            initial_year_value is None
+            or str(self.year).replace(self.MISSING_DIGIT, "") == ""
         ):
-            # determine the smallest step size for the missing digit
-            earliest_year = int(str(self.year).replace(self.MISSING_DIGIT, "0"))
-            latest_year = int(str(self.year).replace(self.MISSING_DIGIT, "9"))
-            missing_digit_place = len(str(self.year)) - str(self.year).rfind(
-                self.MISSING_DIGIT
+            # otherwise, year is fully unknown
+            # returning range from min year to max year is not useful in any scenario!
+            raise ValueError(
+                "Possible years cannot be returned for completely unknown year"
             )
-            # convert place to 1, 10, 100, 1000, etc.
-            step = 10 ** (missing_digit_place - 1)
-            return range(earliest_year, latest_year + 1, step)
 
-        # otherwise, year is fully unknown
-        # returning range from min year to max year is not useful in any scenario!
-        raise ValueError(
-            "Possible years cannot be returned for completely unknown year"
+        # otherwise, year is partially known
+        # determine the smallest step size for the missing digit
+        earliest_year = int(str(self.year).replace(self.MISSING_DIGIT, "0"))
+        latest_year = int(str(self.year).replace(self.MISSING_DIGIT, "9"))
+        missing_digit_place = len(str(self.year)) - str(self.year).rfind(
+            self.MISSING_DIGIT
         )
+        # convert place to 1, 10, 100, 1000, etc.
+        step = 10 ** (missing_digit_place - 1)
+        # generate a range from earliest to latest with the appropriate step
+        # based on the smallest missing digit
+        return range(earliest_year, latest_year + 1, step)
 
     @property
     def representative_years(self) -> list[int]:
@@ -540,12 +546,32 @@ class Undate:
             # appease mypy, which says month values could be None here;
             # Date object allows optional month, but earliest/latest initialization
             # should always be day-precision dates
-            if self.earliest.month is not None and self.latest.month is not None:
-                for possible_month in range(self.earliest.month, self.latest.month + 1):
-                    for year in self.representative_years:
-                        possible_max_days.add(
-                            self.calendar_converter.max_day(year, possible_month)
-                        )
+
+            # use months from the original calendar, not months from
+            # earliest/latest dates, which have been converted to Gregorian
+            initial_month_value = self.initial_values["month"]
+            # if integer, month is fully known and is the only possible value
+            possible_months: list[int] | range
+            if isinstance(initial_month_value, int):
+                possible_months = [initial_month_value]
+            elif isinstance(initial_month_value, str):
+                # determine earliest and latest possible months
+                # based on missing digits and calendar
+                year = (
+                    self.year
+                    if isinstance(self.year, int)
+                    else self.calendar_converter.LEAP_YEAR
+                )
+                earliest_month, latest_month = self._missing_digit_minmax(
+                    initial_month_value,
+                    self.calendar_converter.min_month(),
+                    self.calendar_converter.max_month(year),
+                )
+                possible_months = range(earliest_month, latest_month + 1)
+
+            for month in possible_months:
+                for year in self.representative_years:
+                    possible_max_days.add(self.calendar_converter.max_day(year, month))
 
         # if precision is year but year is unknown, return an uncertain delta
         elif self.precision == DatePrecision.YEAR:
