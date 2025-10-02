@@ -70,9 +70,15 @@ class UndateInterval:
         raise ValueError(f"Unsupported format '{format}'")
 
     def __repr__(self) -> str:
-        if self.label:
-            return "<UndateInterval '%s' (%s)>" % (self.label, self)
-        return "<UndateInterval %s>" % self
+        init_opts = {
+            "earliest": repr(self.earliest) if self.earliest else None,
+            "latest": repr(self.latest) if self.latest else None,
+            "label": f"{self.label!r}" if self.label else None,
+        }
+        init_str = ", ".join(
+            [f"{key}={val}" for key, val in init_opts.items() if val is not None]
+        )
+        return f"undate.UndateInterval({init_str})"
 
     def __eq__(self, other) -> bool:
         # currently doesn't support comparison with any other types

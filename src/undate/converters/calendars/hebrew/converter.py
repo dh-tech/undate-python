@@ -21,6 +21,11 @@ class HebrewDateConverter(BaseCalendarConverter):
     name: str = "Hebrew"
     calendar_name: str = "Anno Mundi"
 
+    #: earliest possible year in the Hebrew calendar is year 1, it does not go negative
+    MIN_YEAR: int = 1
+    # convertdate gives a month 34 for numpy max year 2.5^16, so scale it back a bit
+    MAX_YEAR = int(2.5e12)
+
     #: arbitrary known non-leap year; 4816 is a non-leap year with 353 days (minimum possible)
     NON_LEAP_YEAR: int = 4816
     #: arbitrary known leap year; 4837 is a leap year with 385 days (maximum possible)
