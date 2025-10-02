@@ -230,8 +230,20 @@ class TestUnDelta:
             UnDelta(10)
 
     def test_repr(self):
-        # customized string representation
-        assert repr(UnDelta(28, 29)) == "UnDelta(days=[28,29])"
+        # test customized string representation
+
+        # import undate to test eval of fully-qualified repr string
+        import undate  # noqa: F401
+
+        feb_undelt = UnDelta(28, 29)
+        assert repr(feb_undelt) == "undate.UnDelta(28,29)"
+        # can't compare directly because uncertain deltas aren't equal,
+        # but compare values
+        assert eval(repr(feb_undelt.days.lower)) == feb_undelt.days.lower
+        assert eval(repr(feb_undelt.days.upper)) == feb_undelt.days.upper
+
+        larger_undelt = UnDelta(10, 12, 14, 16)
+        assert repr(larger_undelt) == "undate.UnDelta(10,16)"
 
     def test_eq(self):
         # uncertain deltas are not equivalent

@@ -145,7 +145,7 @@ class UnDelta:
     def __repr__(self):
         # customize string representation  for simpler notation; default
         # specifies full UnInt initialization with upper and lower keywords
-        return f"{self.__class__.__name__}(days=[{self.days.lower},{self.days.upper}])"
+        return f"undate.{self.__class__.__name__}({self.days.lower},{self.days.upper})"
 
     def __eq__(self, other: object) -> bool:
         # is an uncertain duration ever *equal* another, even if the values are the same?
