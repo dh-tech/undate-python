@@ -78,6 +78,15 @@
         "review",
         "ideas"
       ]
+    },
+    {
+      "login": "rettinghaus",
+      "name": "Klaus Rettinghaus",
+      "avatar_url": "https://avatars.githubusercontent.com/u/7693447?v=4",
+      "profile": "https://github.com/rettinghaus",
+      "contributions": [
+        "maintenance"
+      ]
     }
   ],
   "contributorsPerLine": 7,
