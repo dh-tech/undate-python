@@ -38,3 +38,8 @@ def test_transform(date_string, expected):
 def test_converter(date_string, expected):
     # should work the same way when called through the converter class
     assert repr(Undate.parse(date_string, "omnibus")) == repr(expected)
+
+
+def test_no_serialize():
+    with pytest.raises(ValueError, match="does not support"):
+        Undate("2022").format("omnibus")

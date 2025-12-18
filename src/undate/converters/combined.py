@@ -82,4 +82,4 @@ class OmnibusDateConverter(BaseDateConverter):
 
     def to_string(self, undate: Union[Undate, UndateInterval]) -> str:
         "Not supported by this converter. Will raise :class:`ValueError`"
-        raise ValueError("Omnibus supporter does not support serialization")
+        raise ValueError("Omnibus converter does not support serialization")
