@@ -52,7 +52,7 @@ from typing import Dict, Type
 logger = logging.getLogger(__name__)
 
 
-#: path to parser grammar files
+#: Path to parser grammar files
 GRAMMAR_FILE_PATH = pathlib.Path(__file__).parent / "grammars"
 
 

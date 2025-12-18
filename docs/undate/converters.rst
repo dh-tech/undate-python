@@ -4,9 +4,18 @@ Converters
 Overview
 --------
 
+
+..note: base converter is pretty developer-facing documentation; 
+.. calendar/converter usage would be helpful to add
+
 .. automodule:: undate.converters.base
    :members:
    :undoc-members:
+
+
+.. autoclass:: undate.converters.combined.OmnibusDateConverter
+   :members:
+
 
 Formats
 --------

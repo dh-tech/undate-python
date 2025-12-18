@@ -4,7 +4,7 @@ from undate.converters.combined import parser, combined_transformer
 
 from undate.undate import Undate, UndateInterval
 
-# for now, just test that valid dates can be parsed
+# test that valid dates can be parsed
 
 testcases = [
     # EDTF
@@ -24,12 +24,17 @@ testcases = [
 
 @pytest.mark.parametrize("date_string,expected", testcases)
 def test_transform(date_string, expected):
+    # test the transformer directly
     transformer = combined_transformer
     # parse the input string, then transform to undate object
     parsetree = parser.parse(date_string)
-    print(parsetree)
     # since the same unknown date is not considered strictly equal,
     # compare object representations
     transformed_date = transformer.transform(parsetree)
-    print(transformed_date)
     assert repr(transformed_date[0]) == repr(expected)
+
+
+@pytest.mark.parametrize("date_string,expected", testcases)
+def test_converter(date_string, expected):
+    # should work the same way when called through the converter class
+    assert repr(Undate.parse(date_string, "omnibus")) == repr(expected)
