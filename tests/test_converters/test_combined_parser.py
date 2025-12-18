@@ -40,6 +40,15 @@ def test_converter(date_string, expected):
     assert repr(Undate.parse(date_string, "omnibus")) == repr(expected)
 
 
+def test_parse_errors():
+    # empty string not supported
+    with pytest.raises(ValueError, match="not supported"):
+        Undate.parse("", "omnibus")
+
+    with pytest.raises(ValueError, match="not in a recognized date format"):
+        Undate.parse("Monday 2023", "omnibus")
+
+
 def test_no_serialize():
     with pytest.raises(ValueError, match="does not support"):
         Undate("2022").format("omnibus")
