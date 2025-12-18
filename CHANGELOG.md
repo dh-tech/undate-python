@@ -1,5 +1,50 @@
 # Change Log
 
+## 0.5.2
+- repr for Undate, UndateInterval, and UnDelta now produce fully-qualified, constructor-style strings with deterministic field ordering.
+- Added Undate.unknown_year property and is_unknown() method to check for fully-unknown year/month/day.
+- bugfix: comparisons (eq, gt, lt) and contains (in) now return False when year is unknown
+- bugfix: month durations for non-Gregorian dates now returns an integer when month length is known
+
+## 0.5.1
+- Correct license identifier in CITATION.cff so it is valid
+
+## 0.5
+
+- New `UnDelta` and `UnInt` classes for uncertain durations
+  - `Undate.duration` now returns either a `Timedelta` or an `UnDelta` if the duration is ambiguous
+- New properties `possible_years` and `representative_years` on `Undate` class, used for calculating durations for uncertain years and months
+- New `weekday` method on class `undate.date.Date`
+- Calendar converter improvements:
+  - Calendar converter classes can optional provide minimum and maximum years for uncertain dates
+  - New calendar methods `days_in_year` and `representative_years`
+  - Hebrew date parser now allows for week days, along with additional month variants
+  - Preliminary Seleucide calendar converter class, based on Hebrew calendar with a year offset
+  - New method `as_calendar` on `Undate` class, to set calendar without doing any conversion
+- Readme examples have been improved and extended
+- New example notebook testing Hebrew, Islamic, and Seleucid date parsing and conversion with Princeton Geniza Project data
+- bugfix: duration for uncertain years previously returned the duration from earliest to latest possible dates in range; now returns an `UnDelta` with the possible durations for the possible years in the given calendar
+
+## 0.4
+
+- Undate is now Calendar aware / Calendar explicit; default is Gregorian
+  - New `BaseCalendarConverter` class, with additional methods required for calendar converters
+  - `HebrewDateConverter`: Parsing and calendar conversion for Hebrew/Anno Mundi
+  - `IslamicDateConverter`: Parsing and calendar conversion for Islamic/Hijri
+  - `GregorianDateConverter`: basic Gregorian calendar logic
+  - `undate.Calendar` class to track `Undate` object calendar, and match with calendar converters
+- BaseDateConverter class now includes nested/descendant subclasses when looking
+  for available converters
+- `Undate.to_undate` method to convert supported date objects to `Undate` (`datetime.date`, `datetime.datetime`, and internal `undate.date.Date` class)
+- `UndateInterval` improvements
+  - Can be initialized with `Undate` objects or any type supported by `Undate.to_undate`
+  - New method for contains (`in`), to determine if another interval or date is contained by an interval
+  - New method `intersection` to determine the overlap between two `UndateInterval` objects
+- EDTF parser : fixed day parsing for some unsupported cases
+- Dropped support for Python 3.9
+- Reorganized examples folder to avoid unnecessary nesting
+  - ISMI data has been updated from older JSON data to examples in RDF (turtle)
+
 ## 0.3.1
 
 Update readthedocs config for current installation
@@ -14,7 +59,7 @@ Update readthedocs config for current installation
   - Support 5+ digit years with leading Y (thanks to numpy.datetime64)
   - Jupyter notebook demonstrating / validating EDTF support
     - Full support for Level 0 Date and Time Interval (no Date and Time support)
-    - Level 1: 
+    - Level 1:
       - Letter-prefixed calendar year
       - Unspecified digit from the right
       - Partial support for extended interval
@@ -28,7 +73,7 @@ Update readthedocs config for current installation
 
 ### numpy impact
 
-Performance differences seem to be negligible, but it does increase payload size.  The virtualenv for installing version 0.2 was 14MB; when installing the newer version with numpy, the virtualenv is 46MB (the numpy folder in site packages is 31MB on its own).
+Performance differences seem to be negligible, but it does increase payload size. The virtualenv for installing version 0.2 was 14MB; when installing the newer version with numpy, the virtualenv is 46MB (the numpy folder in site packages is 31MB on its own).
 
 ## 0.2
 

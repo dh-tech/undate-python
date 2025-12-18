@@ -1,6 +1,6 @@
 from lark import Token, Transformer, Tree
 
-from undate.undate import Undate, UndateInterval
+from undate import Undate, UndateInterval
 
 
 class EDTFTransformer(Transformer):

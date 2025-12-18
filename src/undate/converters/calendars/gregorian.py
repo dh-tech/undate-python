@@ -1,4 +1,4 @@
-from calendar import monthrange
+from calendar import monthrange, isleap
 
 from undate.converters.base import BaseCalendarConverter
 
@@ -13,8 +13,10 @@ class GregorianDateConverter(BaseCalendarConverter):
     #: calendar
     calendar_name: str = "Gregorian"
 
-    #: known non-leap year
+    #: arbitrary known non-leap year
     NON_LEAP_YEAR: int = 2022
+    #: arbitrary known leap year
+    LEAP_YEAR: int = 2024
 
     def min_month(self) -> int:
         """First month for the Gregorian calendar."""
@@ -38,9 +40,37 @@ class GregorianDateConverter(BaseCalendarConverter):
             _, max_day = monthrange(year, month)
         else:
             # if year and month are unknown, return maximum possible
+            # TODO: should this return an IntervalRange?
             max_day = 31
 
         return max_day
+
+    def representative_years(self, years: None | list[int] = None) -> list[int]:
+        """Takes a list of years and returns a subset with one leap year and one non-leap year.
+        If no years are specified, returns a known leap year and non-leap year.
+        """
+
+        # if years is unset or list is empty
+        if not years:
+            return [self.LEAP_YEAR, self.NON_LEAP_YEAR]
+
+        found_leap = False
+        found_non_leap = False
+        rep_years = []
+        for year in years:
+            if isleap(year):
+                if not found_leap:
+                    found_leap = True
+                    rep_years.append(year)
+            else:
+                if not found_non_leap:
+                    found_non_leap = True
+                    rep_years.append(year)
+            # stop as soon as we've found one example of each type of year
+            if found_leap and found_non_leap:
+                break
+
+        return rep_years
 
     def to_gregorian(self, year, month, day) -> tuple[int, int, int]:
         """Convert to Gregorian date. This returns the specified by year, month,

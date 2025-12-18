@@ -1,5 +1,7 @@
 import pytest
-from undate.converters.calendars.hijri.parser import hijri_parser
+from lark.exceptions import LarkError
+
+from undate.converters.calendars.islamic.parser import islamic_parser
 
 
 # for now, just test that valid dates can be parsed
@@ -49,7 +51,7 @@ testcases = [
 
 @pytest.mark.parametrize("date_string", testcases)
 def test_should_parse(date_string):
-    assert hijri_parser.parse(date_string)
+    assert islamic_parser.parse(date_string)
 
 
 error_cases = [
@@ -72,5 +74,5 @@ error_cases = [
 
 @pytest.mark.parametrize("date_string", error_cases)
 def test_should_error(date_string):
-    with pytest.raises(Exception):
-        hijri_parser.parse(date_string)
+    with pytest.raises(LarkError):
+        islamic_parser.parse(date_string)

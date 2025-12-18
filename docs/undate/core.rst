@@ -1,13 +1,16 @@
 Undate objects
 ==============
 
-undates and undate intervals
+dates, intervals, and calendar
 ------------------------------
 
 .. autoclass:: undate.undate.Undate
    :members:
 
-.. autoclass:: undate.undate.UndateInterval
+.. autoclass:: undate.undate.Calendar
+   :members:
+
+.. autoclass:: undate.interval.UndateInterval
    :members:
 
 date, timedelta, and date precision

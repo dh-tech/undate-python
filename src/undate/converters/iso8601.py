@@ -1,7 +1,7 @@
 from typing import Dict, List, Union
 
+from undate import Undate, UndateInterval
 from undate.converters.base import BaseDateConverter
-from undate.undate import Undate, UndateInterval
 
 
 class ISO8601DateFormat(BaseDateConverter):

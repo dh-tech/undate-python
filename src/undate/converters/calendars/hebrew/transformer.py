@@ -1,6 +1,6 @@
 from lark import Transformer, Tree
 
-from undate.undate import Undate, Calendar
+from undate import Undate, Calendar
 
 
 class HebrewUndate(Undate):
@@ -13,6 +13,8 @@ class HebrewDateTransformer(Transformer):
     """Transform a Hebrew date parse tree and return an Undate or
     UndateInterval."""
 
+    calendar = Calendar.HEBREW
+
     def hebrew_date(self, items):
         parts = {}
         for child in items:
@@ -22,9 +24,10 @@ class HebrewDateTransformer(Transformer):
                 value = int(child.children[0])
                 parts[str(child.data)] = value
 
-        # initialize and return an undate with year, month, day in
-        # hebrew calendar
-        return HebrewUndate(**parts)
+        # initialize and return an undate with year, month, day and
+        # configured calendar (hebrew by default)
+        # NOTE: use self.calendar so Seleucid can extend more easily
+        return Undate(**parts, calendar=self.calendar)
 
     def year(self, items):
         # combine multiple parts into a single string

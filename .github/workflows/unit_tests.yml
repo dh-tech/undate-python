@@ -1,5 +1,9 @@
 name: unit tests
 
+permissions:
+  contents: read
+  id-token: write
+
 on:
   push:
     branches:
@@ -20,32 +24,38 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+        python: ["3.10", "3.11", "3.12", "3.13"]
     defaults:
       run:
         working-directory: .
 
     steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+      - uses: actions/checkout@v5
+
+      # use github python action instead of uv to take advantage of caching
+      - name: Set up Python ${{ matrix.python }}
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python }}
           cache: 'pip'
           cache-dependency-path: '**/pyproject.toml'
+
       - name: Install package with dependencies
         run: pip install -e ".[test]"
 
       # for all versions but the one we use for code coverage, run normally
-      - name: Run unit tests normally
+      - name: Run unit tests without code coverage
         run: pytest
         if: ${{ matrix.python != env.COV_PYTHON_VERSION }}
 
       # run code coverage in one version only
       - name: Run unit tests with code coverage reporting
-        run: pytest --cov=undate
+        run: pytest --cov=.
         if: ${{ matrix.python == env.COV_PYTHON_VERSION }}
-      - name: Upload test coverage to Codecov
-        uses: codecov/codecov-action@v3
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         if: ${{ matrix.python == env.COV_PYTHON_VERSION }}
 

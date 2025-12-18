@@ -1,0 +1,14 @@
+coverage:
+  status:
+    project:
+      default: false  # disable default status check
+      app:  # custom target for app code
+        target: auto  # default target (95%)
+        paths:
+          - "src/"  # limit to files within src code directory
+      tests:  # declare a new status context  for "tests"
+        target: 100%  # we always want 100% coverage here
+        paths:
+          - "tests/"  # only include coverage in "tests/" folder
+
+

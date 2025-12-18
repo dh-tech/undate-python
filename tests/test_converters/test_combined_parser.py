@@ -2,7 +2,7 @@ import pytest
 
 from undate.converters.combined import parser, combined_transformer
 
-from undate.undate import Undate, UndateInterval
+from undate import Undate, UndateInterval
 
 # test that valid dates can be parsed
 
@@ -16,9 +16,9 @@ testcases = [
     # Hebrew / Anno Mundi calendar
     ("Tammuz 4816", Undate(4816, 4, calendar="Hebrew")),
     # Islamic / Hijri calendar
-    ("Jumādā I 1243", Undate(1243, 5, calendar="Hijri")),
-    ("7 Jumādā I 1243", Undate(1243, 5, 7, calendar="Hijri")),
-    ("14 Rabīʿ I 901", Undate(901, 3, 14, calendar="Hijri")),
+    ("Jumādā I 1243", Undate(1243, 5, calendar="Islamic")),
+    ("7 Jumādā I 1243", Undate(1243, 5, 7, calendar="Islamic")),
+    ("14 Rabīʿ I 901", Undate(901, 3, 14, calendar="Islamic")),
 ]
 
 

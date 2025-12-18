@@ -68,6 +68,25 @@
         "test",
         "doc"
       ]
+    },
+    {
+      "login": "taylor-arnold",
+      "name": "Taylor Arnold",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5752184?v=4",
+      "profile": "http://taylorarnold.org",
+      "contributions": [
+        "review",
+        "ideas"
+      ]
+    },
+    {
+      "login": "rettinghaus",
+      "name": "Klaus Rettinghaus",
+      "avatar_url": "https://avatars.githubusercontent.com/u/7693447?v=4",
+      "profile": "https://github.com/rettinghaus",
+      "contributions": [
+        "maintenance"
+      ]
     }
   ],
   "contributorsPerLine": 7,
@@ -77,5 +96,6 @@
   "repoHost": "https://github.com",
   "projectName": "undate-python",
   "projectOwner": "dh-tech",
-  "badgeTemplate": "![All Contributors](https://img.shields.io/github/all-contributors/dh-tech/undate-python?color=ee8449&style=flat-square)"
+  "badgeTemplate": "![All Contributors](https://img.shields.io/github/all-contributors/dh-tech/undate-python?color=ee8449&style=flat-square)",
+  "commitType": "docs"
 }

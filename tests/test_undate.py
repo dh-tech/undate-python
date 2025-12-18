@@ -1,11 +1,13 @@
-import calendar
-from datetime import date
+from datetime import date, datetime
+from enum import auto
+from unittest import mock
 
 import pytest
 
-from undate.converters.base import BaseCalendarConverter
-from undate.date import DatePrecision, Timedelta
-from undate.undate import Undate, UndateInterval, Calendar
+from undate import Undate, UndateInterval, Calendar
+from undate.undate import StrEnum  # import whichever version is used there
+from undate.converters.base import BaseCalendarConverter, BaseDateConverter
+from undate.date import Date, DatePrecision, Timedelta, UnDelta, UnInt
 
 
 class TestUndate:
@@ -27,12 +29,36 @@ class TestUndate:
         # assert str(Undate(2022, day=7)) == "2022-XX-07"   @ currently returns 2022-07
 
     def test_repr(self):
-        assert repr(Undate(2022, 11, 7)) == "<Undate 2022-11-07 (Gregorian)>"
+        # import undate to test eval of fully-qualified undate repr string
+        import undate  # noqa: F401
+
+        nov2022 = Undate(2022, 11, 7)
+        # repr string should provide sufficient details to initialize
         assert (
-            repr(Undate(2022, 11, 7, label="A Special Day"))
-            == "<Undate 'A Special Day' 2022-11-07 (Gregorian)>"
+            repr(nov2022)
+            == "undate.Undate(year=2022, month=11, day=7, calendar='Gregorian')"
         )
-        assert repr(Undate(484, calendar=Calendar.HIJRI)) == "<Undate 0484 (Hijri)>"
+        # eval on repr string should be equivalent to the object
+        assert eval(repr(nov2022)) == nov2022
+        nov2022_labeled = Undate(2022, 11, 7, label="A Special Day")
+        assert (
+            repr(nov2022_labeled)
+            == "undate.Undate(year=2022, month=11, day=7, label='A Special Day', calendar='Gregorian')"
+        )
+        assert eval(repr(nov2022_labeled)) == nov2022_labeled
+        # different calendar, missing fields
+        islamic_date = Undate(484, calendar=Calendar.ISLAMIC)
+        assert repr(islamic_date) == "undate.Undate(year=484, calendar='Islamic')"
+        assert eval(repr(islamic_date)) == islamic_date
+
+        # test string values for month/day
+        unknown_year = Undate(month="1X", day="3X")
+        assert (
+            repr(unknown_year)
+            == "undate.Undate(month='1X', day='3X', calendar='Gregorian')"
+        )
+        # unknown dates aren't equal, but string representation should match
+        assert str(eval(repr(unknown_year))) == str(unknown_year)
 
     def test_init_str(self):
         assert Undate("2000").earliest.year == 2000
@@ -123,27 +149,57 @@ class TestUndate:
     def test_calendar(self):
         assert Undate(2024).calendar == Calendar.GREGORIAN
         # by name, any case
-        assert Undate(848, calendar="HIJRI").calendar == Calendar.HIJRI
-        assert Undate(848, calendar="hijri").calendar == Calendar.HIJRI
+        assert Undate(848, calendar="ISLAMIC").calendar == Calendar.ISLAMIC
+        assert Undate(848, calendar="islamic").calendar == Calendar.ISLAMIC
         # by enum
-        assert Undate(848, calendar=Calendar.HIJRI).calendar == Calendar.HIJRI
+        assert Undate(848, calendar=Calendar.ISLAMIC).calendar == Calendar.ISLAMIC
         # invalid
         with pytest.raises(ValueError, match="Calendar `foobar` is not supported"):
             Undate(848, calendar="foobar")
 
+    def test_as_calendar(self):
+        # changes calendar *without* converting dates
+        assert Undate(1243, 5, 7).as_calendar(Calendar.ISLAMIC) == Undate(
+            1243, 5, 7, calendar=Calendar.ISLAMIC
+        )
+        # should also work with string
+        assert Undate(1243, 5, 7).as_calendar("islamic") == Undate(
+            1243, 5, 7, calendar=Calendar.ISLAMIC
+        )
+
     def test_init_invalid(self):
         with pytest.raises(ValueError):
-            Undate("19xx")
+            Undate("19??")
+
+        with pytest.raises(ValueError, match="At least one of year, month, or day"):
+            Undate()
 
     def test_invalid_date(self):
         # invalid month should raise an error
         with pytest.raises(ValueError):
             Undate(1990, 22)
 
-    def test_from_datetime_date(self):
-        undate_from_date = Undate.from_datetime_date(date(2001, 3, 5))
+    def test_to_undate(self):
+        undate_from_date = Undate.to_undate(date(2001, 3, 5))
         assert isinstance(undate_from_date, Undate)
         assert undate_from_date == Undate(2001, 3, 5)
+
+        now = datetime.now()
+        undate_from_dt = Undate.to_undate(now)
+        assert isinstance(undate_from_dt, Undate)
+        assert undate_from_dt == Undate(now.year, now.month, now.day)
+
+        # from internal Date object
+        y2k = Date(2000)
+        y2k_to_undate = Undate.to_undate(y2k)
+        assert isinstance(y2k_to_undate, Undate)
+        assert int(y2k_to_undate.year) == y2k.year
+        assert y2k_to_undate.month is None
+        assert y2k_to_undate.day is None
+
+        # unsupported type
+        with pytest.raises(TypeError):
+            Undate.to_undate("foo")
 
     # test properties for accessing parts of date
     def test_year_property(self):
@@ -157,8 +213,10 @@ class TestUndate:
         # unset year
         assert Undate(month=12, day=31).year == "XXXX"
 
+        # NOTE: no longer supported to initialize undate with no date information
         # force method to hit conditional for date precision
-        some_century = Undate()
+        some_century = Undate(year="X")
+        some_century.initial_values["year"] = None
         some_century.precision = DatePrecision.CENTURY
         assert some_century.year is None
 
@@ -200,7 +258,8 @@ class TestUndate:
         assert Undate(2022) == Undate(2022)
         assert Undate(2022, 10) == Undate(2022, 10)
         assert Undate(2022, 10, 1) == Undate(2022, 10, 1)
-        assert Undate(month=2, day=7) == Undate(month=2, day=7)
+        # dates without a known year cannot known to be equal
+        assert not Undate(month=2, day=7) == Undate(month=2, day=7)
 
         # something we can't convert for comparison should return NotImplemented
         assert Undate(2022).__eq__("not a date") == NotImplemented
@@ -226,6 +285,8 @@ class TestUndate:
         # partially unknown dates should NOT be considered equal
         assert Undate("19XX") != Undate("19XX")
         assert Undate(1980, "XX") != Undate(1980, "XX")
+        # same dates with unknown years should not be considered equal
+        assert Undate(month=2, day=7) != Undate(month=2, day=7)
 
     testdata_lt_gt = [
         # dates to test for gt/lt comparison: earlier date, later date
@@ -274,15 +335,37 @@ class TestUndate:
         assert earlier <= later
         assert later >= earlier
 
+    def test_gt_lt_unknown_years(self):
+        # unknown years cannot be compared on either side...
+        year100 = Undate(100)
+        some_january = Undate(month=1)
+        assert not year100 < some_january
+        assert not year100 <= some_january
+        assert not year100 > some_january
+        assert not year100 >= some_january
+        assert not some_january < year100
+        assert not some_january <= year100
+        assert not some_january > year100
+        assert not some_january >= year100
+
     def test_lt_notimplemented(self):
+        # unsupported type should bail out and return NotImplemented
+        assert Undate(2022).__lt__("foo") == NotImplemented
+
         # how to compare mixed precision where dates overlap?
         # if the second date falls *within* earliest/latest,
         # then it is not clearly less; not implemented?
-        with pytest.raises(NotImplementedError, match="date falls within the other"):
+        with pytest.raises(
+            NotImplementedError,
+            match="one date \\(2022-05\\) falls within the other \\(2022\\)",
+        ):
             assert Undate(2022) < Undate(2022, 5)
 
         # same if we attempt to compare in the other direction
-        with pytest.raises(NotImplementedError, match="date falls within the other"):
+        with pytest.raises(
+            NotImplementedError,
+            match="one date \\(2022-05\\) falls within the other \\(2022\\)",
+        ):
             assert Undate(2022, 5) < Undate(2022)
 
     testdata_contains = [
@@ -300,6 +383,9 @@ class TestUndate:
     @pytest.mark.parametrize("date1,date2", testdata_contains)
     def test_contains(self, date1, date2):
         assert date1 in date2
+
+        # unsupported type should bail out and return NotImplemented
+        assert Undate(2022).__contains__("foo") == NotImplemented
 
     testdata_not_contains = [
         # dates not in range
@@ -320,6 +406,9 @@ class TestUndate:
         (Undate(1980, "XX"), Undate(1980, "XX")),
         # - partially unknown month to unknown month
         (Undate(1801, "1X"), Undate(1801, "XX")),
+        # fully unknown year
+        (Undate(month=6, day=1), Undate(2022)),
+        (Undate(1950), Undate(day=31)),
     ]
 
     @pytest.mark.parametrize("date1,date2", testdata_not_contains)
@@ -357,6 +446,48 @@ class TestUndate:
         # someyear = Undate("1XXX")
         # assert sorted([d1991, someyear]) == [someyear, d1991]
 
+    def test_possible_years(self):
+        assert Undate(1991).possible_years == [1991]
+        assert Undate("190X").possible_years == range(1900, 1910)
+        assert Undate("19XX").possible_years == range(1900, 2000)
+        # uses step when missing digit is not last digit
+        assert Undate("19X1").possible_years == range(1901, 1992, 10)
+        assert Undate("2X25").possible_years == range(2025, 2926, 100)
+        assert Undate("1XXX").possible_years == range(1000, 2000)
+        # completely unknown year raises value error, because the range is not useful
+        with pytest.raises(
+            ValueError, match="cannot be returned for completely unknown year"
+        ):
+            assert Undate("XXXX").possible_years
+
+        # non-gregorian years should return in original calendar
+        assert Undate(401, calendar="Hebrew").possible_years == [401]
+
+    def test_representative_years(self):
+        # single year is returned as is
+        assert Undate("1991").representative_years == [1991]
+        # for an uncertain year, returns first leap year and non-leap year in range
+        assert Undate("190X").representative_years == [1900, 1904]
+        assert Undate("19XX").representative_years == [1900, 1904]
+        # works for other calendars
+        assert Undate("481X", calendar="Hebrew").representative_years == [
+            4810,
+            4811,
+            4812,
+            4813,
+            4816,
+            4818,
+        ]
+
+        # use mock to simulate a calendar without representative years filtering
+        with mock.patch(
+            "undate.converters.calendars.HebrewDateConverter.representative_years"
+        ) as mock_representative_years:
+            mock_representative_years.side_effect = NotImplementedError
+            assert Undate("481X", calendar="Hebrew").representative_years == list(
+                range(4810, 4820)
+            )
+
     def test_duration(self):
         day_duration = Undate(2022, 11, 7).duration()
         assert isinstance(day_duration, Timedelta)
@@ -375,6 +506,20 @@ class TestUndate:
         leapyear_duration = Undate(2024).duration()
         assert leapyear_duration.days == 366
 
+    def test_duration_month_nongregorian(self):
+        # known-months for non-gregorian calendars should not be uncertain
+        assert Undate(1288, 4, calendar="Seleucid").duration().days == 29
+        assert Undate(1548, 5, calendar="Seleucid").duration().days == 30
+        assert Undate(4791, 11, calendar="Hebrew").duration().days == 30
+        assert Undate(4808, 10, calendar="Hebrew").duration().days == 29
+        assert Undate(942, 1, calendar="Islamic").duration().days == 30
+        assert Undate(984, 8, calendar="Islamic").duration().days == 29
+
+        # in some cases month length may vary by year
+        assert Undate(month=4, calendar="Seleucid").duration().days == 29
+        assert Undate(month=8, calendar="Hebrew").duration().days == UnInt(29, 30)
+        assert Undate(month=1, calendar="Islamic").duration().days == 30
+
     def test_partiallyknown_duration(self):
         # day in unknown month/year
         # assert Undate(day=5).duration().days == 1
@@ -384,12 +529,42 @@ class TestUndate:
         # month in unknown year
         assert Undate(month=6).duration().days == 30
         # partially known month
-        assert Undate(year=1900, month="1X").duration().days == 31
-        # what about february?
-        # could vary with leap years, but assume non-leapyear
-        assert Undate(month=2).duration().days == 28
+        # 1X = October, November, or December = 30 or 31 days
+        # should return a Undelta object
+        unknown_month_duration = Undate(year=1900, month="1X").duration()
+        assert isinstance(unknown_month_duration, UnDelta)
+        assert unknown_month_duration.days == UnInt(30, 31)
+
+        # completely unknown month should also return a Undelta object
+        unknown_month_duration = Undate(year=1900, month="XX").duration()
+        assert isinstance(unknown_month_duration, UnDelta)
+        # possible range is 28 to 31 days
+        assert unknown_month_duration.days == UnInt(28, 31)
+
+        # the number of days in February of an unknown year is uncertain, since
+        # it could vary with leap years; either 28 or 29 days
+        feb_duration = Undate(month=2).duration()
+        assert isinstance(feb_duration, UnDelta)
+        assert feb_duration.days == UnInt(28, 29)
+
+    def test_partiallyknownyear_duration(self):
+        assert Undate("190X").duration().days == UnInt(365, 366)
+        assert Undate("XXXX").duration().days == UnInt(365, 366)
+        # if possible years don't include any leap years, duration is not ambiguous
+        assert Undate("19X1").duration().days == 365
+        # year duration logic should work in other calendars
+        # islamic
+        assert Undate("108X", calendar="Islamic").duration().days == UnInt(354, 355)
+        # completely unknown years is calculated based on representative years
+        assert Undate("XXXX", calendar="Islamic").duration().days == UnInt(354, 355)
+        assert Undate("536X", calendar="Hebrew").duration().days == UnInt(353, 385)
+        # different set of years could vary
+        assert Undate("53X2", calendar="Hebrew").duration().days == UnInt(354, 385)
+        # fully unknown year also works for Hebrew calendar
+        assert Undate("XXX", calendar="Hebrew").duration().days == UnInt(353, 385)
 
     def test_known_year(self):
+        # known OR partially known
         assert Undate(2022).known_year is True
         assert Undate(month=2, day=5).known_year is False
         # partially known year is not known
@@ -411,6 +586,34 @@ class TestUndate:
         assert Undate(month=1, day="X5").is_known("day") is False
         assert Undate(month=1, day="XX").is_known("day") is False
 
+    def test_unknown_year(self):
+        # fully unknown year
+        assert Undate(month=2, day=5).unknown_year is True
+        # known or partially known years = all false for unknown
+        assert Undate(2022).unknown_year is False
+        # partially known year is not unknown
+        assert Undate("19XX").unknown_year is False
+        # fully known string year should be known
+        assert Undate("1900").unknown_year is False
+
+    def test_is_unknown_month(self):
+        # fully unknown month
+        assert Undate(2022).is_unknown("month") is True
+        assert Undate(day=10).is_unknown("month") is True
+        assert Undate(2022, 2).is_unknown("month") is False
+        assert Undate(2022, "5").is_unknown("month") is False
+        assert Undate(2022, "1X").is_unknown("month") is False
+        assert Undate(2022, "XX").is_unknown("month") is False
+
+    def test_is_unknown_day(self):
+        # fully unknown day
+        assert Undate(1984).is_unknown("day") is True
+        assert Undate(month=5).is_unknown("day") is True
+        assert Undate(month=1, day=3).is_unknown("day") is False
+        assert Undate(month=1, day="5").is_unknown("day") is False
+        assert Undate(month=1, day="X5").is_unknown("day") is False
+        assert Undate(month=1, day="XX").is_unknown("day") is False
+
     def test_parse(self):
         assert Undate.parse("1984", "EDTF") == Undate(1984)
         assert Undate.parse("1984-04", "EDTF") == Undate(1984, 4)
@@ -421,7 +624,10 @@ class TestUndate:
 
         assert Undate.parse("1984", "ISO8601") == Undate(1984)
         assert Undate.parse("1984-04", "ISO8601") == Undate(1984, 4)
-        assert Undate.parse("--12-31", "ISO8601") == Undate(month=12, day=31)
+        # dates with unknown year are not equal; compare repr string
+        assert repr(Undate.parse("--12-31", "ISO8601")) == repr(
+            Undate(month=12, day=31)
+        )
 
         # unsupported format
         with pytest.raises(ValueError, match="Unsupported format"):
@@ -452,122 +658,6 @@ class TestUndate:
             Undate(1984).format("%Y-%m")
 
 
-class TestUndateInterval:
-    def test_str(self):
-        # 2022 - 2023
-        assert str(UndateInterval(Undate(2022), Undate(2023))) == "2022/2023"
-        # 2022 - 2023-05
-        assert str(UndateInterval(Undate(2022), Undate(2023, 5))) == "2022/2023-05"
-        # 2022-11-01 to 2022-11-07
-        assert (
-            str(UndateInterval(Undate(2022, 11, 1), Undate(2023, 11, 7)))
-            == "2022-11-01/2023-11-07"
-        )
-
-    def test_format(self):
-        interval = UndateInterval(Undate(2000), Undate(2001))
-        assert interval.format("EDTF") == "2000/2001"
-        assert interval.format("ISO8601") == "2000/2001"
-
-        # Open-ended intervals
-        open_start = UndateInterval(latest=Undate(2000))
-        assert open_start.format("EDTF") == "../2000"
-        assert open_start.format("ISO8601") == "/2000"
-
-        open_end = UndateInterval(earliest=Undate(2000))
-        assert open_end.format("EDTF") == "2000/.."
-        assert open_end.format("ISO8601") == "2000/"
-
-    def test_repr(self):
-        assert (
-            repr(UndateInterval(Undate(2022), Undate(2023)))
-            == "<UndateInterval 2022/2023>"
-        )
-        assert (
-            repr(UndateInterval(Undate(2022), Undate(2023), label="Fancy Epoch"))
-            == "<UndateInterval 'Fancy Epoch' (2022/2023)>"
-        )
-
-    def test_str_open_range(self):
-        # 900 -
-        assert str(UndateInterval(Undate(900))) == "0900/"
-        # - 1900
-        assert str(UndateInterval(latest=Undate(1900))) == "../1900"
-        # - 1900-12
-        assert str(UndateInterval(latest=Undate(1900, 12))) == "../1900-12"
-
-    def test_eq(self):
-        assert UndateInterval(Undate(2022), Undate(2023)) == UndateInterval(
-            Undate(2022), Undate(2023)
-        )
-        assert UndateInterval(Undate(2022), Undate(2023, 5)) == UndateInterval(
-            Undate(2022), Undate(2023, 5)
-        )
-        assert UndateInterval(Undate(2022, 5)) == UndateInterval(Undate(2022, 5))
-
-    def test_not_eq(self):
-        assert UndateInterval(Undate(2022), Undate(2023)) != UndateInterval(
-            Undate(2022), Undate(2024)
-        )
-        assert UndateInterval(Undate(2022), Undate(2023, 5)) != UndateInterval(
-            Undate(2022), Undate(2023, 6)
-        )
-        assert UndateInterval(Undate(2022), Undate(2023, 5)) != UndateInterval(
-            Undate(2022), Undate(2023)
-        )
-        assert UndateInterval(Undate(2022, 5)) != UndateInterval(Undate(2022, 6))
-
-    def test_min_year_non_leapyear(self):
-        assert not calendar.isleap(Undate.MIN_ALLOWABLE_YEAR)
-
-    def test_duration(self):
-        week_duration = UndateInterval(
-            Undate(2022, 11, 1), Undate(2022, 11, 7)
-        ).duration()
-        assert isinstance(week_duration, Timedelta)
-        assert week_duration.days == 7
-
-        twomonths = UndateInterval(Undate(2022, 11), Undate(2022, 12)).duration()
-        # november - december = 30 days + 31 days
-        assert twomonths.days == 30 + 31
-
-        twoyears = UndateInterval(Undate(2021), Undate(2022)).duration()
-        assert twoyears.days == 365 * 2
-
-        # special case: month/day with no year (assumes same year)
-        week_noyear_duration = UndateInterval(
-            Undate(None, 11, 1), Undate(None, 11, 7)
-        ).duration()
-        assert week_noyear_duration.days == 7
-        # special case 2: month/day with no year, wrapping from december to january
-        # (assumes sequential years)
-        month_noyear_duration = UndateInterval(
-            Undate(None, 12, 1), Undate(None, 1, 1)
-        ).duration()
-        assert month_noyear_duration.days == 32
-
-        # real world test cases from Shakespeare and Company Project data;
-        # second date is a year minus one day in the future
-        month_noyear_duration = UndateInterval(
-            Undate(None, 6, 7), Undate(None, 6, 6)
-        ).duration()
-        assert month_noyear_duration.days == 365
-
-        # durations that span february in unknown years should assume
-        # non-leap years
-        jan_march_duration = UndateInterval(
-            Undate(None, 2, 28), Undate(None, 3, 1)
-        ).duration()
-        assert jan_march_duration.days == 2
-
-        # duration is not supported for open-ended intervals
-        assert UndateInterval(Undate(2000), None).duration() == NotImplemented
-
-        # one year set and the other not currently raises not implemented error
-        with pytest.raises(NotImplementedError):
-            UndateInterval(Undate(2000), Undate()).duration()
-
-
 def test_calendar_get_converter():
     # ensure we can retrieve a calendar converter for each
     # calendar named in our calendar enum
@@ -575,3 +665,25 @@ def test_calendar_get_converter():
         converter = Calendar.get_converter(cal)
         assert isinstance(converter, BaseCalendarConverter)
         assert converter.name.lower() == cal.name.lower()
+
+    class BogusCalendar(StrEnum):
+        """Unsupported calendars"""
+
+        FOOBAR = auto()
+        DUMMY = auto()
+
+    # test error handling
+    # ensure we raise a ValueError when an invalid calendar is requested
+    with pytest.raises(ValueError, match="Unknown calendar"):
+        Calendar.get_converter(BogusCalendar.FOOBAR)
+
+    class DummyFormatter(BaseDateConverter):
+        name = "Dummy"
+
+    # also error if you request a converter that is not a calendar converter
+    # NOTE: this fails because get_converter converts the enum to title case...
+    # can't be tested with any of the existing non-calendar converters
+    with pytest.raises(
+        ValueError, match="Requested converter 'Dummy' is not a CalendarConverter"
+    ):
+        Calendar.get_converter(BogusCalendar.DUMMY)

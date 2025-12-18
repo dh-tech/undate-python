@@ -10,11 +10,11 @@ from lark import Lark
 from lark.exceptions import UnexpectedCharacters
 from lark.visitors import Transformer, merge_transformers
 
-from undate.undate import Undate, UndateInterval
+from undate import Undate, UndateInterval
 from undate.converters import BaseDateConverter, GRAMMAR_FILE_PATH
 from undate.converters.edtf.transformer import EDTFTransformer
 from undate.converters.calendars.hebrew.transformer import HebrewDateTransformer
-from undate.converters.calendars.hijri.transformer import HijriDateTransformer
+from undate.converters.calendars.islamic.transformer import IslamicDateTransformer
 
 
 class CombinedDateTransformer(Transformer):
@@ -32,7 +32,7 @@ combined_transformer = merge_transformers(
     CombinedDateTransformer(),
     edtf=EDTFTransformer(),
     hebrew=HebrewDateTransformer(),
-    hijri=HijriDateTransformer(),
+    islamic=IslamicDateTransformer(),
 )
 
 
