@@ -44,11 +44,16 @@ in the list of available converters.
 
 import importlib
 import logging
+import pathlib
 import pkgutil
 from functools import cache
 from typing import Dict, Type
 
 logger = logging.getLogger(__name__)
+
+
+#: path to parser grammar files
+GRAMMAR_FILE_PATH = pathlib.Path(__file__).parent / "grammars"
 
 
 class BaseDateConverter:
