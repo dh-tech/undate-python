@@ -5,8 +5,9 @@ Overview
 --------
 
 
-..note: base converter is pretty developer-facing documentation; 
-.. calendar/converter usage would be helpful to add
+.. automodule:: undate.converters
+
+-----
 
 .. automodule:: undate.converters.base
    :members:
@@ -41,6 +42,8 @@ Extended Date-Time Format (EDTF)
 
 Calendars
 ---------
+
+.. automodule:: undate.converters.calendars
 
 Gregorian
 ^^^^^^^^^
