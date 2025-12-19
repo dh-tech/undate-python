@@ -26,12 +26,13 @@ class HebrewDateTransformer(Transformer):
 
         # initialize and return an undate with year, month, day and
         # configured calendar (hebrew by default)
+        # NOTE: use self.calendar so Seleucid can extend more easily
         return Undate(**parts, calendar=self.calendar)
 
-    # year translation is not needed since we want a tree with name year
-    # this is equivalent to a no-op
-    # def year(self, items):
-    #     return Tree(data="year", children=[items[0]])
+    def year(self, items):
+        # combine multiple parts into a single string
+        value = "".join([str(i) for i in items])
+        return Tree(data="year", children=[value])
 
     def month(self, items):
         # month has a nested tree for the rule and the value

@@ -1,8 +1,8 @@
-import pathlib
-
 from lark import Lark
 
-grammar_path = pathlib.Path(__file__).parent / "hebrew.lark"
+from undate.converters import GRAMMAR_FILE_PATH
+
+grammar_path = GRAMMAR_FILE_PATH / "hebrew.lark"
 
 with open(grammar_path) as grammar:
     # NOTE: LALR parser is faster but can't be used to ambiguity between years and dates

@@ -1,0 +1,32 @@
+%import common.WS
+%ignore WS
+
+start: (edtf__start | hebrew__hebrew_date  | islamic__islamic_date )
+
+// Renaming of the import variables is required, as they receive the namespace of this file.
+// See: https://github.com/lark-parser/lark/pull/973#issuecomment-907287565
+
+// All grammars are in the same file, so we can use relative imports
+
+// relative import from edtf.lark
+%import .edtf.edtf -> edtf__start
+
+// relative import from hebrew.lark
+%import .hebrew.hebrew_date -> hebrew__hebrew_date
+%import .hebrew.day  -> hebrew__day
+%import .hebrew.month -> hebrew__month
+%import .hebrew.year -> hebrew__year
+
+// relative import from islamic.lark
+%import .islamic.islamic_date -> islamic__islamic_date
+%import .islamic.day  -> islamic__day
+%import .islamic.month -> islamic__month
+%import .islamic.year -> islamic__year
+
+
+// override hebrew date to omit year-only, since year without calendar is ambiguous
+// NOTE: potentially support year with calendar label
+%override hebrew__hebrew_date: hebrew__day hebrew__month hebrew__year | hebrew__month hebrew__year 
+
+// same for islamic date, year alone is ambiguous
+%override islamic__islamic_date: islamic__day islamic__month islamic__year | islamic__month islamic__year 

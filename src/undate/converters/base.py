@@ -44,6 +44,7 @@ in the list of available converters.
 
 import importlib
 import logging
+import pathlib
 import pkgutil
 from functools import cache
 from typing import Dict, Type
@@ -51,6 +52,10 @@ from typing import Dict, Type
 from undate.date import Date
 
 logger = logging.getLogger(__name__)
+
+
+#: Path to parser grammar files
+GRAMMAR_FILE_PATH = pathlib.Path(__file__).parent / "grammars"
 
 
 class BaseDateConverter:
