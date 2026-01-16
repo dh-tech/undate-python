@@ -4,9 +4,19 @@ Converters
 Overview
 --------
 
+
+.. automodule:: undate.converters
+
+-----
+
 .. automodule:: undate.converters.base
    :members:
    :undoc-members:
+
+
+.. autoclass:: undate.converters.combined.OmnibusDateConverter
+   :members:
+
 
 Formats
 --------
@@ -32,6 +42,8 @@ Extended Date-Time Format (EDTF)
 
 Calendars
 ---------
+
+.. automodule:: undate.converters.calendars
 
 Gregorian
 ^^^^^^^^^
