@@ -9,6 +9,7 @@ undate documentation
    :caption: Contents:
 
    readme
+   pyodide
    undate/index
    CONTRIBUTING
    DEVELOPER_NOTES
