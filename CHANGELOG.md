@@ -1,5 +1,12 @@
 # Change Log
 
+## 0.6
+
+- Experimental omnibus date converter + parser (EDTF, Hebrew, Hijri)
+  - Reorganized Lark grammar files to a common location
+- Improved documentation for converter class parsing and serialization
+- Update action versions in GitHub Workflows (contributed by @rettinghaus)
+
 ## 0.5.2
 - repr for Undate, UndateInterval, and UnDelta now produce fully-qualified, constructor-style strings with deterministic field ordering.
 - Added Undate.unknown_year property and is_unknown() method to check for fully-unknown year/month/day.
