@@ -2,7 +2,7 @@
 
 ## 0.6
 
-- Experimental omnibus date converter + parser (EDTF, Hebrew, Hirji)
+- Experimental omnibus date converter + parser (EDTF, Hebrew, Hijri)
   - Reorganized Lark grammar files to a common location
 - Improved documentation for converter class parsing and serialization
 - Update action versions in GitHub Workflows (contributed by @rettinghaus)
