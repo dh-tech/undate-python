@@ -15,12 +15,14 @@ def test_django_functionality():
 """
 
 import pytest
+from types import ModuleType
 
+django: ModuleType | None = None
 try:
-    import django
+    import django  # type: ignore[import-not-found, no-redef]
 except ImportError:
-    django = None
+    pass
 
 skipif_no_django = pytest.mark.skipif(django is None, reason="requires Django")
 
-skipif_django = pytest.mark.skipif(django, reason="requires no Django")
+skipif_django = pytest.mark.skipif(django is not None, reason="requires no Django")
