@@ -40,6 +40,8 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Framework :: Django",
+    "Framework :: Django :: 5.2",    
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: Apache Software License",
@@ -53,6 +55,7 @@ classifiers = [
 
 [project.optional-dependencies]
 docs = ["sphinx>=7.0.0", "alabaster", "myst-parser", "myst-parser[linkify]"]
+django = ["django>=5.2"]
 test = ["pytest>=7.2", "pytest-ordering", "pytest-cov"]
 notebooks = ["jupyterlab", "pandas", "treon", "altair"]
 check = ["undate[docs]", "undate[notebooks]", "mypy", "ruff"]
