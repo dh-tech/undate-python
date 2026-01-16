@@ -58,8 +58,7 @@ docs = ["sphinx>=7.0.0", "alabaster", "myst-parser", "myst-parser[linkify]"]
 django = ["django>=5.2"]
 test = ["pytest>=7.2", "pytest-ordering", "pytest-cov"]
 notebooks = ["jupyterlab", "pandas", "treon", "altair"]
-# numpy 2.3+ needed for removal of deperecated typing plugin
-check = ["undate[docs]", "undate[notebooks]", "mypy", "ruff", "numpy>=2.3",]
+check = ["undate[docs]", "undate[notebooks]", "mypy", "ruff"]
 dev = [
     "pre-commit>=2.20.0",
     "twine",
