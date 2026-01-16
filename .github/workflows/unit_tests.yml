@@ -25,7 +25,7 @@ jobs:
     strategy:
       matrix:
         python: ["3.10", "3.11", "3.12", "3.13"]
-        django: [0, "5.2"]  # add more versions as we add support
+        django: ["NO_DJANGO", "5.2"]  # add more versions as we add support
       # exclude incompatible python+django combinations if needed
       # OR limit django+python to specific combinations to avoid too many builds
     defaults:
@@ -46,7 +46,7 @@ jobs:
       # test with and without django based on build matrix
       - name: Install package with dependencies (and optionally django)
         run: |
-          if [ "${{ matrix.django }}" -gt "0"]; then pip install -q Django==${{ matrix.django }} pytest-django; fi
+          if [ "${{ matrix.django }}" != "NO_DJANGO"]; then pip install -q Django==${{ matrix.django }} pytest-django; fi
           pip install -e '.[test]'
 
       # for all versions but the one we use for code coverage, run normally
