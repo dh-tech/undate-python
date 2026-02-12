@@ -1,15 +1,15 @@
 // WARNING: This file is auto-generated. DO NOT EDIT.
 // To regenerate: hatch run codegen:generate
 
-month_1: "January" | "Jan" | "enero" | "ene" | "janvier" | "janv" | "Januar" | "Mutarama" | "mut" | "Janwaliyo" | "ጥሪ"
-month_2: "February" | "Feb" | "febrero" | "feb" | "février" | "févr" | "Februar" | "Gashyantare" | "gas" | "Febwaliyo" | "ለካቲት" | "ለካ"
-month_3: "March" | "Mar" | "marzo" | "mar" | "mars" | "März" | "Werurwe" | "wer" | "Marisi" | "መጋቢት" | "መጋ"
-month_4: "April" | "Apr" | "abril" | "abr" | "avril" | "avr" | "Mata" | "mat" | "Apuli" | "Apu" | "ሚያዝያ" | "ሚያ"
-month_5: "May" | "mayo" | "may" | "mai" | "Mai" | "Gicurasi" | "gic" | "Maayi" | "Maa" | "ጉንበት" | "ግን"
-month_6: "June" | "Jun" | "junio" | "jun" | "juin" | "Juni" | "Kamena" | "kam" | "Juuni" | "Juu" | "ሰነ"
-month_7: "July" | "Jul" | "julio" | "jul" | "juillet" | "juil" | "Juli" | "Nyakanga" | "nya" | "Julaayi" | "ሓምለ" | "ሓም"
-month_8: "August" | "Aug" | "agosto" | "ago" | "août" | "Kanama" | "kan" | "Agusito" | "Agu" | "ነሓሰ" | "ነሓ"
-month_9: "September" | "Sep" | "septiembre" | "sept" | "septembre" | "Sept" | "Nzeri" | "nze" | "Sebuttemba" | "Seb" | "መስከረም" | "መስ"
-month_10: "October" | "Oct" | "octubre" | "oct" | "octobre" | "Oktober" | "Okt" | "Ukwakira" | "ukw" | "Okitobba" | "Oki" | "ጥቅምቲ" | "ጥቅ"
-month_11: "November" | "Nov" | "noviembre" | "nov" | "novembre" | "Ugushyingo" | "ugu" | "Novemba" | "ሕዳር" | "ሕዳ"
-month_12: "December" | "Dec" | "diciembre" | "dic" | "décembre" | "déc" | "Dezember" | "Dez" | "Ukuboza" | "uku" | "Desemba" | "Des" | "ታሕሳስ" | "ታሕ"
+month_1: /(janwaliyo|mutarama|january|janvier|januar|enero|janv|jan|ene|mut|ጥሪ)/i
+month_2: /(gashyantare|febwaliyo|february|febrero|février|februar|févr|ለካቲት|feb|gas|ለካ)/i
+month_3: /(werurwe|marisi|march|marzo|mars|märz|መጋቢት|mar|wer|መጋ)/i
+month_4: /(april|abril|avril|apuli|mata|ሚያዝያ|apr|abr|avr|mat|apu|ሚያ)/i
+month_5: /(gicurasi|maayi|mayo|ጉንበት|may|mai|gic|maa|ግን)/i
+month_6: /(kamena|junio|juuni|june|juin|juni|jun|kam|juu|ሰነ)/i
+month_7: /(nyakanga|juillet|julaayi|julio|july|juil|juli|jul|nya|ሓምለ|ሓም)/i
+month_8: /(agusito|august|agosto|kanama|août|aug|ago|kan|agu|ነሓሰ|ነሓ)/i
+month_9: /(septiembre|sebuttemba|september|septembre|nzeri|መስከረም|sept|sep|nze|seb|መስ)/i
+month_10: /(ukwakira|okitobba|october|octubre|octobre|oktober|ጥቅምቲ|oct|okt|ukw|oki|ጥቅ)/i
+month_11: /(ugushyingo|noviembre|november|novembre|novemba|nov|ugu|ሕዳር|ሕዳ)/i
+month_12: /(diciembre|december|décembre|dezember|ukuboza|desemba|ታሕሳስ|dec|dic|déc|dez|uku|des|ታሕ)/i

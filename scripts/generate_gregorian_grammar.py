@@ -4,7 +4,7 @@ This script generates the gregorian_multilang.lark file
 with month names (full and abbreviated) based on the list of
 target languages.
 
-Run this script with hatch to regeneate the file::
+Run this script with hatch to regenerate the file::
 
     hatch run codegen:generate
 
@@ -48,7 +48,7 @@ def main():
         for width in ["wide", "abbreviated"]:
             for month_num, month_name in get_month_names(width, locale=lang).items():
                 # some locales use a . on the shortened month; let's ignore that
-                month_name = month_name.strip(".")
+                month_name = month_name.strip(".").lower()
                 # In some cases different languages have the same abbreviations;
                 # in some cases, abbreviated and full are the same.
                 # Only add if not already present, to avoid redundancy
@@ -59,11 +59,12 @@ def main():
         outfile.write(warning_text)
 
         # for each numeric month, generate a rule with all variant names:
-        # month_1:  "January" | "Jan"  ...
+        # month_1:  /January|Jan/i
         for i, names in all_month_names.items():
-            # combine all names in an OR string
-            or_names = " | ".join(f'"{m}"' for m in names)
-            outfile.write(f"month_{i}: {or_names}\n")
+            # combine all names in a case-insensitive OR regex
+            # sort shortest variants last to avoid partial matches hitting first
+            or_names = "|".join(sorted(names, key=len, reverse=True))
+            outfile.write(f"month_{i}: /({or_names})/i\n")
 
     print(
         f"Successfully regenerated {MONTH_GRAMMAR_FILE.relative_to(pathlib.Path.cwd())}"

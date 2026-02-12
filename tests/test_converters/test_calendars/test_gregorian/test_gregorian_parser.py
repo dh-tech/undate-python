@@ -38,6 +38,9 @@ testcases = [
     # French
     "18 avril 2025",
     "18 avr. 2025",
+    # case-insensitive
+    "18 JUNE 2025",
+    "Avril 2025",
 ]
 
 
@@ -51,7 +54,7 @@ error_cases = [
     ("0 June 1006", UnexpectedCharacters),
     ("42 March 1206", UnexpectedCharacters),
     # month alone
-    ("Juin", UnexpectedCharacters),
+    ("Juin", UnexpectedEOF),
     # day only
     ("12 ", UnexpectedEOF),
     # non-Gregorian month

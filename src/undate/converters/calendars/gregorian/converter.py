@@ -100,7 +100,7 @@ class GregorianDateConverter(BaseCalendarConverter):
 
         # parse the input string, then transform to undate object
         try:
-            # parse the string with our Hebrew date parser
+            # parse the string with our Gregorian date parser
             parsetree = gregorian_parser.parse(value)
             # transform the parse tree into an undate object
             undate_obj = self.transformer.transform(parsetree)
