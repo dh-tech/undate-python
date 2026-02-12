@@ -23,7 +23,7 @@ testcases = [
     "December 5",
     "5 December",
     # Kinyarwanda (rw)
-    "2025 ugu 4",  # Babel renders as "2025 ugu. 4"
+    "2025 ugu. 4",
     "2025 Ugushyingo 4",
     "2025 ugu",
     "2025 Ugushyingo",
@@ -33,11 +33,11 @@ testcases = [
     "Novemba 2025",
     "4 Novemba",
     # Tigrinya (ti)
-    "ሕዳ 4 2025",  # Babel renders with a comma after the day
+    "ሕዳ 4, 2025",
     "ሕዳር 4 2025",
     # French
     "18 avril 2025",
-    "18 avr 2025",  # Babel renders as 18 avr. 2025
+    "18 avr. 2025",
 ]
 
 

@@ -1,8 +1,14 @@
 %import common.WS
 %ignore WS
 
+// Some abbreviations use periods; some default date formats
+// include commas. Ignore both
+PUNCTUATION: "." | ","
+%ignore PUNCTUATION
+
 %import .gregorian_multilang (month_1, month_2, month_3, month_4, month_5,  \
 	month_6, month_7, month_8, month_9, month_10, month_11, month_12)
+
 
 // no weekday support for now
 gregorian_date: day month year | month day year | year month day | month year | year month | year | day month | month day 
@@ -12,7 +18,9 @@ day: /[1-9]/ | /[12][0-9]/ | /3[0-1]/
 
 // Gregorian calendar started in 1582; assume years with 3 or more digits for now,
 // so we can support mixed day / year order unambiguously
-year: /\d{3,}/
+year: /\b\d{3,}\b/
+// Use word boundaries to separate from other tokens (esp. numeric day), 
+// since we otherwise ignore whitespace
 
 // months
 month: month_1
