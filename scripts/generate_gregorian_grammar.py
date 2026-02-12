@@ -1,4 +1,14 @@
 #!/usr/bin/env python
+"""
+This script generates the gregorian_multilang.lark file
+with month names (full and abbreviated) based on the list of
+target languages.
+
+Run this script with hatch to regeneate the file::
+
+    hatch run codegen:generate
+
+"""
 
 from collections import defaultdict
 import pathlib
@@ -25,7 +35,7 @@ languages = [
 
 # warning to include at top of generated file
 warning_text = """// WARNING: This file is auto-generated. DO NOT EDIT.
-// To regenerate: uvx hatch run codegen:generate
+// To regenerate: hatch run codegen:generate
 
 """
 

@@ -1,5 +1,5 @@
 // WARNING: This file is auto-generated. DO NOT EDIT.
-// To regenerate: uvx hatch run codegen:generate
+// To regenerate: hatch run codegen:generate
 
 month_1: "January" | "Jan" | "enero" | "ene" | "janvier" | "janv" | "Januar" | "Mutarama" | "mut" | "Janwaliyo" | "ጥሪ"
 month_2: "February" | "Feb" | "febrero" | "feb" | "février" | "févr" | "Februar" | "Gashyantare" | "gas" | "Febwaliyo" | "ለካቲት" | "ለካ"
