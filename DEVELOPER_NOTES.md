@@ -97,10 +97,9 @@ The Gregorian Lark parser includes a script-generated file, which
 populates month names based on a list of language codes using the Babel
 library.  To regenerate, run the script with hatch (which should
 be installed globally)::
-
-    hatch run codegen:generate
+```sh
+hatch run codegen:generate
+```
     
 When the `.lark` file is modified by the script, it must be committed to git.
-
-
 
