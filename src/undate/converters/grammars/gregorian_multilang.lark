@@ -1,4 +1,15 @@
+// WARNING: This file is auto-generated. DO NOT EDIT.
+// To regenerate: uvx hatch run codegen:generate
 
-
-month_1: "Jan" | "January"
-month_2: "Feb" | "February"
+month_1: "January" | "Jan" | "enero" | "ene" | "janvier" | "janv" | "Januar" | "Jan" | "Mutarama" | "mut" | "Janwaliyo" | "Jan" | "ጥሪ" | "ጥሪ"
+month_2: "February" | "Feb" | "febrero" | "feb" | "février" | "févr" | "Februar" | "Feb" | "Gashyantare" | "gas" | "Febwaliyo" | "Feb" | "ለካቲት" | "ለካ"
+month_3: "March" | "Mar" | "marzo" | "mar" | "mars" | "mars" | "März" | "März" | "Werurwe" | "wer" | "Marisi" | "Mar" | "መጋቢት" | "መጋ"
+month_4: "April" | "Apr" | "abril" | "abr" | "avril" | "avr" | "April" | "Apr" | "Mata" | "mat" | "Apuli" | "Apu" | "ሚያዝያ" | "ሚያ"
+month_5: "May" | "May" | "mayo" | "may" | "mai" | "mai" | "Mai" | "Mai" | "Gicurasi" | "gic" | "Maayi" | "Maa" | "ጉንበት" | "ግን"
+month_6: "June" | "Jun" | "junio" | "jun" | "juin" | "juin" | "Juni" | "Juni" | "Kamena" | "kam" | "Juuni" | "Juu" | "ሰነ" | "ሰነ"
+month_7: "July" | "Jul" | "julio" | "jul" | "juillet" | "juil" | "Juli" | "Juli" | "Nyakanga" | "nya" | "Julaayi" | "Jul" | "ሓምለ" | "ሓም"
+month_8: "August" | "Aug" | "agosto" | "ago" | "août" | "août" | "August" | "Aug" | "Kanama" | "kan" | "Agusito" | "Agu" | "ነሓሰ" | "ነሓ"
+month_9: "September" | "Sep" | "septiembre" | "sept" | "septembre" | "sept" | "September" | "Sept" | "Nzeri" | "nze" | "Sebuttemba" | "Seb" | "መስከረም" | "መስ"
+month_10: "October" | "Oct" | "octubre" | "oct" | "octobre" | "oct" | "Oktober" | "Okt" | "Ukwakira" | "ukw" | "Okitobba" | "Oki" | "ጥቅምቲ" | "ጥቅ"
+month_11: "November" | "Nov" | "noviembre" | "nov" | "novembre" | "nov" | "November" | "Nov" | "Ugushyingo" | "ugu" | "Novemba" | "Nov" | "ሕዳር" | "ሕዳ"
+month_12: "December" | "Dec" | "diciembre" | "dic" | "décembre" | "déc" | "Dezember" | "Dez" | "Ukuboza" | "uku" | "Desemba" | "Des" | "ታሕሳስ" | "ታሕ"
