@@ -4,7 +4,7 @@ from undate import Undate, Calendar
 
 
 class IslamicUndate(Undate):
-    """Undate convience subclass; sets default calendar to Islamic."""
+    """Undate convenience subclass; sets default calendar to Islamic."""
 
     calendar = Calendar.ISLAMIC
 
