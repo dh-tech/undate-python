@@ -1,6 +1,6 @@
 from calendar import monthrange, isleap
 
-from lark.exceptions import UnexpectedCharacters
+from lark.exceptions import UnexpectedInput
 
 from undate.undate import Undate
 from undate.converters.base import BaseCalendarConverter
@@ -107,5 +107,5 @@ class GregorianDateConverter(BaseCalendarConverter):
             # set the original date string as the label
             undate_obj.label = value
             return undate_obj
-        except UnexpectedCharacters as err:
+        except UnexpectedInput as err:
             raise ValueError(f"Could not parse '{value}' as a Gregorian date") from err

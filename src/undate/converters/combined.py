@@ -7,7 +7,7 @@ Gregorian calendar.)
 from typing import Union
 
 from lark import Lark
-from lark.exceptions import UnexpectedCharacters
+from lark.exceptions import UnexpectedInput
 from lark.visitors import Transformer, merge_transformers
 
 from undate import Undate, UndateInterval
@@ -77,7 +77,7 @@ class OmnibusDateConverter(BaseDateConverter):
             parsetree = parser.parse(value)
             # transform returns a list; we want the first item in the list
             return self.transformer.transform(parsetree)[0]
-        except UnexpectedCharacters:
+        except UnexpectedInput:
             raise ValueError(
                 "Parsing failed: '%s' is not in a recognized date format" % value
             )
