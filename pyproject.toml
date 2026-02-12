@@ -81,6 +81,12 @@ path = "src/undate/__init__.py"
 [tool.hatch.build.targets.sdist]
 include = ["src/undate/**/*.py", "src/undate/**/*.lark", "tests/**"]
 
+[tool.hatch.envs.codegen]
+dependencies = ["babel"]
+
+[tool.hatch.envs.codegen.scripts]
+generate = "python scripts/generate_gregorian_grammar.py"
+
 [tool.pytest.ini_options]
 pythonpath = "src/"
 markers = [
