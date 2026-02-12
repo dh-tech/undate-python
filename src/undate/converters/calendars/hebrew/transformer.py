@@ -21,13 +21,23 @@ class HebrewDateTransformer(Transformer):
             if child.data in ["year", "month", "day"]:
                 # in each case we expect one integer value;
                 # anonymous tokens convert to their value and cast as int
-                value = int(child.children[0])
+                try:
+                    value = int(child.children[0])
+                except ValueError:
+                    # if missing digits are present, leave as a string
+                    value = child.children[0]
+
                 parts[str(child.data)] = value
 
         # initialize and return an undate with year, month, day and
         # configured calendar (hebrew by default)
         # NOTE: use self.calendar so Seleucid can extend more easily
         return Undate(**parts, calendar=self.calendar)
+
+    def UNKNOWN_DIGITS(self, token):
+        """Convert unknown digits into undate missing digit character."""
+        unknown_digits = token.strip("[]").replace(".", Undate.MISSING_DIGIT)
+        return token.update(value=unknown_digits)
 
     def year(self, items):
         # combine multiple parts into a single string

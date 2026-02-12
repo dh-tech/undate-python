@@ -32,6 +32,9 @@ testcases = [
     ("Thursday 12 Sivan 4795", HebrewUndate(4795, 3, 12), DatePrecision.DAY),
     # huh, current parsing completely ignores whitespace; do we want that?
     ("Thursday12Sivan4795", HebrewUndate(4795, 3, 12), DatePrecision.DAY),
+    # years with missing digits
+    ("53[.]2", HebrewUndate("53X2"), DatePrecision.YEAR),
+    ("5[..]2", HebrewUndate("5XX2"), DatePrecision.YEAR),
 ]
 
 
@@ -41,7 +44,7 @@ def test_transform(date_string, expected, expected_precision):
     # parse the input string, then transform to undate object
     parsetree = hebrew_parser.parse(date_string)
     transformed_date = transformer.transform(parsetree)
-    assert transformed_date == expected
+    assert repr(transformed_date) == repr(expected)
     # currently only undates have date precision
     if isinstance(transformed_date, Undate):
         assert transformed_date.precision == expected_precision

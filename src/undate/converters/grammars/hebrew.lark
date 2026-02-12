@@ -1,8 +1,8 @@
-%import common.WS
+%import common (WS, DIGIT)
 %ignore WS
 
 // Ignore periods and commas in dates
-%import .undate_common.DATE_PUNCTUATION
+%import .undate_common (DATE_PUNCTUATION, UNKNOWN_DIGITS)
 %ignore DATE_PUNCTUATION
 
 // only support day month year format for now
@@ -16,7 +16,7 @@ hebrew_date: weekday? day month year | month year | year
 // "first third of", seasons (can look for more examples)
 
 // Hebrew calendar starts with year 1 in 3761 BCE
-year: /\d+/
+year: /\d+/ | DIGIT* UNKNOWN_DIGITS DIGIT*
 
 // months
 month: month_1

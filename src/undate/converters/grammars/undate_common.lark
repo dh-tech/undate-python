@@ -1,3 +1,8 @@
 // Some abbreviations use periods; some default date formats
 // include commas. Ignore both
 DATE_PUNCTUATION: "." | ","
+
+// In some sources like PGP, unknown digits are represented by
+// brackets and periods, where the periods indicate the number of
+// unknown digits, e.g. 18[..]  or 14[.]3
+UNKNOWN_DIGITS: /\[\.+\]/

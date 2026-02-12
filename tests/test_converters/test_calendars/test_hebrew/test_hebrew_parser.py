@@ -33,6 +33,9 @@ testcases = [
     "536",
     "53",
     "3",
+    # years with missing digit
+    "53[.]2",
+    "5[..]2",
 ]
 
 
