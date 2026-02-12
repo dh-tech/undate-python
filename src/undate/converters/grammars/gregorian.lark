@@ -11,15 +11,15 @@ PUNCTUATION: "." | ","
 
 
 // no weekday support for now
-gregorian_date: day month year | month day year | year month day | month year | year month | year | day month | month day 
+gregorian_date: day month year | month day year | year month day | month year | year month | year | day month | month day
 
 // months have 28 to 31 days; we do not expect leading zeroes
-day: /[1-9]/ | /[12][0-9]/ | /3[0-1]/
+day:  /[1-9]/ | /[12][0-9]/ | /3[0-1]/
 
 // Gregorian calendar started in 1582; assume years with 3 or more digits for now,
 // so we can support mixed day / year order unambiguously
 year: /\b\d{3,}\b/
-// Use word boundaries to separate from other tokens (esp. numeric day), 
+// Use word boundaries to separate from other tokens (esp. numeric day),
 // since we otherwise ignore whitespace
 
 // months

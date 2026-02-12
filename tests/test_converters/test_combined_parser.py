@@ -19,6 +19,11 @@ testcases = [
     ("Jumādā I 1243", Undate(1243, 5, calendar="Islamic")),
     ("7 Jumādā I 1243", Undate(1243, 5, 7, calendar="Islamic")),
     ("14 Rabīʿ I 901", Undate(901, 3, 14, calendar="Islamic")),
+    # Gregorian with non-numeric month (full or abbreviated)
+    ("June 1602", Undate(1602, 6, calendar="Gregorian")),
+    ("13 Jan 1602", Undate(1602, 1, 13, calendar="Gregorian")),
+    ("2022 ugu. 4", Undate(2022, 11, 4, calendar="Gregorian")),
+    ("18 avril", Undate(month=4, day=18, calendar="Gregorian")),
 ]
 
 

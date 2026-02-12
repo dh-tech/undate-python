@@ -35,3 +35,8 @@ class GregorianDateTransformer(Transformer):
         tree = items[0]
         month_n = tree.data.split("_")[-1]
         return Tree(data="month", children=[month_n])
+
+    def day(self, items):
+        # combine multiple parts into a single string
+        value = "".join([str(i) for i in items])
+        return Tree(data="day", children=[value])

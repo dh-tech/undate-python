@@ -13,6 +13,7 @@ from lark.visitors import Transformer, merge_transformers
 from undate import Undate, UndateInterval
 from undate.converters import BaseDateConverter, GRAMMAR_FILE_PATH
 from undate.converters.edtf.transformer import EDTFTransformer
+from undate.converters.calendars.gregorian.transformer import GregorianDateTransformer
 from undate.converters.calendars.hebrew.transformer import HebrewDateTransformer
 from undate.converters.calendars.islamic.transformer import IslamicDateTransformer
 
@@ -33,6 +34,7 @@ combined_transformer = merge_transformers(
     edtf=EDTFTransformer(),
     hebrew=HebrewDateTransformer(),
     islamic=IslamicDateTransformer(),
+    gregorian=GregorianDateTransformer(),
 )
 
 
@@ -45,7 +47,7 @@ parser = Lark.open(
 class OmnibusDateConverter(BaseDateConverter):
     """
     Combination parser that aggregates existing parser grammars.
-    Currently supports EDTF, Hebrew, and Hijri  where dates are unambiguous.
+    Currently supports EDTF, Gregorian, Hebrew, and Hijri where dates are unambiguous.
     (Year-only dates are parsed as EDTF in Gregorian calendar.)
 
     Does not support serialization.
