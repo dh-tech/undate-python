@@ -1,6 +1,11 @@
 from calendar import monthrange, isleap
 
+from lark.exceptions import UnexpectedCharacters
+
+from undate.undate import Undate
 from undate.converters.base import BaseCalendarConverter
+from undate.converters.calendars.gregorian.parser import gregorian_parser
+from undate.converters.calendars.gregorian.transformer import GregorianDateTransformer
 
 
 class GregorianDateConverter(BaseCalendarConverter):
@@ -17,6 +22,9 @@ class GregorianDateConverter(BaseCalendarConverter):
     NON_LEAP_YEAR: int = 2022
     #: arbitrary known leap year
     LEAP_YEAR: int = 2024
+
+    def __init__(self):
+        self.transformer = GregorianDateTransformer()
 
     def min_month(self) -> int:
         """First month for the Gregorian calendar."""
@@ -79,3 +87,25 @@ class GregorianDateConverter(BaseCalendarConverter):
         a common point of comparison.
         """
         return (year, month, day)
+
+    def parse(self, value: str) -> Undate:
+        """
+        Parse a Gregorian date string of any supported precision in any
+        supported language and return an :class:`~undate.undate.Undate`.
+        The input date string is preserved in the label of the resulting
+        Undate object.
+        """
+        if not value:
+            raise ValueError("Parsing empty string is not supported")
+
+        # parse the input string, then transform to undate object
+        try:
+            # parse the string with our Hebrew date parser
+            parsetree = gregorian_parser.parse(value)
+            # transform the parse tree into an undate object
+            undate_obj = self.transformer.transform(parsetree)
+            # set the original date string as the label
+            undate_obj.label = value
+            return undate_obj
+        except UnexpectedCharacters as err:
+            raise ValueError(f"Could not parse '{value}' as a Gregorian date") from err

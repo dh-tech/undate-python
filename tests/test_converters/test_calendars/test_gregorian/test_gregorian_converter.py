@@ -1,3 +1,5 @@
+from undate.date import DatePrecision
+from undate.undate import Undate, Calendar
 from undate.converters.calendars import GregorianDateConverter
 
 
@@ -38,3 +40,28 @@ class TestGregorianDateConverter:
             converter.LEAP_YEAR,
             converter.NON_LEAP_YEAR,
         ]
+
+    def test_parse(self):
+        # day
+        date_str = "2022 Ugushyingo 26"
+        date = GregorianDateConverter().parse(date_str)
+        assert date == Undate(2022, 11, 26)  # Ugushyingo = November
+        assert date.calendar == Calendar.GREGORIAN
+        assert date.precision == DatePrecision.DAY
+        assert date.label == date_str
+
+        # month
+        date_str = "avril 1362"
+        date = GregorianDateConverter().parse(date_str)
+        assert date == Undate(1362, 4)
+        assert date.calendar == Calendar.GREGORIAN
+        assert date.precision == DatePrecision.MONTH
+        assert date.label == date_str
+
+        # year
+        date_str = "932"
+        date = GregorianDateConverter().parse(date_str)
+        assert date == Undate(932)
+        assert date.calendar == Calendar.GREGORIAN
+        assert date.precision == DatePrecision.YEAR
+        assert date.label == date_str
