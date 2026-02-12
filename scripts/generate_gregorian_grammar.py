@@ -38,7 +38,12 @@ def main():
         for width in ["wide", "abbreviated"]:
             for month_num, month_name in get_month_names(width, locale=lang).items():
                 # some locales use a . on the shortened month; let's ignore that
-                all_month_names[month_num].append(month_name.strip("."))
+                month_name = month_name.strip(".")
+                # In some cases different languages have the same abbreviations;
+                # in some cases, abbreviated and full are the same.
+                # Only add if not already present, to avoid redundancy
+                if month_name not in all_month_names[month_num]:
+                    all_month_names[month_num].append(month_name)
 
     with MONTH_GRAMMAR_FILE.open("w") as outfile:
         outfile.write(warning_text)
