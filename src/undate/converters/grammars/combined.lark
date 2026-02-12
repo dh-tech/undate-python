@@ -1,10 +1,9 @@
 %import common.WS
 %ignore WS
 
-// Some abbreviations use periods; some default date formats
-// include commas. Ignore both. (Copied from gregorian.lark)
-PUNCTUATION: "." | ","
-%ignore PUNCTUATION
+// Ignore periods and commas in dates
+%import .undate_common.DATE_PUNCTUATION
+%ignore DATE_PUNCTUATION
 
 start: (edtf__start | hebrew__hebrew_date  | islamic__islamic_date | gregorian__gregorian_date )
 

@@ -1,10 +1,9 @@
 %import common.WS
 %ignore WS
 
-// Some abbreviations use periods; some default date formats
-// include commas. Ignore both
-PUNCTUATION: "." | ","
-%ignore PUNCTUATION
+// Ignore periods and commas in dates
+%import .undate_common.DATE_PUNCTUATION
+%ignore DATE_PUNCTUATION
 
 %import .gregorian_multilang (month_1, month_2, month_3, month_4, month_5,  \
 	month_6, month_7, month_8, month_9, month_10, month_11, month_12)

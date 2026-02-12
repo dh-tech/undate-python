@@ -1,9 +1,13 @@
 %import common.WS
 %ignore WS
 
+// Ignore periods and commas in dates
+%import .undate_common.DATE_PUNCTUATION
+%ignore DATE_PUNCTUATION
+
 // only support day month year format for now
 // parser requires numeric day and year to be distinguished based on order
-hebrew_date: weekday? day month comma? year | month year | year
+hebrew_date: weekday? day month year | month year | year
 
 // TODO: handle date ranges?
 
@@ -31,8 +35,7 @@ month: month_1
 // months have 29 or 30 days; we do not expect leading zeroes
 day: /[1-9]/ | /[12][0-9]/ | /30/
 
-comma: ","
-weekday: ("Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday" | "Sunday") comma?
+weekday: ("Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday" | "Sunday")
 
 
 // months, in order; from convertdate list
