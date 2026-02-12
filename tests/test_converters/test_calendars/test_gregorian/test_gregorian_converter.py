@@ -1,3 +1,6 @@
+import pytest
+
+
 from undate.date import DatePrecision
 from undate.undate import Undate, Calendar
 from undate.converters.calendars import GregorianDateConverter
@@ -65,3 +68,10 @@ class TestGregorianDateConverter:
         assert date.calendar == Calendar.GREGORIAN
         assert date.precision == DatePrecision.YEAR
         assert date.label == date_str
+
+    def test_parse_errors(self):
+        with pytest.raises(ValueError, match="empty string is not supported"):
+            GregorianDateConverter().parse("")
+
+        with pytest.raises(ValueError, match="Could not parse"):
+            GregorianDateConverter().parse("Foo 1920")
