@@ -1,7 +1,7 @@
 """
-**Experimental** combined parser. Supports EDTF, Hebrew, and Hijri
-where dates are unambiguous. (Year-only dates are parsed as EDTF in
-Gregorian calendar.)
+**Experimental** combined parser. Supports EDTF, Gregorian, Hebrew, and Hijri
+where dates are unambiguous. Year-only dates are parsed as EDTF in
+Gregorian calendar.
 """
 
 from typing import Union
