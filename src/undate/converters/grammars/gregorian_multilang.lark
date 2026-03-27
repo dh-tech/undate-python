@@ -1,0 +1,15 @@
+// WARNING: This file is auto-generated. DO NOT EDIT.
+// To regenerate: hatch run codegen:generate
+
+month_1: /(janwaliyo|mutarama|january|janvier|januar|enero|janv|jan|ene|mut|ጥሪ)/i
+month_2: /(gashyantare|febwaliyo|february|febrero|février|februar|févr|ለካቲት|feb|gas|ለካ)/i
+month_3: /(werurwe|marisi|march|marzo|mars|märz|መጋቢት|mar|wer|መጋ)/i
+month_4: /(april|abril|avril|apuli|mata|ሚያዝያ|apr|abr|avr|mat|apu|ሚያ)/i
+month_5: /(gicurasi|maayi|mayo|ጉንበት|may|mai|gic|maa|ግን)/i
+month_6: /(kamena|junio|juuni|june|juin|juni|jun|kam|juu|ሰነ)/i
+month_7: /(nyakanga|juillet|julaayi|julio|july|juil|juli|jul|nya|ሓምለ|ሓም)/i
+month_8: /(agusito|august|agosto|kanama|août|aug|ago|kan|agu|ነሓሰ|ነሓ)/i
+month_9: /(septiembre|sebuttemba|september|septembre|nzeri|መስከረም|sept|sep|nze|seb|መስ)/i
+month_10: /(ukwakira|okitobba|october|octubre|octobre|oktober|ጥቅምቲ|oct|okt|ukw|oki|ጥቅ)/i
+month_11: /(ugushyingo|noviembre|november|novembre|novemba|nov|ugu|ሕዳር|ሕዳ)/i
+month_12: /(diciembre|december|décembre|dezember|ukuboza|desemba|ታሕሳስ|dec|dic|déc|dez|uku|des|ታሕ)/i

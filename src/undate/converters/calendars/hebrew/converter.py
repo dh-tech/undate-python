@@ -1,7 +1,7 @@
 from typing import Union
 
 from convertdate import hebrew  # type: ignore
-from lark.exceptions import UnexpectedCharacters
+from lark.exceptions import UnexpectedInput
 
 from undate import Undate, UndateInterval
 from undate.converters.base import BaseCalendarConverter
@@ -111,7 +111,7 @@ class HebrewDateConverter(BaseCalendarConverter):
             # set the original date as a label, with the calendar name
             undate_obj.label = f"{value} {self.calendar_name}"
             return undate_obj
-        except UnexpectedCharacters as err:
+        except UnexpectedInput as err:
             raise ValueError(f"Could not parse '{value}' as a Hebrew date") from err
 
     # do we need to support conversion the other direction?

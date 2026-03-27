@@ -89,3 +89,18 @@ sphinx-build docs docs/_build
 ```
 
 HTML documentation will be generated in `docs/_build/html`
+
+
+### Regenerating multilingual Gregorian month name parse file
+
+The Gregorian Lark parser includes a script-generated file, which
+populates month names based on a list of language codes using the Babel
+library.  To regenerate, run the script with hatch (which should
+be installed globally):
+
+```sh
+hatch run codegen:generate
+```
+    
+When the `.lark` file is modified by the script, it must be committed to git.
+

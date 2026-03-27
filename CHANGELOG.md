@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.7
+
+- Add parsing to Gregorian date converter; supports month names (full or abbreviated)
+  in English, French, German, Spanish, Kinyarwanda, Ganda, and Tigrinya
+- Include Gregorian dates in omnibus parser
+
 ## 0.6
 
 - Experimental omnibus date converter + parser (EDTF, Hebrew, Hijri)

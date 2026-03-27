@@ -1,6 +1,6 @@
 from typing import Optional, Union
 
-from lark.exceptions import UnexpectedCharacters
+from lark.exceptions import UnexpectedInput
 
 from undate import Undate, UndateInterval
 from undate.converters.base import BaseDateConverter
@@ -40,10 +40,10 @@ class EDTFDateConverter(BaseDateConverter):
         try:
             parsetree = edtf_parser.parse(value)
             return self.transformer.transform(parsetree)
-        except UnexpectedCharacters:
+        except UnexpectedInput as err:
             raise ValueError(
-                "Parsing failed: '%s' is not a supported EDTF date format" % value
-            )
+                f"Parsing failed: '{value}' is not a supported EDTF date format"
+            ) from err
 
     def _convert_missing_digits(
         self, value: Optional[str], old_missing_digit: str
