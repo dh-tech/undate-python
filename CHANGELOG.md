@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.6.1
+- Updated Read the Docs build to use Ubuntu 24.04
+
 ## 0.6
 
 - Experimental omnibus date converter + parser (EDTF, Hebrew, Hijri)
