@@ -1,0 +1,37 @@
+%import common.WS
+%ignore WS
+
+%import .undate_common.DATE_PUNCTUATION
+%ignore DATE_PUNCTUATION
+
+
+holiday_date: movable_feast year | fixed_date year?
+
+// holidays that shift depending on the year
+movable_feast: EASTER | EASTER_MONDAY | HOLY_SATURDAY | ASCENSION 
+             | PENTECOST | WHIT_MONDAY | TRINITY | ASH_WEDNESDAY | SHROVE_TUESDAY
+
+// holidays that are always on the same date
+fixed_date: EPIPHANY | CANDLEMASS | ST_PATRICKS | ALL_FOOLS | ST_CYPRIANS
+
+year: /\d{4}/
+
+// all patterns use case-insensitive regex
+
+// Fixed-date holidays 
+EPIPHANY: /epiphany/i
+CANDLEMASS: /candlemass?/i   // recognize with both one and 2 s
+ST_PATRICKS: /st\.?\s*patrick'?s?\s*day/i
+ALL_FOOLS: /(april|all)\s*fools?\s*day/i
+ST_CYPRIANS: /st\.?\s*cyprian'?s?\s*day/i
+
+// Moveable feasts 
+EASTER: /easter/i
+EASTER_MONDAY: /easter\s*monday/i
+HOLY_SATURDAY: /holy\s*saturday/i
+ASCENSION: /ascension\s*day|ascension/i
+PENTECOST: /pentecost/i
+WHIT_MONDAY: /whit\s*monday|whitsun\s*monday/i
+TRINITY: /trinity\s*sunday|trinity/i
+ASH_WEDNESDAY: /ash\s*wednesday/i
+SHROVE_TUESDAY: /shrove\s*tuesday/i

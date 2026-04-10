@@ -24,6 +24,12 @@ testcases = [
     ("13 Jan 1602", Undate(1602, 1, 13, calendar="Gregorian")),
     ("2022 ugu. 4", Undate(2022, 11, 4, calendar="Gregorian")),
     ("18 avril", Undate(month=4, day=18, calendar="Gregorian")),
+    # Christian liturgical dates
+    ("Easter 1942", Undate(1942, 4, 5)),
+    ("Epiphany 1921", Undate(1921, 1, 6)),
+    ("Pentecost 2016", Undate(2016, 5, 15)),
+    ("Ash Wednesday 2000", Undate(2000, 3, 8)),
+    ("Whit Monday 2023", Undate(2023, 5, 29)),
 ]
 
 
