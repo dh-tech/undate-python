@@ -115,4 +115,4 @@ class HebrewDateConverter(BaseCalendarConverter):
             raise ValueError(f"Could not parse '{value}' as a Hebrew date") from err
 
     # do we need to support conversion the other direction?
-    # i.e., generate a Hebrew date from an abitrary undate or undate interval?
+    # i.e., generate a Hebrew date from an arbitrary undate or undate interval?

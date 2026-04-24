@@ -103,7 +103,7 @@ class ISO8601DateFormat(BaseDateConverter):
 
             elif date_portion == "year":
                 # if year is not known, add '-' for year portion,
-                # to genereate --MM-DD unknown year format
+                # to generate --MM-DD unknown year format
                 date_parts.append("-")
         # TODO: fix type error: "list[str | None]" is incompatible with "Iterable[str]"
         return "-".join(date_parts)  # type: ignore

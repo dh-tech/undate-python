@@ -102,7 +102,7 @@ class BaseDateConverter:
         logger.debug("Loading converters under undate.converters")
         import undate.converters
 
-        # load packages under this path with curent package prefix
+        # load packages under this path with current package prefix
         converter_path = undate.converters.__path__
         converter_prefix = f"{undate.converters.__name__}."
 

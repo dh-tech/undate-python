@@ -6,6 +6,6 @@ from undate.converters.calendars.seleucid import SeleucidDateConverter
 __all__ = [
     "GregorianDateConverter",
     "HebrewDateConverter",
-    "IslamicDateConverter",    
+    "IslamicDateConverter",
     "SeleucidDateConverter",
 ]

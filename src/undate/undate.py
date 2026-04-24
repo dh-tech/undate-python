@@ -177,7 +177,7 @@ class Undate:
             # if we have no day or partial day, calculate min / max
             min_day = 1  # is min day ever anything other than 1 ?
             rel_year = year if year and isinstance(year, int) else max_year
-            # use month if it is an integer; otherwise use previusly determined
+            # use month if it is an integer; otherwise use previously determined
             # max month (which may not be 12 depending if partially unknown)
             rel_month = month if month and isinstance(month, int) else latest_month
 

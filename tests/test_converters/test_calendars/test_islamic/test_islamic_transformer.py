@@ -28,7 +28,7 @@ testcases = [
     # examples from ISMI data (reformatted to day month year)
     # Rabi 1 = month 3
     ("14 Rabīʿ I 901", IslamicUndate(901, 3, 14), DatePrecision.DAY),
-    ("Rabīʿ I 490", IslamicUndate(490, 3), DatePrecision.MONTH),    
+    ("Rabīʿ I 490", IslamicUndate(490, 3), DatePrecision.MONTH),
     ("884", IslamicUndate(884), DatePrecision.YEAR),
     # Gregorian:  UndateInterval(Undate(1479, 4, 3), Undate(1480, 3, 21)),
     # add when we support parsing ranges:

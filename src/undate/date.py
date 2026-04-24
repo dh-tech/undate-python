@@ -297,7 +297,7 @@ class DatePrecision(IntEnum):
     of the date is known."""
 
     # NOTE: values MUST be ordered based on the relative size or
-    # precison of the time unit. That is, the smaller the unit, the more precise
+    # precision of the time unit. That is, the smaller the unit, the more precise
     # it is: a day is more precise than a month, a month is more precise than a year,
     # (DatePrecision.year < DatePrecision.month)
 

@@ -36,7 +36,11 @@ class TestHolidayConverter:
             ("Ascension 1988", Undate(1988, 5, 12), Weekday.THURSDAY),
             ("Ascension Day 1999", Undate(1999, 5, 13), Weekday.THURSDAY),
             ("Pentecost 2016", Undate(2016, 5, 15), Weekday.SUNDAY),
-            ("whit monday 2005", Undate(2005, 5, 16), Weekday.MONDAY),
+            (
+                "whit monday 2005",  # codespell:ignore whit
+                Undate(2005, 5, 16),
+                Weekday.MONDAY,
+            ),
             ("whitsun monday 2023", Undate(2023, 5, 29), Weekday.MONDAY),
             ("trinity 1978", Undate(1978, 5, 21), Weekday.SUNDAY),
             ("Trinity Sunday 1967", Undate(1967, 5, 21), Weekday.SUNDAY),
