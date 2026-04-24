@@ -14,21 +14,21 @@ from undate.converters.base import BaseDateConverter, GRAMMAR_FILE_PATH
 # To add a new holiday:
 #   1. Add a name and pattern to holidays.lark grammar file
 #   2. Include the in appropriate section (fixed or movable)
-#   3. Add an entry to FIXED_HOLIDAYS or MOVEABLE_FEASTS; must match grammar terminal name
+#   3. Add an entry to FIXED_HOLIDAYS or MOVABLE_FEASTS; must match grammar terminal name
 
 
 # holidays that fall on the same date every year
 # key must match grammar term; value is tuple of numeric month, day
 FIXED_HOLIDAYS = {
     "EPIPHANY": (1, 6),  # January 6
-    "CANDLEMASS": (2, 2),  # February 2; 40th day & end of epiphany
+    "CANDLEMAS": (2, 2),  # February 2; 40th day & end of epiphany
     "ST_PATRICKS": (3, 17),  # March 17
     "ALL_FOOLS": (4, 1),  # All / April fools day, April 1
     "ST_CYPRIANS": (9, 16),  # St. Cyprian's Feast day: September 16
 }
 
 # holidays that shift depending on the year; value is days relative to Easter
-MOVEABLE_FEASTS = {
+MOVABLE_FEASTS = {
     "EASTER": 0,  # Easter, no offset
     "HOLY_SATURDAY": -1,  # day before Easter
     "EASTER_MONDAY": 1,  # day after Easter
@@ -55,22 +55,20 @@ class HolidayTransformer(Transformer):
         # return Tree(data="year", children=[value])
 
     def movable_feast(self, items):
-        # moveable feast day can't be calculated without the year,
+        # movable feast day can't be calculated without the year,
         # so pass through
         return items[0]
 
     def fixed_date(self, items):
         item = items[0]
+        # type is prefixed when included in the combined parser;
+        # we need the second portion
         holiday_name = item.type.split("__")[-1]
-        # token_type = item.type
-        # token type is holiday fixed-date name; use to determine month/day
-        month, day = FIXED_HOLIDAYS.get(holiday_name)
+        try:
+            month, day = FIXED_HOLIDAYS[holiday_name]
+        except KeyError:
+            raise ValueError(f"Unknown fixed holiday {holiday_name}")
         return Tree("fixed_date", [Token("month", month), Token("day", day)])
-        # for key in FIXED_HOLIDAYS:
-        #     if token_type == key or token_type == f"holidays__{key}":
-        #         month, day = FIXED_HOLIDAYS[key]
-        #         return Tree("fixed_date", [Token("month", month), Token("day", day)])
-        # raise ValueError(f"Unknown fixed holiday: {item.type}")
 
     def holiday_date(self, items):
         parts = self._get_date_parts(items)
@@ -94,12 +92,12 @@ class HolidayTransformer(Transformer):
                     field = child.type
                     value = child.value
                 # check for movable feast terminal
-                elif child.type in MOVEABLE_FEASTS:
+                elif child.type in MOVABLE_FEASTS:
                     # collect but don't handle until we know the year
                     movable_feast = child.type
                 # handle namespaced token type; happens when called from combined grammar
                 elif (
-                    "__" in child.type and child.type.split("__")[-1] in MOVEABLE_FEASTS
+                    "__" in child.type and child.type.split("__")[-1] in MOVABLE_FEASTS
                 ):
                     # collect but don't handle until we know the year
                     movable_feast = child.type.split("__")[-1]
@@ -115,10 +113,15 @@ class HolidayTransformer(Transformer):
 
         # if date is a movable feast, calculate relative to Easter based on the year
         if movable_feast is not None:
-            offset = MOVEABLE_FEASTS[movable_feast]
-            holiday_date = datetime.date(
-                *holidays.easter(parts["year"])
-            ) + datetime.timedelta(days=offset)
+            try:
+                year = parts["year"]
+            except KeyError:
+                raise ValueError("Year is required for movable feasts")
+            offset = MOVABLE_FEASTS[movable_feast]
+
+            holiday_date = datetime.date(*holidays.easter(year)) + datetime.timedelta(
+                days=offset
+            )
             parts.update({"month": holiday_date.month, "day": holiday_date.day})
 
         return parts
@@ -129,7 +132,7 @@ class HolidayDateConverter(BaseDateConverter):
     Converter for Christian liturgical dates.
 
     Supports fixed-date holidays (Epiphany, Candlemass, etc.) and
-    Easter-relative moveable feasts (Easter, Ash Wednesday, Pentecost, etc.).
+    Easter-relative movable feasts (Easter, Ash Wednesday, Pentecost, etc.).
 
     Example usage::
 

@@ -12,7 +12,7 @@ movable_feast: EASTER | EASTER_MONDAY | HOLY_SATURDAY | ASCENSION
              | PENTECOST | WHIT_MONDAY | TRINITY | ASH_WEDNESDAY | SHROVE_TUESDAY
 
 // holidays that are always on the same date
-fixed_date: EPIPHANY | CANDLEMASS | ST_PATRICKS | ALL_FOOLS | ST_CYPRIANS
+fixed_date: EPIPHANY | CANDLEMAS | ST_PATRICKS | ALL_FOOLS | ST_CYPRIANS
 
 year: /\d{4}/
 
@@ -20,7 +20,7 @@ year: /\d{4}/
 
 // Fixed-date holidays 
 EPIPHANY: /epiphany/i
-CANDLEMASS: /candlemass?/i   // recognize with both one and 2 s
+CANDLEMAS: /candlemass?/i   // recognize with both one and 2 s
 ST_PATRICKS: /st\.?\s*patrick'?s?\s*day/i
 ALL_FOOLS: /(april|all)\s*fools?\s*day/i
 ST_CYPRIANS: /st\.?\s*cyprian'?s?\s*day/i

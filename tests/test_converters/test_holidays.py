@@ -1,8 +1,10 @@
 import pytest
 
+from lark import Token, Tree
+
 from undate import Undate, Calendar
 from undate.date import Weekday
-from undate.converters.holidays import HolidayDateConverter
+from undate.converters.holidays import HolidayDateConverter, HolidayTransformer
 
 
 class TestHolidayConverter:
@@ -72,3 +74,39 @@ class TestHolidayConverter:
     def test_to_string_error(self):
         with pytest.raises(ValueError, match="does not support"):
             self.converter.to_string(Undate(1916))
+
+
+# edge cases  - should not happen from parser input but possible
+
+
+class TestHolidayTransformer:
+    def test_fixed_date(self):
+        transformer = HolidayTransformer()
+        result = transformer.fixed_date([Token("EPIPHANY", "")])
+        assert isinstance(result, Tree)
+        assert len(result.children) == 2
+        assert all(isinstance(child, Token) for child in result.children)
+        assert result.children[0].type == "month"
+        assert result.children[0].value == 1
+        assert result.children[1].type == "day"
+        assert result.children[1].value == 6
+
+        # namespaced token
+        result = transformer.fixed_date([Token("holiday__EPIPHANY", "")])
+        assert isinstance(result, Tree)
+        assert len(result.children) == 2
+        assert all(isinstance(child, Token) for child in result.children)
+        assert result.children[0].type == "month"
+        assert result.children[0].value == 1
+        assert result.children[1].type == "day"
+        assert result.children[1].value == 6
+
+        # unknown fixed holiday should raise value error
+        with pytest.raises(ValueError, match="Unknown fixed holiday"):
+            transformer.fixed_date([Token("epiphany", "")])
+
+    def test_get_date_parts(self):
+        transformer = HolidayTransformer()
+        # movable feast without year is not supported
+        with pytest.raises(ValueError, match="Year is required"):
+            transformer._get_date_parts([Token("EASTER", "")])
