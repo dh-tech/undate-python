@@ -40,17 +40,17 @@ jobs:
           cache: 'pip'
           cache-dependency-path: '**/pyproject.toml'
 
-      - name: Install package with dependencies
-        run: pip install -e ".[test]"
+      - name: Install package with check dependencies
+        run: uv sync --extra test
 
       # for all versions but the one we use for code coverage, run normally
       - name: Run unit tests without code coverage
-        run: pytest
+        run: uv run pytest
         if: ${{ matrix.python != env.COV_PYTHON_VERSION }}
 
       # run code coverage in one version only
       - name: Run unit tests with code coverage reporting
-        run: pytest --cov=.
+        run: uv run pytest --cov=.
         if: ${{ matrix.python == env.COV_PYTHON_VERSION }}
 
       - name: Upload coverage to Codecov
