@@ -12,7 +12,7 @@ dynamic = ["version"]
 dependencies = [
     "lark[interegular]",
     "numpy",
-    "convertdate",
+    "convertdate>=2.4,<2.4.1",   # changes syntax, deprecation warning
     "strenum; python_version < '3.11'",
 ]
 authors = [
