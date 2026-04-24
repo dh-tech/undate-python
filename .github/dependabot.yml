@@ -7,6 +7,10 @@ version: 2
 updates:
   # Enable version updates for GitHub Actions
   - package-ecosystem: "github-actions"
+    groups:
+      actions:
+        patterns:
+          - "*"
     directory: "/"
     schedule:
       # Check for updates to GitHub Actions every week
@@ -17,3 +21,7 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    groups:
+      pre-commit:
+        patterns:
+          - "*"
