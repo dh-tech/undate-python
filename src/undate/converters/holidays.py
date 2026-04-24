@@ -104,17 +104,9 @@ class HolidayTransformer(Transformer):
                     # collect but don't handle until we know the year
                     movable_feast = child.type.split("__")[-1]
 
-            # if a tree, check for type and anonymous token
-            if isinstance(child, Tree):
-                # if tree is a date field (i.e., year), get the value
-                if child.data in date_parts:
-                    field = child.data
-                    # in this case we expect one value;
-                    # convert anonymous token to value
-                    value = child.children[0]
-                # if tree has children, recurse to get date parts
-                elif child.children:
-                    parts.update(self._get_date_parts(child.children))
+            # if a tree, recurse on children to get date parts
+            if isinstance(child, Tree) and child.children:
+                parts.update(self._get_date_parts(child.children))
 
             # if date fields were found, add to dictionary
             if field and value:
