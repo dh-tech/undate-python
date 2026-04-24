@@ -25,7 +25,7 @@ jobs:
           cache-dependency-glob: "pyproject.toml"
 
       - name: Install package with check dependencies
-        run: uv sync --extra check
+        run: uv sync --group check
 
       # check with ruff
       - name: Run ruff

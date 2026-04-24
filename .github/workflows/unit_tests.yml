@@ -34,14 +34,14 @@ jobs:
 
       # use github python action instead of uv to take advantage of caching
       - name: Set up Python ${{ matrix.python }}
-        uses: actions/setup-python@v6
+        uses: astral-sh/setup-uv@v8.1.0
         with:
           python-version: ${{ matrix.python }}
           cache: 'pip'
           cache-dependency-path: '**/pyproject.toml'
 
       - name: Install package with check dependencies
-        run: uv sync --extra test
+        run: uv sync --group test
 
       # for all versions but the one we use for code coverage, run normally
       - name: Run unit tests without code coverage
