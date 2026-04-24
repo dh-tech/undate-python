@@ -13,6 +13,6 @@ sphinx:
 python:
    install:
       - method: uv
-         command: sync
-         groups:
-            - docs
+        command: sync
+        groups:
+          - docs
