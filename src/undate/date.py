@@ -261,7 +261,7 @@ class Date(np.ndarray):
             thursday_week = self.astype("datetime64[W]")
             days_from_thursday = (self - thursday_week).astype(int)
             # if monday is 0, thursday is 3
-            return (days_from_thursday + 3) % 7
+            return int((days_from_thursday + 3) % 7)
 
         return None
 
@@ -278,6 +278,18 @@ class Date(np.ndarray):
         return result
 
     # NOTE: add should not be subclassed because we want to return a Date, not a delta
+
+
+class Weekday(IntEnum):
+    """Weekday as an integer, compatible with :meth:`datetime.date.weekday`."""
+
+    MONDAY = 0
+    TUESDAY = 1
+    WEDNESDAY = 2
+    THURSDAY = 3
+    FRIDAY = 4
+    SATURDAY = 5
+    SUNDAY = 6
 
 
 class DatePrecision(IntEnum):

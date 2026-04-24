@@ -1,7 +1,7 @@
 """
-**Experimental** combined parser. Supports EDTF, Gregorian, Hebrew, and Hijri
-where dates are unambiguous. Year-only dates are parsed as EDTF in
-Gregorian calendar.
+Combined parser. Supports EDTF, Gregorian, Hebrew, Hijri, and Christian
+liturgical dates where dates are unambiguous. Year-only dates are parsed
+as EDTF in Gregorian calendar.
 """
 
 from typing import Union
@@ -16,6 +16,7 @@ from undate.converters.edtf.transformer import EDTFTransformer
 from undate.converters.calendars.gregorian.transformer import GregorianDateTransformer
 from undate.converters.calendars.hebrew.transformer import HebrewDateTransformer
 from undate.converters.calendars.islamic.transformer import IslamicDateTransformer
+from undate.converters.holidays import HolidayTransformer
 
 
 class CombinedDateTransformer(Transformer):
@@ -35,6 +36,7 @@ combined_transformer = merge_transformers(
     hebrew=HebrewDateTransformer(),
     islamic=IslamicDateTransformer(),
     gregorian=GregorianDateTransformer(),
+    holidays=HolidayTransformer(),
 )
 
 
@@ -47,14 +49,16 @@ parser = Lark.open(
 class OmnibusDateConverter(BaseDateConverter):
     """
     Combination parser that aggregates existing parser grammars.
-    Currently supports EDTF, Gregorian, Hebrew, and Hijri where dates are unambiguous.
-    (Year-only dates are parsed as EDTF in Gregorian calendar.)
+    Supports EDTF, Gregorian, Hebrew, Hijri, and Christian liturgical dates
+    where dates are unambiguous. Year-only dates are parsed as EDTF in
+    Gregorian calendar.
 
     Does not support serialization.
 
     Example usage::
 
-        Undate.parse("Tammuz 4816", "omnibus")
+        Undate.parse("Tammuz 4812", "omnibus")
+        Undate.parse("Easter 1916", "omnibus")
 
     """
 
