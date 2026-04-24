@@ -89,6 +89,7 @@ generate = "python scripts/generate_gregorian_grammar.py"
 
 [tool.pytest.ini_options]
 pythonpath = "src/"
+testpaths = ["tests/"]
 markers = [
     "last : run marked tests after all others",
     "first : run marked tests before all others",
