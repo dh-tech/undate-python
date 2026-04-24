@@ -85,6 +85,13 @@ dependencies = ["babel"]
 [tool.hatch.envs.codegen.scripts]
 generate = "python scripts/generate_gregorian_grammar.py"
 
+[tool.pytest]
+minversion = "9"
+log_level = "INFO"
+strict = true
+addopts = ["-ra"]
+filterwarnings = ["error"]
+
 [tool.pytest.ini_options]
 pythonpath = "src/"
 testpaths = ["tests/"]
