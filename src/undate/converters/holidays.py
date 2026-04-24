@@ -7,7 +7,7 @@ import datetime
 from lark import Lark, Transformer, Tree, Token
 from lark.exceptions import UnexpectedInput
 
-from convertdate import holidays
+from convertdate import holidays  # type: ignore[import-untyped]
 from undate import Undate, Calendar
 from undate.converters.base import BaseDateConverter, GRAMMAR_FILE_PATH
 
