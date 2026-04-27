@@ -43,6 +43,14 @@ Use the `@name` notation to specify the branch or tag; e.g., to install developm
 pip install git+https://github.com/dh-tech/undate-python@develop#egg=undate
 ```
 
+### Optional Django Support (PRELIMINARY / IN PROGRESS)
+
+To install with optional Django integration field support:
+```console
+pip install undate[django]
+```
+
+
 ## Example Usage
 
 Often humanities and cultural data include imprecise or uncertain
