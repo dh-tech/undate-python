@@ -4,12 +4,17 @@
 
 **undate** is a python library for working with uncertain or partially known dates.
 
-> [!WARNING]
-> This is beta software and is not yet feature complete! Use with caution and give us feedback.
-> Currently `undate` supports parsing and formatting dates in ISO8601, some
-> portions of EDTF (Extended Date Time Format), and parsing and conversion for dates in Hebrew Anno Mundi and Islamic Hijri calendars.
+> [!NOTE]
+> This is beta software; it is still in development and not fully feature complete. If you use it, please let us know and share your feedback.
 
-_Undate was initially created as part of a [DH-Tech](https://dh-tech.github.io/) hackathon in November 2022._
+
+Currently `undate` supports parsing, formatting, and reasoning with dates in varying precision and calendars; dates with different precision and from different original calendars can be used together. Supported formats include ISO8601, portions of EDTF (Extended Date Time Format),
+and parsing and conversion for dates in Hebrew Anno Mundi and Islamic Hijri calendars, and Gregorian dates with full or abbreviated month names in any order for multiple languages (English, Spanish, French, German, Kinyarwanda, Ganda, Tigrinya). Parsers can be used together in an experimental omnibus parser for unambiguous dates.
+
+For more about the origin and goals of `undate`, read our 2025 software paper:
+
+> Rebecca Sutton Koeser, Julia Damerow, Robert Casties, and Cole Crawford. “[Undate: Humanistic Dates for Computation](https://doi.org/10.1017/chr.2025.10006).” _Computational Humanities Research_, August 5, 2025.
+
 
 ---
 
@@ -20,13 +25,13 @@ _Undate was initially created as part of a [DH-Tech](https://dh-tech.github.io/)
 [![codecov](https://codecov.io/gh/dh-tech/undate-python/branch/main/graph/badge.svg?token=GE7HZE8C9D)](https://codecov.io/gh/dh-tech/undate-python)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
+Project documentation is [available on ReadTheDocs](https://undate-python.readthedocs.io/en/latest/).
+
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 
 [![All Contributors](https://img.shields.io/badge/all_contributors-5-orange.svg?style=flat-square)](CONTRIBUTORS.md)
 
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
-
-Read [Contributors](CONTRIBUTORS.md) for detailed contribution information.
 
 ## Installation
 
@@ -241,6 +246,17 @@ directory in this repository.
 Project documentation is [available on ReadTheDocs](https://undate-python.readthedocs.io/en/latest/).
 
 For instructions on setting up for local development, see [Developer Notes](DEVELOPER_NOTES.md).
+
+See [Contributors](CONTRIBUTORS.md) for more detailed information about contributors.
+
+
+## Publications & Presentations
+
+* Rebecca Sutton Koeser, Julia Damerow, Robert Casties, and Cole Crawford.  “[Undate: Humanistic Dates for Computation](https://doi.org/10.1017/chr.2025.10006).”  Software paper published in _Computational Humanities Research_, August 5, 2025.
+* Rebecca Sutton Koeser. “[Undate: Computing with Uncertain and Partially-Unknown Dates](https://doi.org/10.5281/zenodo.17253974).” Computational notebook presented at USRSE’25. October 6, 2025.
+* Rebecca Sutton Koeser. “[Undate in Action](https://rlskoeser.github.io/undate-in-action/).” Presentation at [Digital Humanities Tech Symposium](https://dh-tech.github.io/2025/06/04/digital-humanities-tech-symposium-agenda/), DH2025. July 14, 2025.
+* Rebecca Sutton Koeser. 2025. “[Undate in Action](https://doi.org/10.63744/SFtXXpIE4ERh).” In Digital Humanities Tech Symposium 2025—Anthology of Computers and the Humanities, edited by Julia Damerow and Rebecca Sutton Koeser, vol. 2.
+* Rebecca Sutton Koeser. [Join me for a DHTech hackathon? It’s an un-date!](https://dh-tech.github.io/blog/2023/02/09/hackathon-undate/) DHTech, February 9, 2023.
 
 ## License
 
