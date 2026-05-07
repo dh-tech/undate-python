@@ -122,5 +122,3 @@ ignore = []
 [tool.ruff.lint.per-file-ignores]
 # for test files, don't require docstrings or return type annotations
 "tests/**.py" = ["D", "ANN", "RUF"]
-"examples/**.ipynb" = ["RUF"]
-"examples/**.py" = ["RUF"]
