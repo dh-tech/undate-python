@@ -1,7 +1,5 @@
-from typing import Union
-
 from convertdate import hebrew  # type: ignore
-from lark.exceptions import UnexpectedCharacters
+from lark.exceptions import UnexpectedInput
 
 from undate import Undate, UndateInterval
 from undate.converters.base import BaseCalendarConverter
@@ -93,7 +91,7 @@ class HebrewDateConverter(BaseCalendarConverter):
         """
         return hebrew.to_gregorian(year, month, day)
 
-    def parse(self, value: str) -> Union[Undate, UndateInterval]:
+    def parse(self, value: str) -> Undate | UndateInterval:
         """
         Parse a Hebrew date string and return an :class:`~undate.undate.Undate` or
         :class:`~undate.undate.UndateInterval`.
@@ -111,8 +109,8 @@ class HebrewDateConverter(BaseCalendarConverter):
             # set the original date as a label, with the calendar name
             undate_obj.label = f"{value} {self.calendar_name}"
             return undate_obj
-        except UnexpectedCharacters as err:
+        except UnexpectedInput as err:
             raise ValueError(f"Could not parse '{value}' as a Hebrew date") from err
 
     # do we need to support conversion the other direction?
-    # i.e., generate a Hebrew date from an abitrary undate or undate interval?
+    # i.e., generate a Hebrew date from an arbitrary undate or undate interval?

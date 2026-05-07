@@ -1,0 +1,3 @@
+// Some abbreviations use periods; some default date formats
+// include commas. Ignore both
+DATE_PUNCTUATION: "." | ","

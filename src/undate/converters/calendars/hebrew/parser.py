@@ -4,6 +4,7 @@ from undate.converters import GRAMMAR_FILE_PATH
 
 grammar_path = GRAMMAR_FILE_PATH / "hebrew.lark"
 
-with open(grammar_path) as grammar:
-    # NOTE: LALR parser is faster but can't be used to ambiguity between years and dates
-    hebrew_parser = Lark(grammar.read(), start="hebrew_date", strict=True)
+# open based on filename to allow relative imports based on grammar file
+hebrew_parser = Lark.open(
+    str(grammar_path), rel_to=__file__, start="hebrew_date", strict=True
+)

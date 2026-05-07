@@ -63,7 +63,7 @@ class TestUndateInterval:
         closed_interval = UndateInterval(Undate(2022), Undate(2023))
         assert (
             repr(closed_interval)
-            == f"undate.UndateInterval(earliest={repr(closed_interval.earliest)}, latest={repr(closed_interval.latest)})"
+            == f"undate.UndateInterval(earliest={closed_interval.earliest!r}, latest={closed_interval.latest!r})"
         )
         # should be able to evaluate repr string to get an equivalent object
         assert eval(repr(closed_interval)) == closed_interval
@@ -71,7 +71,7 @@ class TestUndateInterval:
         fancy_epoch = UndateInterval(Undate(2022), Undate(2023), label="Fancy Epoch")
         assert (
             repr(fancy_epoch)
-            == f"undate.UndateInterval(earliest={repr(fancy_epoch.earliest)}, latest={repr(fancy_epoch.latest)}, label='Fancy Epoch')"
+            == f"undate.UndateInterval(earliest={fancy_epoch.earliest!r}, latest={fancy_epoch.latest!r}, label='Fancy Epoch')"
         )
         assert eval(repr(fancy_epoch)) == fancy_epoch
 
@@ -80,7 +80,7 @@ class TestUndateInterval:
         )
         assert (
             repr(open_interval)
-            == f"undate.UndateInterval(earliest={repr(open_interval.earliest)})"
+            == f"undate.UndateInterval(earliest={open_interval.earliest!r})"
         )
         assert eval(repr(open_interval)) == open_interval
 
