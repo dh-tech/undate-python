@@ -8,7 +8,6 @@ from undate.converters.edtf.parser import edtf_parser
 from undate.converters.edtf.transformer import EDTFTransformer
 from undate.date import DatePrecision
 
-
 #: character for unspecified digits
 EDTF_UNSPECIFIED_DIGIT: str = "X"
 

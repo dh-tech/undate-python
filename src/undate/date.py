@@ -1,9 +1,9 @@
-from enum import IntEnum
-from dataclasses import dataclass, replace
 import operator
+from dataclasses import dataclass, replace
+from enum import IntEnum
 
 # Pre 3.10 requires Union for multiple types, e.g. Union[int, None] instead of int | None
-from typing import Optional, Union, Iterable
+from typing import Iterable, Optional, Union
 
 import numpy as np
 

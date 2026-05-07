@@ -1,10 +1,9 @@
 # Pre 3.10 requires Union for multiple types, e.g. Union[int, None] instead of int | None
 from typing import Optional, Union
 
-
 from undate import Undate
-from undate.date import ONE_DAY, ONE_YEAR, Timedelta
 from undate.converters.base import BaseDateConverter
+from undate.date import ONE_DAY, ONE_YEAR, Timedelta
 
 
 class UndateInterval:

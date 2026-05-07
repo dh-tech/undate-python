@@ -4,12 +4,12 @@ Holiday date Converter: parse Christian liturgical dates and convert to Gregoria
 
 import datetime
 
-from lark import Lark, Transformer, Tree, Token
+from convertdate import holidays  # type: ignore[import-untyped]
+from lark import Lark, Token, Transformer, Tree
 from lark.exceptions import UnexpectedInput
 
-from convertdate import holidays  # type: ignore[import-untyped]
-from undate import Undate, Calendar
-from undate.converters.base import BaseDateConverter, GRAMMAR_FILE_PATH
+from undate import Calendar, Undate
+from undate.converters.base import GRAMMAR_FILE_PATH, BaseDateConverter
 
 # To add a new holiday:
 #   1. Add a name and pattern to holidays.lark grammar file

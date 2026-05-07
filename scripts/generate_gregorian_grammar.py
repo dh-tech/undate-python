@@ -10,8 +10,8 @@ Run this script with hatch to regenerate the file::
 
 """
 
-from collections import defaultdict
 import pathlib
+from collections import defaultdict
 
 from babel.dates import get_month_names
 

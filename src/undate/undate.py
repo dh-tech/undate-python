@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 import datetime
-from enum import auto
-
 import re
+from enum import auto
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:

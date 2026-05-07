@@ -24,6 +24,6 @@ format with ``Undate`` class method :meth:`~undate.undate.Undate.format`:
 
 """
 
-from undate.converters.base import BaseDateConverter, GRAMMAR_FILE_PATH
+from undate.converters.base import GRAMMAR_FILE_PATH, BaseDateConverter
 
 __all__ = ["BaseDateConverter", "GRAMMAR_FILE_PATH"]
