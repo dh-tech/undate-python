@@ -76,7 +76,7 @@ class ISO8601DateFormat(BaseDateConverter):
         # TODO: should error if we have year and day but no month
         # TODO: may want to refactor and take advantage of the year/month/day properties
         # added for use in EDTF formatter code
-        for date_portion, iso_format in self.iso_format.items():
+        for date_portion in self.iso_format.keys():
             # is known means fully known, means guaranteed integer
             if undate.is_known(date_portion):
                 # NOTE: datetime strftime for %Y for 3-digit year

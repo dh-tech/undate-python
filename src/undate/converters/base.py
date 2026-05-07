@@ -107,7 +107,7 @@ class BaseDateConverter:
         converter_prefix = f"{undate.converters.__name__}."
 
         import_count = 0
-        for importer, modname, ispkg in pkgutil.iter_modules(
+        for _importer, modname, _ispkg in pkgutil.iter_modules(
             converter_path, converter_prefix
         ):
             # import everything except the current file

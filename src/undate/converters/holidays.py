@@ -66,8 +66,8 @@ class HolidayTransformer(Transformer):
         holiday_name = item.type.split("__")[-1]
         try:
             month, day = FIXED_HOLIDAYS[holiday_name]
-        except KeyError:
-            raise ValueError(f"Unknown fixed holiday {holiday_name}")
+        except KeyError as err:
+            raise ValueError(f"Unknown fixed holiday {holiday_name}") from err
         return Tree("fixed_date", [Token("month", month), Token("day", day)])
 
     def holiday_date(self, items):
@@ -115,8 +115,8 @@ class HolidayTransformer(Transformer):
         if movable_feast is not None:
             try:
                 year = parts["year"]
-            except KeyError:
-                raise ValueError("Year is required for movable feasts")
+            except KeyError as err:
+                raise ValueError("Year is required for movable feasts") from err
             offset = MOVABLE_FEASTS[movable_feast]
 
             holiday_date = datetime.date(*holidays.easter(year)) + datetime.timedelta(

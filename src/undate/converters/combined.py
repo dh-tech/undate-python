@@ -81,10 +81,10 @@ class OmnibusDateConverter(BaseDateConverter):
             parsetree = parser.parse(value)
             # transform returns a list; we want the first item in the list
             return self.transformer.transform(parsetree)[0]
-        except UnexpectedInput:
+        except UnexpectedInput as err:
             raise ValueError(
-                "Parsing failed: '%s' is not in a recognized date format" % value
-            )
+                f"Parsing failed: '{value}' is not in a recognized date format"
+            ) from err
 
     def to_string(self, undate: Union[Undate, UndateInterval]) -> str:
         "Not supported by this converter. Will raise :class:`ValueError`"

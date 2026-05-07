@@ -84,7 +84,7 @@ class Undate:
         calendar: Optional[Union[str, Calendar]] = None,
     ):
         # everything is optional but something is required
-        if all([val is None for val in [year, month, day]]):
+        if all(val is None for val in [year, month, day]):
             raise ValueError("At least one of year, month, or day must be specified")
 
         # keep track of initial values and which values are known
@@ -331,8 +331,8 @@ class Undate:
         if looks_equal and (
             # if any part of either date that is known is _partially_ known,
             # then these dates are not equal
-            any([self.is_partially_known(p) for p in self.initial_values.keys()])
-            or any([other.is_partially_known(p) for p in other.initial_values.keys()])
+            any(self.is_partially_known(p) for p in self.initial_values.keys())
+            or any(other.is_partially_known(p) for p in other.initial_values.keys())
         ):
             return False
 
@@ -588,7 +588,7 @@ class Undate:
         # if year is known and no values are partially known,
         # we can calculate a time delta based on earliest + latest
         if self.known_year and not any(
-            [self.is_partially_known(part) for part in ["year", "month", "day"]]
+            self.is_partially_known(part) for part in ["year", "month", "day"]
         ):
             #  subtract earliest from latest and add a day to include start day in the count
             return self.latest - self.earliest + ONE_DAY
