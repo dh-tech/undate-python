@@ -38,7 +38,7 @@ jobs:
 
       - name: Run Ruff formatter
         # NOTE: ruff format does not currently support github output format
-        run: ruff format --check --diff
+        run: ruff format --check --diff  src tests
         # Check formatting even if the previous step failed
         if: always()
 
