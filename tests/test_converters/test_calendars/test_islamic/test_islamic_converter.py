@@ -2,8 +2,8 @@ import pytest
 
 from undate.converters.calendars import IslamicDateConverter
 from undate.converters.calendars.islamic.transformer import IslamicUndate
+from undate.date import Date, DatePrecision
 from undate.undate import Calendar, Undate
-from undate.date import DatePrecision, Date
 
 
 class TestIslamicDateConverter:

@@ -4,18 +4,16 @@ liturgical dates where dates are unambiguous. Year-only dates are parsed
 as EDTF in Gregorian calendar.
 """
 
-from typing import Union
-
 from lark import Lark
 from lark.exceptions import UnexpectedInput
 from lark.visitors import Transformer, merge_transformers
 
 from undate import Undate, UndateInterval
-from undate.converters import BaseDateConverter, GRAMMAR_FILE_PATH
-from undate.converters.edtf.transformer import EDTFTransformer
+from undate.converters import GRAMMAR_FILE_PATH, BaseDateConverter
 from undate.converters.calendars.gregorian.transformer import GregorianDateTransformer
 from undate.converters.calendars.hebrew.transformer import HebrewDateTransformer
 from undate.converters.calendars.islamic.transformer import IslamicDateTransformer
+from undate.converters.edtf.transformer import EDTFTransformer
 from undate.converters.holidays import HolidayTransformer
 
 
@@ -68,7 +66,7 @@ class OmnibusDateConverter(BaseDateConverter):
     def __init__(self):
         self.transformer = combined_transformer
 
-    def parse(self, value: str) -> Union[Undate, UndateInterval]:
+    def parse(self, value: str) -> Undate | UndateInterval:
         """
         Parse a string in a supported format and return an :class:`~undate.undate.Undate`
         or :class:`~undate.undate.UndateInterval`.
@@ -81,11 +79,11 @@ class OmnibusDateConverter(BaseDateConverter):
             parsetree = parser.parse(value)
             # transform returns a list; we want the first item in the list
             return self.transformer.transform(parsetree)[0]
-        except UnexpectedInput:
+        except UnexpectedInput as err:
             raise ValueError(
-                "Parsing failed: '%s' is not in a recognized date format" % value
-            )
+                f"Parsing failed: '{value}' is not in a recognized date format"
+            ) from err
 
-    def to_string(self, undate: Union[Undate, UndateInterval]) -> str:
+    def to_string(self, undate: Undate | UndateInterval) -> str:
         "Not supported by this converter. Will raise :class:`ValueError`"
         raise ValueError("Omnibus converter does not support serialization")

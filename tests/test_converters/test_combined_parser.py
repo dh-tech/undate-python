@@ -1,8 +1,7 @@
 import pytest
 
-from undate.converters.combined import parser, combined_transformer
-
 from undate import Undate, UndateInterval
+from undate.converters.combined import combined_transformer, parser
 
 # test that valid dates can be parsed
 
@@ -29,7 +28,7 @@ testcases = [
     ("Epiphany 1921", Undate(1921, 1, 6)),
     ("Pentecost 2016", Undate(2016, 5, 15)),
     ("Ash Wednesday 2000", Undate(2000, 3, 8)),
-    ("Whit Monday 2023", Undate(2023, 5, 29)),
+    ("Whit Monday 2023", Undate(2023, 5, 29)),  # codespell:ignore whit
 ]
 
 

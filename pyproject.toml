@@ -6,13 +6,13 @@ build-backend = "hatchling.build"
 name = "undate"
 description = "library for working with uncertain, fuzzy, or partially unknown dates and date intervals"
 readme = "README.md"
-license = { text = "Apache-2" }
+license = { text = "Apache-2.0" }
 requires-python = ">= 3.10"
 dynamic = ["version"]
 dependencies = [
     "lark[interegular]",
     "numpy",
-    "convertdate",
+    "convertdate>=2.4,<2.4.1",   # changes syntax, deprecation warning
     "strenum; python_version < '3.11'",
 ]
 authors = [
@@ -42,7 +42,6 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Scientific/Engineering",
@@ -51,21 +50,20 @@ classifiers = [
 
 ]
 
-[project.optional-dependencies]
+[dependency-groups]
 docs = ["sphinx>=7.0.0", "alabaster", "myst-parser", "myst-parser[linkify]"]
-test = ["pytest>=7.2", "pytest-ordering", "pytest-cov"]
+test = ["pytest>=9", "pytest-ordering", "pytest-cov"]
 notebooks = ["jupyterlab", "pandas", "treon", "altair"]
-check = ["undate[docs]", "undate[notebooks]", "mypy", "ruff"]
+check = [ { include-group = "docs" }, {include-group = "notebooks"}, "mypy", "ruff"]
 dev = [
     "pre-commit>=2.20.0",
     "twine",
     "wheel",
     "build",
-    "undate[check]",
-    "undate[docs]",
-    "undate[test]",
+    { include-group = "test" },
+    { include-group = "check" },
+    { include-group = "docs" }
 ]
-all = ["undate", "undate[dev]"]
 
 [project.urls]
 Homepage = "https://github.com/dh-tech/undate-python"
@@ -87,9 +85,16 @@ dependencies = ["babel"]
 [tool.hatch.envs.codegen.scripts]
 generate = "python scripts/generate_gregorian_grammar.py"
 
-[tool.pytest.ini_options]
-pythonpath = "src/"
-testpaths = ["tests/"]
+[tool.pytest]
+minversion = "9"
+log_level = "INFO"
+strict = true
+addopts = ["-ra"]
+filterwarnings = ["error"]
+pythonpath = [ "src/" ]
+testpaths = [
+    "tests",
+]
 markers = [
     "last : run marked tests after all others",
     "first : run marked tests before all others",
@@ -97,3 +102,23 @@ markers = [
 
 [tool.mypy]
 plugins = ["numpy.typing.mypy_plugin"]
+
+[tool.ruff.lint]
+# Include these rules in addition to ruff's defaults
+extend-select = [
+  "B",    # flake8-bugbear
+  "C4",   # flake8-comprehensions
+  "I",    #isort
+  "NPY",  # numpy-specific rules
+  "PERF", # perflint
+  "PTH",  # flake8-use-pathlib
+  "RUF",  # ruff-specific rules
+  "SIM",  # flake8-simplify
+  "UP",   # pyupgrade
+]
+# Can use to ignore specific rules within above selection
+ignore = []
+
+[tool.ruff.lint.per-file-ignores]
+# for test files, don't require docstrings or return type annotations
+"tests/**.py" = ["D", "ANN", "RUF"]

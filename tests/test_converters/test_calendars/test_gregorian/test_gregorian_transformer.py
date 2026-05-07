@@ -1,9 +1,9 @@
 import pytest
+
 from undate.converters.calendars.gregorian.parser import gregorian_parser
 from undate.converters.calendars.gregorian.transformer import GregorianDateTransformer
-from undate.undate import Undate, Calendar
 from undate.date import DatePrecision
-
+from undate.undate import Calendar, Undate
 
 testcases = [
     ("2012", Undate(2012), DatePrecision.YEAR),

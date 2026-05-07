@@ -2,8 +2,8 @@ import pytest
 
 from undate.converters.calendars import HebrewDateConverter
 from undate.converters.calendars.hebrew.transformer import HebrewUndate
+from undate.date import Date, DatePrecision
 from undate.undate import Calendar, Undate
-from undate.date import DatePrecision, Date
 
 
 class TestHebrewDateConverter:
@@ -136,7 +136,7 @@ class TestHebrewDateConverter:
         assert HebrewUndate(4816, 4, 26) > Undate(1055, 5)
 
         # 26 Tammuz 4816: Tammuz = month 4 (17 July, 1056)
-        # so it falls within or is c ontained by July 1056
+        # so it falls within or is contained by July 1056
         assert HebrewUndate(4816, 4, 26) in Undate(1056, 7)
         assert HebrewUndate(4816, 4, 26) not in Undate(1054)
 

@@ -3,7 +3,6 @@ from lark.exceptions import LarkError
 
 from undate.converters.calendars.islamic.parser import islamic_parser
 
-
 # for now, just test that valid dates can be parsed
 
 testcases = [

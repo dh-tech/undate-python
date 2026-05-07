@@ -4,12 +4,12 @@ Holiday date Converter: parse Christian liturgical dates and convert to Gregoria
 
 import datetime
 
-from lark import Lark, Transformer, Tree, Token
+from convertdate import holidays  # type: ignore[import-untyped]
+from lark import Lark, Token, Transformer, Tree
 from lark.exceptions import UnexpectedInput
 
-from convertdate import holidays  # type: ignore[import-untyped]
-from undate import Undate, Calendar
-from undate.converters.base import BaseDateConverter, GRAMMAR_FILE_PATH
+from undate import Calendar, Undate
+from undate.converters.base import GRAMMAR_FILE_PATH, BaseDateConverter
 
 # To add a new holiday:
 #   1. Add a name and pattern to holidays.lark grammar file
@@ -66,8 +66,8 @@ class HolidayTransformer(Transformer):
         holiday_name = item.type.split("__")[-1]
         try:
             month, day = FIXED_HOLIDAYS[holiday_name]
-        except KeyError:
-            raise ValueError(f"Unknown fixed holiday {holiday_name}")
+        except KeyError as err:
+            raise ValueError(f"Unknown fixed holiday {holiday_name}") from err
         return Tree("fixed_date", [Token("month", month), Token("day", day)])
 
     def holiday_date(self, items):
@@ -115,8 +115,8 @@ class HolidayTransformer(Transformer):
         if movable_feast is not None:
             try:
                 year = parts["year"]
-            except KeyError:
-                raise ValueError("Year is required for movable feasts")
+            except KeyError as err:
+                raise ValueError("Year is required for movable feasts") from err
             offset = MOVABLE_FEASTS[movable_feast]
 
             holiday_date = datetime.date(*holidays.easter(year)) + datetime.timedelta(

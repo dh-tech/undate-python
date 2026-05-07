@@ -44,8 +44,14 @@ source .venv/bin/activate
 Install an editable version of the local package along with python dependencies needed for testing and development.
 
 ```sh
-pip install -e ".[dev]"
+pip install -e . --group=dev
 ```
+
+If using `uv`, use 
+
+```sh
+ uv sync --group test
+ ```
 
 ### Install pre-commit hooks
 

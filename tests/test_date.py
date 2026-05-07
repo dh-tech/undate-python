@@ -5,8 +5,8 @@ import pytest
 
 from undate.date import (
     ONE_DAY,
-    ONE_YEAR,
     ONE_MONTH_MAX,
+    ONE_YEAR,
     Date,
     DatePrecision,
     Timedelta,
@@ -159,7 +159,7 @@ class TestUnInt:
         assert not ten_twelve > UnInt(13, 23)
         # unsupported type
         with pytest.raises(TypeError):
-            ten_twelve > "three"
+            assert ten_twelve > "three"
 
     def test_lt(self):
         ten_twelve = UnInt(10, 12)
@@ -173,7 +173,7 @@ class TestUnInt:
         assert not ten_twelve < UnInt(2, 4)
         # unsupported type
         with pytest.raises(TypeError):
-            ten_twelve < "three"
+            assert ten_twelve < "three"
 
     def test_iterable(self):
         anymonth_days = UnInt(lower=28, upper=31)

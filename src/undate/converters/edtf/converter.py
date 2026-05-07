@@ -1,5 +1,3 @@
-from typing import Optional, Union
-
 from lark.exceptions import UnexpectedInput
 
 from undate import Undate, UndateInterval
@@ -7,7 +5,6 @@ from undate.converters.base import BaseDateConverter
 from undate.converters.edtf.parser import edtf_parser
 from undate.converters.edtf.transformer import EDTFTransformer
 from undate.date import DatePrecision
-
 
 #: character for unspecified digits
 EDTF_UNSPECIFIED_DIGIT: str = "X"
@@ -27,7 +24,7 @@ class EDTFDateConverter(BaseDateConverter):
     def __init__(self):
         self.transformer = EDTFTransformer()
 
-    def parse(self, value: str) -> Union[Undate, UndateInterval]:
+    def parse(self, value: str) -> Undate | UndateInterval:
         """
         Parse a string in a supported EDTF date or date interval format and
         return an :class:`~undate.undate.Undate` or
@@ -46,13 +43,13 @@ class EDTFDateConverter(BaseDateConverter):
             ) from err
 
     def _convert_missing_digits(
-        self, value: Optional[str], old_missing_digit: str
-    ) -> Optional[str]:
+        self, value: str | None, old_missing_digit: str
+    ) -> str | None:
         if value:
             return value.replace(old_missing_digit, EDTF_UNSPECIFIED_DIGIT)
         return None
 
-    def to_string(self, undate: Union[Undate, UndateInterval]) -> str:
+    def to_string(self, undate: Undate | UndateInterval) -> str:
         """
         Convert an :class:`~undate.undate.Undate` or
         :class:`~undate.undate.UndateInterval` to EDTF format.

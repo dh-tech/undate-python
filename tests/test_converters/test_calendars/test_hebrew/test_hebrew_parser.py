@@ -3,7 +3,6 @@ from lark.exceptions import UnexpectedCharacters, UnexpectedEOF
 
 from undate.converters.calendars.hebrew.parser import hebrew_parser
 
-
 # for now, just test that valid dates can be parsed
 
 testcases = [

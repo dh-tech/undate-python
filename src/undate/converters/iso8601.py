@@ -1,4 +1,4 @@
-from typing import Dict, List, Union
+from typing import ClassVar
 
 from undate import Undate, UndateInterval
 from undate.converters.base import BaseDateConverter
@@ -13,13 +13,13 @@ class ISO8601DateFormat(BaseDateConverter):
     # do not change; Undate relies on this string
 
     #: datetime strftime format for known part of date
-    iso_format: Dict[str, str] = {
+    iso_format: ClassVar[dict[str, str]] = {
         "year": "%Y",
         "month": "%m",
         "day": "%d",
     }
 
-    def parse(self, value: str) -> Union[Undate, UndateInterval]:
+    def parse(self, value: str) -> Undate | UndateInterval:
         """
         Parse an ISO88601 string and return an :class:`~undate.undate.Undate` or
         :class:`~undate.undate.UndateInterval`. Currently supports
@@ -29,7 +29,7 @@ class ISO8601DateFormat(BaseDateConverter):
         # TODO: what happens if someone gives us a full isoformat date with time?
         # (ignore, error?)
         # TODO: what about invalid format?
-        parts: List[str] = value.split("/")  # split in case we have a range
+        parts: list[str] = value.split("/")  # split in case we have a range
         if len(parts) == 1:
             return self._parse_single_date(parts[0])
         elif len(parts) == 2:
@@ -43,7 +43,7 @@ class ISO8601DateFormat(BaseDateConverter):
     def _parse_single_date(self, value: str) -> Undate:
         # split single iso date into parts; convert to int or None
         # special case: missing year
-        date_parts: List[Union[int, None]] = []
+        date_parts: list[int | None] = []
         if value.startswith("--"):
             date_parts.append(None)  # year unknown
             value = value[2:]
@@ -53,7 +53,7 @@ class ISO8601DateFormat(BaseDateConverter):
         # Argument of type "int | None" cannot be assigned to parameter "formatter" of type "BaseDateFormat | None" in function "__init__"
         return Undate(*date_parts)  # type: ignore
 
-    def to_string(self, undate: Union[Undate, UndateInterval]) -> str:
+    def to_string(self, undate: Undate | UndateInterval) -> str:
         """
         Convert an :class:`~undate.undate.Undate` or
         :class:`~undate.undate.UndateInterval` to ISO8601 string format.
@@ -70,13 +70,13 @@ class ISO8601DateFormat(BaseDateConverter):
 
     def _undate_to_string(self, undate: Undate) -> str:
         # serialize to iso format for simplicity, for now
-        date_parts: List[Union[str, None]] = []
+        date_parts: list[str | None] = []
         # for each part of the date that is known, generate the string format
         # then combine
         # TODO: should error if we have year and day but no month
         # TODO: may want to refactor and take advantage of the year/month/day properties
         # added for use in EDTF formatter code
-        for date_portion, iso_format in self.iso_format.items():
+        for date_portion in self.iso_format:
             # is known means fully known, means guaranteed integer
             if undate.is_known(date_portion):
                 # NOTE: datetime strftime for %Y for 3-digit year
@@ -84,26 +84,26 @@ class ISO8601DateFormat(BaseDateConverter):
                 # and not others; force year to always be 4 digits
                 if date_portion == "year" and undate.year:
                     try:
-                        date_parts.append("%04d" % int(undate.year))
+                        date_parts.append(f"{undate.year:04}")
                     except ValueError:
                         # shouldn't happen because of is_known
                         date_parts.append(undate.year)
                 elif date_portion == "month" and undate.month:
                     try:
-                        date_parts.append("%02d" % int(undate.month))
+                        date_parts.append(f"{undate.month:02}")
                     except ValueError:
                         # shouldn't happen because of is_known
                         date_parts.append(undate.month)
                 elif date_portion == "day" and undate.day:
                     try:
-                        date_parts.append("%02d" % int(undate.day))
+                        date_parts.append(f"{undate.day:02}")
                     except ValueError:
                         # shouldn't happen because of is_known
                         date_parts.append(undate.day)
 
             elif date_portion == "year":
                 # if year is not known, add '-' for year portion,
-                # to genereate --MM-DD unknown year format
+                # to generate --MM-DD unknown year format
                 date_parts.append("-")
         # TODO: fix type error: "list[str | None]" is incompatible with "Iterable[str]"
         return "-".join(date_parts)  # type: ignore

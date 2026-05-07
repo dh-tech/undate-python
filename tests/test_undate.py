@@ -4,10 +4,10 @@ from unittest import mock
 
 import pytest
 
-from undate import Undate, UndateInterval, Calendar
-from undate.undate import StrEnum  # import whichever version is used there
+from undate import Calendar, Undate, UndateInterval
 from undate.converters.base import BaseCalendarConverter, BaseDateConverter
 from undate.date import Date, DatePrecision, Timedelta, UnDelta, UnInt
+from undate.undate import StrEnum  # import whichever version is used there
 
 
 class TestUndate:
@@ -259,7 +259,7 @@ class TestUndate:
         assert Undate(2022, 10) == Undate(2022, 10)
         assert Undate(2022, 10, 1) == Undate(2022, 10, 1)
         # dates without a known year cannot known to be equal
-        assert not Undate(month=2, day=7) == Undate(month=2, day=7)
+        assert Undate(month=2, day=7) != Undate(month=2, day=7)
 
         # something we can't convert for comparison should return NotImplemented
         assert Undate(2022).__eq__("not a date") == NotImplemented
