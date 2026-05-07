@@ -34,7 +34,7 @@ jobs:
       - name: Run Ruff linter
         uses: astral-sh/ruff-action@v3
         with:
-          args: "check --output-format=github"
+          args: "check --output-format=github src tests"
 
       - name: Run Ruff formatter
         # NOTE: ruff format does not currently support github output format
