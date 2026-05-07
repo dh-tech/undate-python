@@ -1,4 +1,4 @@
-from typing import Dict, List, Union
+from typing import ClassVar, Dict, List, Union
 
 from undate import Undate, UndateInterval
 from undate.converters.base import BaseDateConverter
@@ -13,7 +13,7 @@ class ISO8601DateFormat(BaseDateConverter):
     # do not change; Undate relies on this string
 
     #: datetime strftime format for known part of date
-    iso_format: Dict[str, str] = {
+    iso_format: ClassVar[Dict[str, str]] = {
         "year": "%Y",
         "month": "%m",
         "day": "%d",

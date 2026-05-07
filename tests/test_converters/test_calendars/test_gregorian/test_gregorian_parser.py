@@ -3,7 +3,6 @@ from lark.exceptions import UnexpectedCharacters, UnexpectedEOF
 
 from undate.converters.calendars.gregorian.parser import gregorian_parser
 
-
 # test that valid dates can be parsed to confirm parser is working correctly
 
 testcases = [

@@ -1,10 +1,9 @@
 import pytest
-
 from lark import Token, Tree
 
-from undate import Undate, Calendar
-from undate.date import Weekday
+from undate import Calendar, Undate
 from undate.converters.holidays import HolidayDateConverter, HolidayTransformer
+from undate.date import Weekday
 
 
 class TestHolidayConverter:

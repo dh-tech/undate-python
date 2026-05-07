@@ -317,4 +317,4 @@ class DatePrecision(IntEnum):
         return f"{self.name}"
 
     # NOTE: consider harmonizing / using numpy date units:
-    # years (‘Y’), months (‘M’), weeks (‘W’), and days (‘D’)
+    # years (Y), months (M), weeks (W), and days (D)

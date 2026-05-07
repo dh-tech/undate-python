@@ -1,7 +1,8 @@
 import logging
 
 import pytest
-from undate.converters.base import BaseDateConverter, BaseCalendarConverter
+
+from undate.converters.base import BaseCalendarConverter, BaseDateConverter
 from undate.converters.calendars import (
     GregorianDateConverter,
     HebrewDateConverter,

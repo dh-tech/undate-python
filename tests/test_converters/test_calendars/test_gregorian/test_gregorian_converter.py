@@ -1,9 +1,8 @@
 import pytest
 
-
-from undate.date import DatePrecision
-from undate.undate import Undate, Calendar
 from undate.converters.calendars import GregorianDateConverter
+from undate.date import DatePrecision
+from undate.undate import Calendar, Undate
 
 
 class TestGregorianDateConverter:

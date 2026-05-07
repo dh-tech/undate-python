@@ -8,10 +8,10 @@ from undate.undate import Calendar, Undate
 from undate.interval import UndateInterval
 
 __all__ = [
-    "Undate",
-    "UndateInterval",
     "Calendar",
     "DatePrecision",
     "UnDelta",
+    "Undate",
+    "UndateInterval",
     "__version__",
 ]

@@ -1,8 +1,7 @@
 import pytest
 
-from undate.converters.combined import parser, combined_transformer
-
 from undate import Undate, UndateInterval
+from undate.converters.combined import combined_transformer, parser
 
 # test that valid dates can be parsed
 

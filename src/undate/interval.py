@@ -155,12 +155,10 @@ class UndateInterval:
         # bounds of this interval
         return (
             self.earliest is None
-            or other_earliest is not None
-            and other_earliest >= self.earliest
+            or (other_earliest is not None and other_earliest >= self.earliest)
         ) and (
             self.latest is None
-            or other_latest is not None
-            and other_latest <= self.latest
+            or (other_latest is not None and other_latest <= self.latest)
         )
 
     def intersection(self, other: "UndateInterval") -> Optional["UndateInterval"]:

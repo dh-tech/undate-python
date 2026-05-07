@@ -4,10 +4,10 @@ from unittest import mock
 
 import pytest
 
-from undate import Undate, UndateInterval, Calendar
-from undate.undate import StrEnum  # import whichever version is used there
+from undate import Calendar, Undate, UndateInterval
 from undate.converters.base import BaseCalendarConverter, BaseDateConverter
 from undate.date import Date, DatePrecision, Timedelta, UnDelta, UnInt
+from undate.undate import StrEnum  # import whichever version is used there
 
 
 class TestUndate:

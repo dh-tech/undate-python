@@ -1,11 +1,12 @@
 import pytest
+
 from undate.converters.calendars.islamic.parser import islamic_parser
 from undate.converters.calendars.islamic.transformer import (
     IslamicDateTransformer,
     IslamicUndate,
 )
-from undate.undate import Undate, Calendar
 from undate.date import DatePrecision
+from undate.undate import Calendar, Undate
 
 
 def test_islamic_undate():

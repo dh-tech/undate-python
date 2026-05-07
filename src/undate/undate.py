@@ -167,7 +167,7 @@ class Undate:
             day = None
 
         # if day is numeric, use as is
-        if isinstance(day, int) or isinstance(day, str) and day.isnumeric():
+        if isinstance(day, int) or (isinstance(day, str) and day.isnumeric()):
             day = int(day)
             # update initial value - fully known day
             self.initial_values["day"] = day
@@ -388,14 +388,14 @@ class Undate:
         # if either date has a completely unknown year, then we can't compare
         # NOTE: this means that gt and lt will both be false when comparing
         # with a date with an unknown year...
-        if self.unknown_year or isinstance(other, Undate) and other.unknown_year:
+        if self.unknown_year or (isinstance(other, Undate) and other.unknown_year):
             return False
 
         return not (self < other or self == other)
 
     def __le__(self, other: object) -> bool:
         # if either date has a completely unknown year, then we can't compare
-        if self.unknown_year or isinstance(other, Undate) and other.unknown_year:
+        if self.unknown_year or (isinstance(other, Undate) and other.unknown_year):
             return False
 
         return self == other or self < other
