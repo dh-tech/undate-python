@@ -31,9 +31,16 @@ jobs:
       - name: Install package with check dependencies
         run: uv sync --group check
 
-      # check with ruff
-      - name: Run ruff
-        run: uv run ruff check
+      - name: Run Ruff linter
+        uses: astral-sh/ruff-action@v3
+        with:
+          args: "check --output-format=github"
+
+      - name: Run Ruff formatter
+        # NOTE: ruff format does not currently support github output format
+        run: ruff format --check --diff
+        # Check formatting even if the previous step failed
+        if: always()
 
       # check docs build
       - name: Check that documentation builds with no errors or warnings
