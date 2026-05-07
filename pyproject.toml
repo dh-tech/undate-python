@@ -106,12 +106,12 @@ plugins = ["numpy.typing.mypy_plugin"]
 [tool.ruff.lint]
 # Include these rules in addition to ruff's defaults
 extend-select = [
- "B",    # flake8-bugbear
- "C4",   # flake8-comprehensions
+  "B",    # flake8-bugbear
+  "C4",   # flake8-comprehensions
   "I",    #isort
   "NPY",  # numpy-specific rules
-#  "PERF", # perflint
-#  "PTH",  # flake8-use-pathlib
+  "PERF", # perflint
+  "PTH",  # flake8-use-pathlib
 #  "RUF",  # ruff-specific rules
 #  "SIM",  # flake8-simplify
 #  "UP",   # pyupgrade
