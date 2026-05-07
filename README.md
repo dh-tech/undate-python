@@ -8,8 +8,14 @@
 > This is beta software; it is still in development and not fully feature complete. If you use it, please let us know and share your feedback.
 
 
-Currently `undate` supports parsing, formatting, and reasoning with dates in varying precision and calendars; dates with different precision and from different original calendars can be used together. Supported formats include ISO8601, portions of EDTF (Extended Date Time Format),
-and parsing and conversion for dates in Hebrew Anno Mundi and Islamic Hijri calendars, and Gregorian dates with full or abbreviated month names in any order for multiple languages (English, Spanish, French, German, Kinyarwanda, Ganda, Tigrinya). Parsers can be used together in an experimental omnibus parser for unambiguous dates.
+Currently `undate` supports parsing, formatting, and reasoning with dates in varying precision and calendars; dates with different precision and from different original calendars can be used together. Supported formats include:
+- portions of EDTF (Extended Date Time Format)
+- ISO8601
+- parsing and calendar conversion for dates in Hebrew Anno Mundi and Islamic Hijri calendars
+- Gregorian dates with full or abbreviated month names in any order for multiple languages (English, Spanish, French, German, Kinyarwanda, Ganda, Tigrinya)
+- Christian liturgical dates (fixed holidays and movable feasts)
+
+For unambiguous dates, there is an experimental omnibus parser which combines all available dates (bare years are currently assumed to be Gregorian calendar).
 
 For more about the origin and goals of `undate`, read our 2025 software paper:
 
@@ -257,6 +263,14 @@ See [Contributors](CONTRIBUTORS.md) for more detailed information about contribu
 * Rebecca Sutton Koeser. “[Undate in Action](https://rlskoeser.github.io/undate-in-action/).” Presentation at [Digital Humanities Tech Symposium](https://dh-tech.github.io/2025/06/04/digital-humanities-tech-symposium-agenda/), DH2025. July 14, 2025.
 * Rebecca Sutton Koeser. 2025. “[Undate in Action](https://doi.org/10.63744/SFtXXpIE4ERh).” In Digital Humanities Tech Symposium 2025—Anthology of Computers and the Humanities, edited by Julia Damerow and Rebecca Sutton Koeser, vol. 2.
 * Rebecca Sutton Koeser. [Join me for a DHTech hackathon? It’s an un-date!](https://dh-tech.github.io/blog/2023/02/09/hackathon-undate/) DHTech, February 9, 2023.
+
+## Related Projects
+
+- ISO8601 date support and dates with unknown years, including duration, adapted from [Shakespeare and Company Project](https://shakespeareandco.princeton.edu/) ([codebase](https://github.com/Princeton-CDH/mep-django))
+- Parsing and calendar conversion for Hebrew Anno Mundi and Islamic Hijri calendars adapted from [Princeton Geniza Project (PGP)](https://geniza.princeton.edu/) ([codebase](https://github.com/Princeton-CDH/geniza/)); improved and verified with data and logic from the [Islamic Scientific Manuscripts Initiative (ISMI)](https://ismi.mpiwg-berlin.mpg.de/) 
+- Parsing for dates in African languages inspired by work on and partially checked against data from [MasakhaNER](https://github.com/masakhane-io/masakhane-ner)
+- Parsing and calendar conversion for Christian liturgical holidays adapted from work on [Hale/Eliot Letters project](https://cdh.princeton.edu/projects/haleeliot-letters/)
+
 
 ## License
 

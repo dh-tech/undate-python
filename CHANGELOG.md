@@ -5,7 +5,9 @@
 
 - Add parsing to Gregorian date converter; supports month names (full or abbreviated)
   in English, French, German, Spanish, Kinyarwanda, Ganda, and Tigrinya
-- Include Gregorian dates in omnibus parser
+- Add support for parsing Christian liturgical dates (fixed holidays and movable feasts)
+- Include Gregorian dates and holidays in omnibus parser
+- Updates to pyproject.toml, pre-commit hooks, ruff rules, dependabot configuration
 
 ## 0.6.1
 - Updated Read the Docs build to use Ubuntu 24.04
