@@ -267,7 +267,7 @@ See [Contributors](CONTRIBUTORS.md) for more detailed information about contribu
 ## Related Projects
 
 - ISO8601 date support and dates with unknown years, including duration, adapted from [Shakespeare and Company Project](https://shakespeareandco.princeton.edu/) ([codebase](https://github.com/Princeton-CDH/mep-django))
-- Parsing and calendar conversion for Hebrew Anno Mundi and Islamic Hijri calendars adapted from [Princeton Geniza Project (PGP)](https://geniza.princeton.edu/) ([codebase](github.com/Princeton-CDH/geniza/)); improved and verified with data and logic from the [Islamic Scientific Manuscripts Initiative (ISMI)](https://ismi.mpiwg-berlin.mpg.de/) 
+- Parsing and calendar conversion for Hebrew Anno Mundi and Islamic Hijri calendars adapted from [Princeton Geniza Project (PGP)](https://geniza.princeton.edu/) ([codebase](https://github.com/Princeton-CDH/geniza/)); improved and verified with data and logic from the [Islamic Scientific Manuscripts Initiative (ISMI)](https://ismi.mpiwg-berlin.mpg.de/) 
 - Parsing for dates in African languages inspired by work on and partially checked against data from [MasakhaNER](https://github.com/masakhane-io/masakhane-ner)
 - Parsing and calendar conversion for Christian liturgical holidays adapted from work on [Hale/Eliot Letters project](https://cdh.princeton.edu/projects/haleeliot-letters/)
 
