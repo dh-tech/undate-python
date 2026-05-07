@@ -8,8 +8,14 @@
 > This is beta software; it is still in development and not fully feature complete. If you use it, please let us know and share your feedback.
 
 
-Currently `undate` supports parsing, formatting, and reasoning with dates in varying precision and calendars; dates with different precision and from different original calendars can be used together. Supported formats include ISO8601, portions of EDTF (Extended Date Time Format),
-and parsing and conversion for dates in Hebrew Anno Mundi and Islamic Hijri calendars, and Gregorian dates with full or abbreviated month names in any order for multiple languages (English, Spanish, French, German, Kinyarwanda, Ganda, Tigrinya). Parsers can be used together in an experimental omnibus parser for unambiguous dates.
+Currently `undate` supports parsing, formatting, and reasoning with dates in varying precision and calendars; dates with different precision and from different original calendars can be used together. Supported formats include:
+- portions of EDTF (Extended Date Time Format)
+- ISO8601
+- parsing and calendar conversion for dates in Hebrew Anno Mundi and Islamic Hijri calendars
+- Gregorian dates with full or abbreviated month names in any order for multiple languages (English, Spanish, French, German, Kinyarwanda, Ganda, Tigrinya)
+- Christian liturgical dates (fixed holidays and movable feasts)
+
+For unambiguous dates, there is an experimental omnibus parser which combines all available dates (bare years are currently assumed to be Gregorian calendar).
 
 For more about the origin and goals of `undate`, read our 2025 software paper:
 
