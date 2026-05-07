@@ -16,7 +16,6 @@ except ImportError:
     from strenum import StrEnum  # type: ignore
 
 # Pre 3.10 requires Union for multiple types, e.g. Union[int, None] instead of int | None
-from typing import Dict, Optional, Union
 
 from undate.converters.base import BaseCalendarConverter, BaseDateConverter
 from undate.date import ONE_DAY, Date, DatePrecision, Timedelta, UnDelta
@@ -59,7 +58,7 @@ class Undate:
     latest: Date
     #: A string to label a specific undate, e.g. "German Unity Date 2022" for Oct. 3, 2022.
     #: Labels are not taken into account when comparing undate objects.
-    label: Union[str, None] = None
+    label: str | None = None
     converter: BaseDateConverter
     #: precision of the date (day, month, year, etc.)
     precision: DatePrecision
@@ -76,12 +75,12 @@ class Undate:
 
     def __init__(
         self,
-        year: Optional[Union[int, str]] = None,
-        month: Optional[Union[int, str]] = None,
-        day: Optional[Union[int, str]] = None,
-        converter: Optional[BaseDateConverter] = None,
-        label: Optional[str] = None,
-        calendar: Optional[Union[str, Calendar]] = None,
+        year: int | str | None = None,
+        month: int | str | None = None,
+        day: int | str | None = None,
+        converter: BaseDateConverter | None = None,
+        label: str | None = None,
+        calendar: str | Calendar | None = None,
     ):
         # everything is optional but something is required
         if all(val is None for val in [year, month, day]):
@@ -89,7 +88,7 @@ class Undate:
 
         # keep track of initial values and which values are known
         # TODO: add validation: if str, must be expected length
-        self.initial_values: Dict[str, Optional[Union[int, str]]] = {
+        self.initial_values: dict[str, int | str | None] = {
             "year": year,
             "month": month,
             "day": day,
@@ -200,7 +199,7 @@ class Undate:
             *self.calendar_converter.to_gregorian(max_year, latest_month, max_day)
         )
 
-    def set_calendar(self, calendar: Union[str, Calendar]):
+    def set_calendar(self, calendar: str | Calendar):
         """Find calendar by name if passed as string and set on the object.
         Only intended for use at initialization time; use :meth:`as_calendar`
         to change calendar."""
@@ -214,7 +213,7 @@ class Undate:
                     raise ValueError(f"Calendar `{calendar}` is not supported") from err
             self.calendar = calendar
 
-    def as_calendar(self, calendar: Union[str, Calendar]):
+    def as_calendar(self, calendar: str | Calendar):
         """Return a new :class:`Undate` object with the same year, month, day, and labels
         used to initialize the current object, but with a different calendar.  Note that this
         does NOT do calendar conversion, but reinterprets current numeric year, month, day values
@@ -260,7 +259,7 @@ class Undate:
         return f"undate.Undate({init_str})"
 
     @classmethod
-    def parse(cls, date_string, format) -> Union["Undate", UndateInterval]:
+    def parse(cls, date_string, format) -> Undate | UndateInterval:
         """parse a string to an undate or undate interval using the specified format;
         for now, only supports named converters"""
         converter_cls = BaseDateConverter.available_converters().get(format, None)
@@ -281,7 +280,7 @@ class Undate:
         raise ValueError(f"Unsupported format '{format}'")
 
     @classmethod
-    def _comparison_type(cls, other: object) -> "Undate":
+    def _comparison_type(cls, other: object) -> Undate:
         """Common logic for type handling in comparison methods.
         Converts to Undate object if possible, otherwise raises
         NotImplementedError exception.  Uses :meth:`to_undate` for conversion.
@@ -331,8 +330,8 @@ class Undate:
         if looks_equal and (
             # if any part of either date that is known is _partially_ known,
             # then these dates are not equal
-            any(self.is_partially_known(p) for p in self.initial_values.keys())
-            or any(other.is_partially_known(p) for p in other.initial_values.keys())
+            any(self.is_partially_known(p) for p in self.initial_values)
+            or any(other.is_partially_known(p) for p in other.initial_values)
         ):
             return False
 
@@ -429,7 +428,7 @@ class Undate:
         )
 
     @classmethod
-    def to_undate(cls, other: object) -> "Undate":
+    def to_undate(cls, other: object) -> Undate:
         """Convert arbitrary object to Undate, if possible. Raises TypeError
         if conversion is not possible.
 
@@ -480,7 +479,7 @@ class Undate:
         # and self.initial_values[part].replace(self.MISSING_DIGIT, "") != ""
 
     @property
-    def year(self) -> Optional[str]:
+    def year(self) -> str | None:
         "year as string (minimum 4 characters), if year is known"
         year = self._get_date_part("year")
         if year:
@@ -491,7 +490,7 @@ class Undate:
         return None
 
     @property
-    def month(self) -> Optional[str]:
+    def month(self) -> str | None:
         "month as 2-character string, or None if unknown/unset"
         # TODO: do we allow None for unknown month with day-level granularity?
         # TODO: need to distinguish between unknown (XX) and unset/not part of the date due to granularity
@@ -504,7 +503,7 @@ class Undate:
         return None
 
     @property
-    def day(self) -> Optional[str]:
+    def day(self) -> str | None:
         "day as 2-character string or None if unset"
         day = self._get_date_part("day")
         if day:
@@ -515,7 +514,7 @@ class Undate:
             return self.MISSING_DIGIT * 2
         return None
 
-    def _get_date_part(self, part: str) -> Optional[str]:
+    def _get_date_part(self, part: str) -> str | None:
         value = self.initial_values.get(part)
         return str(value) if value else None
 
@@ -654,7 +653,7 @@ class Undate:
         # assuming two digit only (i.e., month or day)
         possible_values = [f"{n:02}" for n in range(min_val, max_val + 1)]
         # ensure input value has two digits
-        value = "%02s" % value
+        value = f"{value:>2}"
         # generate regex where missing digit matches anything
         val_pattern = re.compile(value.replace(self.MISSING_DIGIT, "."))
         # identify all possible matches, then get min and max

@@ -259,7 +259,7 @@ class TestUndate:
         assert Undate(2022, 10) == Undate(2022, 10)
         assert Undate(2022, 10, 1) == Undate(2022, 10, 1)
         # dates without a known year cannot known to be equal
-        assert not Undate(month=2, day=7) == Undate(month=2, day=7)
+        assert Undate(month=2, day=7) != Undate(month=2, day=7)
 
         # something we can't convert for comparison should return NotImplemented
         assert Undate(2022).__eq__("not a date") == NotImplemented

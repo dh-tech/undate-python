@@ -113,13 +113,11 @@ extend-select = [
   "PERF", # perflint
   "PTH",  # flake8-use-pathlib
   "RUF",  # ruff-specific rules
-#  "SIM",  # flake8-simplify
-#  "UP",   # pyupgrade
+  "SIM",  # flake8-simplify
+  "UP",   # pyupgrade
 ]
 # Can use to ignore specific rules within above selection
 ignore = []
-# ignore test code
-# exclude = ["tests/*.py"]
 
 [tool.ruff.lint.per-file-ignores]
 # for test files, don't require docstrings or return type annotations

@@ -1,5 +1,3 @@
-from typing import Union
-
 from convertdate import islamic  # type: ignore
 from lark.exceptions import UnexpectedInput
 
@@ -79,7 +77,7 @@ class IslamicDateConverter(BaseCalendarConverter):
         # NOTE: this results in weird numbers for months when year gets sufficiently high
         return islamic.to_gregorian(year, month, day)
 
-    def parse(self, value: str) -> Union[Undate, UndateInterval]:
+    def parse(self, value: str) -> Undate | UndateInterval:
         """
         Parse an Islamic/Hijri date string and return an :class:`~undate.undate.Undate` or
         :class:`~undate.undate.UndateInterval`.

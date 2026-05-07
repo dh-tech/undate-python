@@ -47,7 +47,6 @@ import logging
 import pathlib
 import pkgutil
 from functools import cache
-from typing import Dict, Type
 
 from undate.date import Date
 
@@ -118,14 +117,14 @@ class BaseDateConverter:
         return import_count
 
     @classmethod
-    def available_converters(cls) -> Dict[str, Type["BaseDateConverter"]]:
+    def available_converters(cls) -> dict[str, type["BaseDateConverter"]]:
         """
         Dictionary of available converters keyed on name.
         """
         return {c.name: c for c in cls.subclasses()}  # type: ignore
 
     @classmethod
-    def subclasses(cls) -> set[Type["BaseDateConverter"]]:
+    def subclasses(cls) -> set[type["BaseDateConverter"]]:
         """
         Set of available converters classes. Includes descendant
         subclasses, including calendar converters, but does not include

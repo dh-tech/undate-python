@@ -1,5 +1,5 @@
 # Pre 3.10 requires Union for multiple types, e.g. Union[int, None] instead of int | None
-from typing import Optional, Union
+from typing import Optional
 
 from undate import Undate
 from undate.converters.base import BaseDateConverter
@@ -18,18 +18,18 @@ class UndateInterval:
     """
 
     # date range between two undates
-    earliest: Union[Undate, None]
-    latest: Union[Undate, None]
-    label: Union[str, None]
+    earliest: Undate | None
+    latest: Undate | None
+    label: str | None
 
     # TODO: think about adding an optional precision / length /size field
     # using DatePrecision for intervals of any standard duration (decade, century)
 
     def __init__(
         self,
-        earliest: Optional[Undate] = None,
-        latest: Optional[Undate] = None,
-        label: Optional[str] = None,
+        earliest: Undate | None = None,
+        latest: Undate | None = None,
+        label: str | None = None,
     ):
         # takes two undate objects; allows conversion from supported types
         if earliest:
@@ -57,7 +57,7 @@ class UndateInterval:
 
     def __str__(self) -> str:
         # using EDTF syntax for open ranges
-        return "%s/%s" % (self.earliest or "..", self.latest or "")
+        return f"{self.earliest or '..'}/{self.latest or ''}"
 
     def format(self, format) -> str:
         """format this undate interval as a string using the specified format;

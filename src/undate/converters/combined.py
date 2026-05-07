@@ -4,8 +4,6 @@ liturgical dates where dates are unambiguous. Year-only dates are parsed
 as EDTF in Gregorian calendar.
 """
 
-from typing import Union
-
 from lark import Lark
 from lark.exceptions import UnexpectedInput
 from lark.visitors import Transformer, merge_transformers
@@ -68,7 +66,7 @@ class OmnibusDateConverter(BaseDateConverter):
     def __init__(self):
         self.transformer = combined_transformer
 
-    def parse(self, value: str) -> Union[Undate, UndateInterval]:
+    def parse(self, value: str) -> Undate | UndateInterval:
         """
         Parse a string in a supported format and return an :class:`~undate.undate.Undate`
         or :class:`~undate.undate.UndateInterval`.
@@ -86,6 +84,6 @@ class OmnibusDateConverter(BaseDateConverter):
                 f"Parsing failed: '{value}' is not in a recognized date format"
             ) from err
 
-    def to_string(self, undate: Union[Undate, UndateInterval]) -> str:
+    def to_string(self, undate: Undate | UndateInterval) -> str:
         "Not supported by this converter. Will raise :class:`ValueError`"
         raise ValueError("Omnibus converter does not support serialization")

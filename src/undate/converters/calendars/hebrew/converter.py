@@ -1,5 +1,3 @@
-from typing import Union
-
 from convertdate import hebrew  # type: ignore
 from lark.exceptions import UnexpectedInput
 
@@ -93,7 +91,7 @@ class HebrewDateConverter(BaseCalendarConverter):
         """
         return hebrew.to_gregorian(year, month, day)
 
-    def parse(self, value: str) -> Union[Undate, UndateInterval]:
+    def parse(self, value: str) -> Undate | UndateInterval:
         """
         Parse a Hebrew date string and return an :class:`~undate.undate.Undate` or
         :class:`~undate.undate.UndateInterval`.
