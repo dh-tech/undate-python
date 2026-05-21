@@ -1,8 +1,7 @@
 import pytest
 
-from undate.converters.combined import parser, combined_transformer
-
 from undate import Undate, UndateInterval
+from undate.converters.combined import combined_transformer, parser
 
 # test that valid dates can be parsed
 
@@ -19,6 +18,17 @@ testcases = [
     ("Jumādā I 1243", Undate(1243, 5, calendar="Islamic")),
     ("7 Jumādā I 1243", Undate(1243, 5, 7, calendar="Islamic")),
     ("14 Rabīʿ I 901", Undate(901, 3, 14, calendar="Islamic")),
+    # Gregorian with non-numeric month (full or abbreviated)
+    ("June 1602", Undate(1602, 6, calendar="Gregorian")),
+    ("13 Jan 1602", Undate(1602, 1, 13, calendar="Gregorian")),
+    ("2022 ugu. 4", Undate(2022, 11, 4, calendar="Gregorian")),
+    ("18 avril", Undate(month=4, day=18, calendar="Gregorian")),
+    # Christian liturgical dates
+    ("Easter 1942", Undate(1942, 4, 5)),
+    ("Epiphany 1921", Undate(1921, 1, 6)),
+    ("Pentecost 2016", Undate(2016, 5, 15)),
+    ("Ash Wednesday 2000", Undate(2000, 3, 8)),
+    ("Whit Monday 2023", Undate(2023, 5, 29)),  # codespell:ignore whit
 ]
 
 

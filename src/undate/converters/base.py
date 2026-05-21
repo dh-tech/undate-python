@@ -47,7 +47,6 @@ import logging
 import pathlib
 import pkgutil
 from functools import cache
-from typing import Dict, Type
 
 from undate.date import Date
 
@@ -102,12 +101,12 @@ class BaseDateConverter:
         logger.debug("Loading converters under undate.converters")
         import undate.converters
 
-        # load packages under this path with curent package prefix
+        # load packages under this path with current package prefix
         converter_path = undate.converters.__path__
         converter_prefix = f"{undate.converters.__name__}."
 
         import_count = 0
-        for importer, modname, ispkg in pkgutil.iter_modules(
+        for _importer, modname, _ispkg in pkgutil.iter_modules(
             converter_path, converter_prefix
         ):
             # import everything except the current file
@@ -118,14 +117,14 @@ class BaseDateConverter:
         return import_count
 
     @classmethod
-    def available_converters(cls) -> Dict[str, Type["BaseDateConverter"]]:
+    def available_converters(cls) -> dict[str, type["BaseDateConverter"]]:
         """
         Dictionary of available converters keyed on name.
         """
         return {c.name: c for c in cls.subclasses()}  # type: ignore
 
     @classmethod
-    def subclasses(cls) -> set[Type["BaseDateConverter"]]:
+    def subclasses(cls) -> set[type["BaseDateConverter"]]:
         """
         Set of available converters classes. Includes descendant
         subclasses, including calendar converters, but does not include

@@ -1,5 +1,27 @@
 # Change Log
 
+## 0.8
+
+-
+
+## 0.7
+
+- Add parsing to Gregorian date converter; supports month names (full or abbreviated)
+  in English, French, German, Spanish, Kinyarwanda, Ganda, and Tigrinya
+- Add support for parsing Christian liturgical dates (fixed holidays and movable feasts)
+- Include Gregorian dates and holidays in omnibus parser
+- Updates to pyproject.toml, pre-commit hooks, ruff rules, dependabot configuration
+
+## 0.6.1
+- Updated Read the Docs build to use Ubuntu 24.04
+
+## 0.6
+
+- Experimental omnibus date converter + parser (EDTF, Hebrew, Hijri)
+  - Reorganized Lark grammar files to a common location
+- Improved documentation for converter class parsing and serialization
+- Update action versions in GitHub Workflows (contributed by @rettinghaus)
+
 ## 0.5.2
 - repr for Undate, UndateInterval, and UnDelta now produce fully-qualified, constructor-style strings with deterministic field ordering.
 - Added Undate.unknown_year property and is_unknown() method to check for fully-unknown year/month/day.

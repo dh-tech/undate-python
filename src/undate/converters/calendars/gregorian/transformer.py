@@ -3,17 +3,14 @@ from lark import Transformer, Tree
 from undate import Calendar, Undate
 
 
-class IslamicUndate(Undate):
-    """Undate convenience subclass; sets default calendar to Islamic."""
+class GregorianDateTransformer(Transformer):
+    """Transform a Gregorian date parse tree and return an Undate."""
 
-    calendar = Calendar.ISLAMIC
+    # Currently parser should not result in intervals
 
+    calendar = Calendar.GREGORIAN
 
-class IslamicDateTransformer(Transformer):
-    """Transform an Islamic Hijri date parse tree and return an Undate or
-    UndateInterval."""
-
-    def islamic_date(self, items):
+    def gregorian_date(self, items):
         parts = {}
         for child in items:
             if child.data in ["year", "month", "day"]:
@@ -22,23 +19,14 @@ class IslamicDateTransformer(Transformer):
                 value = int(child.children[0])
                 parts[str(child.data)] = value
 
-        # initialize and return an undate with islamic year, month, day and
-        # islamic calendar
-        return IslamicUndate(**parts)
+        # initialize and return an undate with year, month, day and
+        # Gregorian calendar
+        return Undate(**parts, calendar=self.calendar)
 
-    # year translation is not needed since we want a tree with name year
-    # this is equivalent to a no-op
     def year(self, items):
         # combine multiple parts into a single string
-        # (for some reason we're getting an anonymous token in combined parser)
         value = "".join([str(i) for i in items])
         return Tree(data="year", children=[value])
-
-    def day(self, items):
-        # combine multiple parts into a single string
-        # (for some reason we're getting an anonymous token in combined parser)
-        value = "".join([str(i) for i in items])
-        return Tree(data="day", children=[value])
 
     def month(self, items):
         # month has a nested tree for the rule and the value
@@ -47,3 +35,8 @@ class IslamicDateTransformer(Transformer):
         tree = items[0]
         month_n = tree.data.split("_")[-1]
         return Tree(data="month", children=[month_n])
+
+    def day(self, items):
+        # combine multiple parts into a single string
+        value = "".join([str(i) for i in items])
+        return Tree(data="day", children=[value])

@@ -1,6 +1,7 @@
 import pytest
-from undate.converters.edtf import EDTFDateConverter
+
 from undate import Undate, UndateInterval
+from undate.converters.edtf import EDTFDateConverter
 
 
 class TestEDTFDateConverter:

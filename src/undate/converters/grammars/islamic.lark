@@ -1,6 +1,10 @@
 %import common.WS
 %ignore WS
 
+// Ignore periods and commas in dates
+%import .undate_common.DATE_PUNCTUATION
+%ignore DATE_PUNCTUATION
+
 // only support day month year format for now
 // parser requires numeric day and year to be distinguished based on order
 islamic_date: weekday? day month year | month year | year

@@ -6,6 +6,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   check:
     runs-on: ubuntu-latest
@@ -15,24 +19,28 @@ jobs:
         working-directory: .
 
     steps:
-      - uses: actions/checkout@v5
-      - name: Set up Python 3.12
-        uses: actions/setup-python@v6
-        with:
-          python-version: "3.12"
+      - uses: actions/checkout@v6
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v8.1.0
         with:
+          python-version: "3.12"
           enable-cache: true
           cache-dependency-glob: "pyproject.toml"
 
       - name: Install package with check dependencies
-        run: uv sync --extra check
+        run: uv sync --group check
 
-      # check with ruff
-      - name: Run ruff
-        run: uv run ruff check
+      - name: Run Ruff linter
+        uses: astral-sh/ruff-action@v3
+        with:
+          args: "check --output-format=github"
+
+      - name: Run Ruff formatter
+        # NOTE: ruff format does not currently support github output format
+        run: ruff format --check --diff  src tests
+        # Check formatting even if the previous step failed
+        if: always()
 
       # check docs build
       - name: Check that documentation builds with no errors or warnings

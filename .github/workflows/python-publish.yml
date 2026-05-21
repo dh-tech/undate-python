@@ -11,6 +11,8 @@ name: Upload Python Package
 on:
   release:
     types: [published]
+  # allow manually running on main
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -21,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
     - name: Set up Python
       uses: actions/setup-python@v6
       with:
@@ -33,7 +35,7 @@ jobs:
     - name: Build package
       run: python -m build
     - name: Publish package
-      uses: pypa/gh-action-pypi-publish@27b31702a0e7fc50959f5ad993c78deac1bdfc29
+      uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b
       with:
         user: __token__
         password: ${{ secrets.PYPI_API_TOKEN }}

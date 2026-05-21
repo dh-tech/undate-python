@@ -1,7 +1,5 @@
-from typing import Union
-
 from convertdate import islamic  # type: ignore
-from lark.exceptions import UnexpectedCharacters
+from lark.exceptions import UnexpectedInput
 
 from undate import Undate, UndateInterval
 from undate.converters.base import BaseCalendarConverter
@@ -79,7 +77,7 @@ class IslamicDateConverter(BaseCalendarConverter):
         # NOTE: this results in weird numbers for months when year gets sufficiently high
         return islamic.to_gregorian(year, month, day)
 
-    def parse(self, value: str) -> Union[Undate, UndateInterval]:
+    def parse(self, value: str) -> Undate | UndateInterval:
         """
         Parse an Islamic/Hijri date string and return an :class:`~undate.undate.Undate` or
         :class:`~undate.undate.UndateInterval`.
@@ -97,7 +95,7 @@ class IslamicDateConverter(BaseCalendarConverter):
             # set the original date as a label, with the calendar name
             undate_obj.label = f"{value} {self.calendar_name}"
             return undate_obj
-        except UnexpectedCharacters as err:
+        except UnexpectedInput as err:
             raise ValueError(f"Could not parse '{value}' as an Islamic date") from err
 
     # do we need to support conversion the other direction?

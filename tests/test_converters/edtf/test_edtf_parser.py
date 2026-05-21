@@ -1,4 +1,6 @@
 import pytest
+from lark.exceptions import UnexpectedCharacters
+
 from undate.converters.edtf.parser import edtf_parser
 
 # for now, just test that valid dates can be parsed
@@ -51,5 +53,5 @@ error_cases = ["1984-13", "Y1702", "1984-00", "1984-01-00"]
 
 @pytest.mark.parametrize("date_string", error_cases)
 def test_should_error(date_string):
-    with pytest.raises(Exception):
+    with pytest.raises(UnexpectedCharacters):
         edtf_parser.parse(date_string)

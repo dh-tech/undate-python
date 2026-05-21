@@ -1,10 +1,9 @@
-from enum import IntEnum
-from dataclasses import dataclass, replace
 import operator
+from collections.abc import Iterable
+from dataclasses import dataclass, replace
+from enum import IntEnum
 
 # Pre 3.10 requires Union for multiple types, e.g. Union[int, None] instead of int | None
-from typing import Optional, Union, Iterable
-
 import numpy as np
 
 
@@ -12,7 +11,7 @@ class Timedelta(np.ndarray):
     """Convenience class to make :class:`numpy.timedelta64` act
     more like the built-in python :class:`datetime.timedelta`."""
 
-    def __new__(cls, deltadays: Union[np.timedelta64, int]):
+    def __new__(cls, deltadays: np.timedelta64 | int):
         if isinstance(deltadays, int):
             deltadays = np.timedelta64(deltadays, "D")
         data = np.asarray(deltadays, dtype="timedelta64")
@@ -186,9 +185,9 @@ class Date(np.ndarray):
 
     def __new__(
         cls,
-        year: Union[int, np.datetime64],
-        month: Optional[int] = None,
-        day: Optional[int] = None,
+        year: int | np.datetime64,
+        month: int | None = None,
+        day: int | None = None,
     ):
         if isinstance(year, np.datetime64):
             _data = year
@@ -231,21 +230,21 @@ class Date(np.ndarray):
         return int(str(self.astype("datetime64[Y]")))
 
     @property
-    def month(self) -> Optional[int]:
+    def month(self) -> int | None:
         # if date unit is year, don't return a month (only M/D)
         if self.dtype != "datetime64[Y]":
             return int(str(self.astype("datetime64[M]")).split("-")[-1])
         return None
 
     @property
-    def day(self) -> Optional[int]:
+    def day(self) -> int | None:
         # only return a day if date unit is in days
         if self.dtype == "datetime64[D]":
             return int(str(self.astype("datetime64[D]")).split("-")[-1])
         return None
 
     @property
-    def weekday(self) -> Optional[int]:
+    def weekday(self) -> int | None:
         """Equivalent to :meth:`datetime.date.weekday`; returns day of week as an
         integer where Monday is 0 and Sunday is 6. Only supported for dates
         with date unit in days.
@@ -261,7 +260,7 @@ class Date(np.ndarray):
             thursday_week = self.astype("datetime64[W]")
             days_from_thursday = (self - thursday_week).astype(int)
             # if monday is 0, thursday is 3
-            return (days_from_thursday + 3) % 7
+            return int((days_from_thursday + 3) % 7)
 
         return None
 
@@ -280,12 +279,24 @@ class Date(np.ndarray):
     # NOTE: add should not be subclassed because we want to return a Date, not a delta
 
 
+class Weekday(IntEnum):
+    """Weekday as an integer, compatible with :meth:`datetime.date.weekday`."""
+
+    MONDAY = 0
+    TUESDAY = 1
+    WEDNESDAY = 2
+    THURSDAY = 3
+    FRIDAY = 4
+    SATURDAY = 5
+    SUNDAY = 6
+
+
 class DatePrecision(IntEnum):
     """date precision, to indicate date precision independent from how much
     of the date is known."""
 
     # NOTE: values MUST be ordered based on the relative size or
-    # precison of the time unit. That is, the smaller the unit, the more precise
+    # precision of the time unit. That is, the smaller the unit, the more precise
     # it is: a day is more precise than a month, a month is more precise than a year,
     # (DatePrecision.year < DatePrecision.month)
 
@@ -305,4 +316,4 @@ class DatePrecision(IntEnum):
         return f"{self.name}"
 
     # NOTE: consider harmonizing / using numpy date units:
-    # years (‘Y’), months (‘M’), weeks (‘W’), and days (‘D’)
+    # years (Y), months (M), weeks (W), and days (D)

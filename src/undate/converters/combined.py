@@ -1,20 +1,20 @@
 """
-**Experimental** combined parser. Supports EDTF, Hebrew, and Hijri
-where dates are unambiguous. (Year-only dates are parsed as EDTF in
-Gregorian calendar.)
+Combined parser. Supports EDTF, Gregorian, Hebrew, Hijri, and Christian
+liturgical dates where dates are unambiguous. Year-only dates are parsed
+as EDTF in Gregorian calendar.
 """
 
-from typing import Union
-
 from lark import Lark
-from lark.exceptions import UnexpectedCharacters
+from lark.exceptions import UnexpectedInput
 from lark.visitors import Transformer, merge_transformers
 
 from undate import Undate, UndateInterval
-from undate.converters import BaseDateConverter, GRAMMAR_FILE_PATH
-from undate.converters.edtf.transformer import EDTFTransformer
+from undate.converters import GRAMMAR_FILE_PATH, BaseDateConverter
+from undate.converters.calendars.gregorian.transformer import GregorianDateTransformer
 from undate.converters.calendars.hebrew.transformer import HebrewDateTransformer
 from undate.converters.calendars.islamic.transformer import IslamicDateTransformer
+from undate.converters.edtf.transformer import EDTFTransformer
+from undate.converters.holidays import HolidayTransformer
 
 
 class CombinedDateTransformer(Transformer):
@@ -33,6 +33,8 @@ combined_transformer = merge_transformers(
     edtf=EDTFTransformer(),
     hebrew=HebrewDateTransformer(),
     islamic=IslamicDateTransformer(),
+    gregorian=GregorianDateTransformer(),
+    holidays=HolidayTransformer(),
 )
 
 
@@ -45,14 +47,16 @@ parser = Lark.open(
 class OmnibusDateConverter(BaseDateConverter):
     """
     Combination parser that aggregates existing parser grammars.
-    Currently supports EDTF, Hebrew, and Hijri  where dates are unambiguous.
-    (Year-only dates are parsed as EDTF in Gregorian calendar.)
+    Supports EDTF, Gregorian, Hebrew, Hijri, and Christian liturgical dates
+    where dates are unambiguous. Year-only dates are parsed as EDTF in
+    Gregorian calendar.
 
     Does not support serialization.
 
     Example usage::
 
-        Undate.parse("Tammuz 4816", "omnibus")
+        Undate.parse("Tammuz 4812", "omnibus")
+        Undate.parse("Easter 1916", "omnibus")
 
     """
 
@@ -62,7 +66,7 @@ class OmnibusDateConverter(BaseDateConverter):
     def __init__(self):
         self.transformer = combined_transformer
 
-    def parse(self, value: str) -> Union[Undate, UndateInterval]:
+    def parse(self, value: str) -> Undate | UndateInterval:
         """
         Parse a string in a supported format and return an :class:`~undate.undate.Undate`
         or :class:`~undate.undate.UndateInterval`.
@@ -75,11 +79,11 @@ class OmnibusDateConverter(BaseDateConverter):
             parsetree = parser.parse(value)
             # transform returns a list; we want the first item in the list
             return self.transformer.transform(parsetree)[0]
-        except UnexpectedCharacters:
+        except UnexpectedInput as err:
             raise ValueError(
-                "Parsing failed: '%s' is not in a recognized date format" % value
-            )
+                f"Parsing failed: '{value}' is not in a recognized date format"
+            ) from err
 
-    def to_string(self, undate: Union[Undate, UndateInterval]) -> str:
+    def to_string(self, undate: Undate | UndateInterval) -> str:
         "Not supported by this converter. Will raise :class:`ValueError`"
         raise ValueError("Omnibus converter does not support serialization")

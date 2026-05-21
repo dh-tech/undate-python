@@ -1,10 +1,10 @@
 from lark import Transformer, Tree
 
-from undate import Undate, Calendar
+from undate import Calendar, Undate
 
 
 class HebrewUndate(Undate):
-    """Undate convience subclass; sets default calendar to Hebrew."""
+    """Undate convenience subclass; sets default calendar to Hebrew."""
 
     calendar = Calendar.HEBREW
 
