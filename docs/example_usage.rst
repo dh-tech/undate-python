@@ -102,7 +102,10 @@ methods raise a ``NotImplementedError``.
    :show-errors:
 
    november_2020 = Undate(2020, 11)
-   november7_2020 > november_2020
+   try:
+     november7_2020 > november_2020
+   except NotImplementedError as err:
+     print(err)
 
 An ``UndateInterval`` is a date range between two ``Undate`` objects.
 Intervals can be open-ended, allow for optional labels, and can
@@ -153,16 +156,35 @@ The ``"Gregorian"`` converter parses dates with full or abbreviated month
 names across multiple languages:
 
 .. pyodide::
-   print(repr(Undate.parse("avril 1362", "Gregorian")))           # French
-   print(repr(Undate.parse("2022 Ugushyingo 26", "Gregorian")))   # Kinyarwanda
+    :editable:
+    :show-errors:
+
+    dates = [
+         "7 November 2000",
+         "Nov 2000",
+         "avril 1362",
+         "2022 Ugushyingo 26",
+    ]
+    for date in dates:
+         print(repr(Undate.parse(date, "Gregorian")))
+
 
 The ``"holidays"`` converter parses Christian liturgical dates, including
 movable feasts:
 
 .. pyodide::
-   print(repr(Undate.parse("Epiphany 1942", "holidays")))
-   print(repr(Undate.parse("Easter 1942", "holidays")))
-   print(repr(Undate.parse("Ash Wednesday 1942", "holidays")))
+   :editable:
+   :show-errors:
+
+   holidays = [
+       "Epiphany 1942",
+       "Easter 1942",
+       "Ash Wednesday 1942",
+   ]
+   undate_holidays = [Undate.parse(hol, "holidays") for hol in holidays]
+
+   for holidate in undate_holidays:
+       print(f"{holidate.label}: {holidate!s} (earliest: {holidate.earliest}, latest: {holidate.latest})")
 
 
 Calendars
@@ -199,3 +221,16 @@ comparison across dates from different calendars.
    print("Sorted by Gregorian date:")
    for d in sorted([rajab495, tammuz4816, y2k]):
        print(f"  {repr(d)}")
+
+Try it yourself
+~~~~~~~~~~~~~~~
+
+.. pyodide::
+   :editable:
+   :show-errors:
+
+   # try your own dates here
+   from undate import Undate, UndateInterval
+
+   mydate = Undate(2025, 6)
+   print(mydate)
