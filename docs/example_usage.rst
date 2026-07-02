@@ -100,6 +100,7 @@ methods raise a ``NotImplementedError``.
 
 .. pyodide::
    :show-errors:
+
    november_2020 = Undate(2020, 11)
    november7_2020 > november_2020
 
@@ -131,17 +132,37 @@ Intervals can calculate duration if enough information is known:
    for interval in [century19, century20, jan2000_interval]:
        print(f"{interval.label}: {interval.duration().days:,} days")
 
+Parsing and Formatting
+~~~~~~~~~~~~~~~~~~~~~~
+
 You can initialize ``Undate`` or ``UndateInterval`` objects by parsing a
-date string with a specific converter, and you can also output an
-``Undate`` object in those formats. Currently available converters
-are "ISO8601" and "EDTF" and supported calendars.
+date string with a named converter, and output an ``Undate`` in a
+different format than it was parsed. The ``"ISO8601"`` and ``"EDTF"``
+converters handle the most common structured formats:
 
 .. pyodide::
    print(repr(Undate.parse("2002", "ISO8601")))
    print(repr(Undate.parse("2002-05", "EDTF")))
    print(repr(Undate.parse("--05-03", "ISO8601")))
+   print(repr(Undate.parse("1800/1900", "EDTF")))
+
+   # convert between formats
    print(Undate.parse("--05-03", "ISO8601").format("EDTF"))
-   print(repr(Undate.parse("1800/1900", format="EDTF")))
+
+The ``"Gregorian"`` converter parses dates with full or abbreviated month
+names across multiple languages:
+
+.. pyodide::
+   print(repr(Undate.parse("avril 1362", "Gregorian")))           # French
+   print(repr(Undate.parse("2022 Ugushyingo 26", "Gregorian")))   # Kinyarwanda
+
+The ``"holidays"`` converter parses Christian liturgical dates, including
+movable feasts:
+
+.. pyodide::
+   print(repr(Undate.parse("Epiphany 1942", "holidays")))
+   print(repr(Undate.parse("Easter 1942", "holidays")))
+   print(repr(Undate.parse("Ash Wednesday 1942", "holidays")))
 
 
 Calendars
