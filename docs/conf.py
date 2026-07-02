@@ -10,20 +10,22 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path().resolve()))
 
 import undate
 
 # -- Project information -----------------------------------------------------
 
 project = "undate"
-copyright = "2024, DHtech"
+copyright = "2026, DHtech"
 author = "DHtech Community"
 
 # The full version, including alpha/beta/rc tags
-release = undate.__version__
+release = undate.__version__  # type: ignore[attr-defined]
 
 master_doc = "index"
 

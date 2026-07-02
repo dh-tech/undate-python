@@ -13,8 +13,8 @@ on:
     branches:
       - "**"
     paths:
-      - 'undate/**'
-      - 'tests/**'
+      - "undate/**"
+      - "tests/**"
   pull_request:
     branches:
       - "**"
@@ -34,15 +34,16 @@ jobs:
         working-directory: .
 
     steps:
-      - uses: actions/checkout@v6
-
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
       # use github python action instead of uv to take advantage of caching
       - name: Set up Python ${{ matrix.python }}
-        uses: astral-sh/setup-uv@v8.1.0
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
         with:
           python-version: ${{ matrix.python }}
-          cache: 'pip'
-          cache-dependency-path: '**/pyproject.toml'
+          cache: "pip"
+          cache-dependency-path: "**/pyproject.toml"
 
       - name: Install package with check dependencies
         run: uv sync --group test
@@ -58,8 +59,7 @@ jobs:
         if: ${{ matrix.python == env.COV_PYTHON_VERSION }}
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v6
+        uses: codecov/codecov-action@e79a6962e0d4c0c17b229090214935d2e33f8354 # v6.0.1
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         if: ${{ matrix.python == env.COV_PYTHON_VERSION }}
-
