@@ -1,4 +1,9 @@
 
+.sidebar-logo {
+    width: 200px;
+    height: auto;
+}
+
 div.sphinxsidebar .powered_by a {
 	text-decoration: none;
 	border-bottom: none;

@@ -51,7 +51,7 @@ classifiers = [
 ]
 
 [dependency-groups]
-docs = ["sphinx>=7.0.0", "alabaster", "myst-parser", "myst-parser[linkify]"]
+docs = ["sphinx>=7.0.0", "furo", "myst-parser", "myst-parser[linkify]"]
 test = ["pytest>=9", "pytest-ordering", "pytest-cov"]
 notebooks = ["jupyterlab", "pandas", "treon", "altair"]
 check = [ { include-group = "docs" }, {include-group = "notebooks"}, "mypy", "ruff"]
@@ -60,9 +60,11 @@ dev = [
     "twine",
     "wheel",
     "build",
+    "sphinx-autobuild>=2024.10.3",
+    "sphinx-pyodide",
     { include-group = "test" },
     { include-group = "check" },
-    { include-group = "docs" }
+    { include-group = "docs" },
 ]
 
 [project.urls]
@@ -122,3 +124,6 @@ ignore = []
 [tool.ruff.lint.per-file-ignores]
 # for test files, don't require docstrings or return type annotations
 "tests/**.py" = ["D", "ANN", "RUF"]
+
+[tool.uv.sources]
+sphinx-pyodide = { path = "../sphinx-pyodide", editable = true }
