@@ -101,3 +101,75 @@ methods raise a ``NotImplementedError``.
 .. pyodide::
    november_2020 = Undate(2020, 11)
    november7_2020 > november_2020
+
+An ``UndateInterval`` is a date range between two ``Undate`` objects.
+Intervals can be open-ended, allow for optional labels, and can
+calculate duration if enough information is known. ``UndateIntervals``
+are inclusive (i.e., a closed interval), and include both the earliest
+and latest date as part of the range.
+
+.. pyodide::
+   from undate import UndateInterval
+
+   century19 = UndateInterval(Undate(1801), Undate(1900), label="19th century")
+   century20 = UndateInterval(Undate(1901), Undate(2000), label="20th century")
+   before2000 = UndateInterval(latest=Undate(2000))   # before 2000
+   after1900 = UndateInterval(Undate(1900))            # after 1900
+
+   for interval in [century19, century20, before2000, after1900]:
+       print(repr(interval))
+
+Intervals can calculate duration if enough information is known:
+
+.. pyodide::
+   for interval in [century19, century20]:
+       print(f"{interval.label}: {interval.duration().days} days")
+   print(f"January 2000: {UndateInterval(Undate(2000, 1, 1), Undate(2000, 1, 31)).duration().days} days")
+
+You can initialize ``Undate`` or ``UndateInterval`` objects by parsing a
+date string with a specific converter, and you can also output an
+``Undate`` object in those formats. Currently available converters
+are "ISO8601" and "EDTF" and supported calendars.
+
+.. pyodide::
+   print(repr(Undate.parse("2002", "ISO8601")))
+   print(repr(Undate.parse("2002-05", "EDTF")))
+   print(repr(Undate.parse("--05-03", "ISO8601")))
+   print(Undate.parse("--05-03", "ISO8601").format("EDTF"))
+   print(repr(Undate.parse("1800/1900", format="EDTF")))
+
+
+Calendars
+~~~~~~~~~
+
+All ``Undate`` objects are calendar aware, and date converters include
+support for parsing and working with dates from other calendars. The
+Gregorian calendar is used by default; currently ``undate`` supports the
+Islamic Hijri calendar and the Hebrew Anno Mundi calendar.
+
+Dates are stored with the year, month, day and appropriate precision for
+the original calendar; internally, earliest and latest dates are
+calculated in Gregorian / Proleptic Gregorian calendar for standardized
+comparison across dates from different calendars.
+
+.. pyodide::
+   tammuz4816 = Undate.parse("26 Tammuz 4816", "Hebrew")
+   rajab495 = Undate.parse("Rajab 495", "Islamic")
+   y2k = Undate.parse("2001", "EDTF")
+
+   for d in [tammuz4816, rajab495, y2k]:
+       print(repr(d))
+
+.. pyodide::
+   print("Earliest Gregorian equivalent:")
+   for d in [rajab495, tammuz4816, y2k]:
+       print(f"  {str(d):<30} earliest: {d.earliest}")
+
+   print("\nPrecision:")
+   for d in [rajab495, tammuz4816, y2k]:
+       print(f"  {str(d):<30} precision: {d.precision}")
+
+.. pyodide::
+   print("Sorted by Gregorian date:")
+   for d in sorted([rajab495, tammuz4816, y2k]):
+       print(f"  {repr(d)}")
