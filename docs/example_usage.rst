@@ -99,6 +99,7 @@ When dates cannot be compared due to ambiguity or precision, comparison
 methods raise a ``NotImplementedError``.
 
 .. pyodide::
+   :show-errors:
    november_2020 = Undate(2020, 11)
    november7_2020 > november_2020
 
@@ -117,14 +118,18 @@ and latest date as part of the range.
    after1900 = UndateInterval(Undate(1900))            # after 1900
 
    for interval in [century19, century20, before2000, after1900]:
-       print(repr(interval))
+       print(f"{repr(interval)}\n{interval}\n")
 
 Intervals can calculate duration if enough information is known:
 
 .. pyodide::
-   for interval in [century19, century20]:
-       print(f"{interval.label}: {interval.duration().days} days")
-   print(f"January 2000: {UndateInterval(Undate(2000, 1, 1), Undate(2000, 1, 31)).duration().days} days")
+   jan2000_interval = UndateInterval(
+    Undate(2000, 1, 1),
+    Undate(2000, 1, 31),
+    label="January 2000"
+   )
+   for interval in [century19, century20, jan2000_interval]:
+       print(f"{interval.label}: {interval.duration().days:,} days")
 
 You can initialize ``Undate`` or ``UndateInterval`` objects by parsing a
 date string with a specific converter, and you can also output an
@@ -158,16 +163,16 @@ comparison across dates from different calendars.
    y2k = Undate.parse("2001", "EDTF")
 
    for d in [tammuz4816, rajab495, y2k]:
-       print(repr(d))
+       print(f"{d!s:<10} {repr(d)}")
 
 .. pyodide::
    print("Earliest Gregorian equivalent:")
    for d in [rajab495, tammuz4816, y2k]:
-       print(f"  {str(d):<30} earliest: {d.earliest}")
+       print(f"  {str(d):<20} earliest: {d.earliest}")
 
    print("\nPrecision:")
    for d in [rajab495, tammuz4816, y2k]:
-       print(f"  {str(d):<30} precision: {d.precision}")
+       print(f"  {str(d):<20} precision: {d.precision}")
 
 .. pyodide::
    print("Sorted by Gregorian date:")
