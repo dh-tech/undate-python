@@ -41,6 +41,9 @@ extensions = [
     "sphinx_pyodide",
 ]
 
+# build static output for noscript fallback
+pyodide_build_output = True
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
 

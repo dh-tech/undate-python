@@ -5,7 +5,7 @@ undate documentation
 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Contents:
 
    readme
@@ -15,6 +15,8 @@ undate documentation
    DEVELOPER_NOTES
    CONTRIBUTORS
    LICENSE
+
+.. include:: example_usage.rst
 
 Indices and tables
 ==================
