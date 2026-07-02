@@ -1,13 +1,9 @@
-
 Example Usage
 --------------
 
 Often humanities and cultural data include imprecise or uncertain temporal information. We want to store that information but also work with it in a structured way, not just treat it as text for display. Different projects may need to work with or convert between different date formats or even different calendars.
 
 An ``undate.Undate`` is analogous to python’s builtin ``datetime.date`` object, but with support for varying degrees of precision and unknown information. You can initialize an ``Undate`` with either strings or numbers for whichever parts of the date are known or partially known. An ``Undate`` can take an optional label.
-
-.. note::
-   These are examples are written to run live in the browser with `Pyodide <https://pyodide.org/>`_ and `sphinx-pyodide <https://github.com/rlskoeser/sphinx-pyodide>`_.
 
 .. pyodide::
    :packages: ./wheels/PyMeeus-0.5.12-py3-none-any.whl,./wheels/undate-0.8.0.dev0-py3-none-any.whl
