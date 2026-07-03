@@ -52,7 +52,7 @@ classifiers = [
 
 [dependency-groups]
 docs = [
-    "sphinx>=7.0.0",
+    "sphinx>=8.0.0",
     "furo",
     "myst-parser",
     "myst-parser[linkify]",
@@ -67,7 +67,6 @@ dev = [
     "wheel",
     "build",
     "sphinx-autobuild>=2024.10.3",
-    "sphinx-pyodide",
     { include-group = "test" },
     { include-group = "check" },
     { include-group = "docs" },
