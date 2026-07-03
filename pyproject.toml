@@ -51,7 +51,13 @@ classifiers = [
 ]
 
 [dependency-groups]
-docs = ["sphinx>=7.0.0", "furo", "myst-parser", "myst-parser[linkify]"]
+docs = [
+    "sphinx>=7.0.0",
+    "furo",
+    "myst-parser",
+    "myst-parser[linkify]",
+    "sphinx-pyodide",
+]
 test = ["pytest>=9", "pytest-ordering", "pytest-cov"]
 notebooks = ["jupyterlab", "pandas", "treon", "altair"]
 check = [ { include-group = "docs" }, {include-group = "notebooks"}, "mypy", "ruff"]
