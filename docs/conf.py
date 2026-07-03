@@ -20,7 +20,7 @@ import undate
 # -- Project information -----------------------------------------------------
 
 project = "undate"
-copyright = "2024, DHtech"
+copyright = "2026, DHtech"
 author = "DHtech Community"
 
 # The full version, including alpha/beta/rc tags
