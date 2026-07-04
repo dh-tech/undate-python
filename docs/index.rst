@@ -1,8 +1,15 @@
 undate
 ======
 
-.. image:: _static/undate_logo.png
+.. image:: _static/undate_logo.svg
    :alt: undate
+   :width: 350px
+   :class: only-light
+
+.. image:: _static/undate_logo_dark.svg
+   :alt: undate
+   :width: 350px
+   :class: only-dark
 
 **undate** is a Python library for working with uncertain or partially known dates.
 
