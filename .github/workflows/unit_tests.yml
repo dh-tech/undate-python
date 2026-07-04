@@ -42,8 +42,8 @@ jobs:
         uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
         with:
           python-version: ${{ matrix.python }}
-          cache: "pip"
-          cache-dependency-path: "**/pyproject.toml"
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
 
       - name: Install package with check dependencies
         run: uv sync --group test
