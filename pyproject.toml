@@ -130,5 +130,6 @@ ignore = []
 # for test files, don't require docstrings or return type annotations
 "tests/**.py" = ["D", "ANN", "RUF"]
 
-[tool.uv.sources]
-sphinx-pyodide = { path = "../sphinx-pyodide", editable = true }
+# uncomment for local development of sphinx-pyodide
+#[tool.uv.sources]
+#sphinx-pyodide = { path = "../sphinx-pyodide", editable = true }
