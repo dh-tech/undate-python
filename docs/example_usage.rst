@@ -87,8 +87,8 @@ can also compare with python ``datetime.date`` objects.
    jan2001 = date(2001, 1, 1)
 
    print(f"{november7_2020!s:>10} before {november_2001!s:<10} ? {yes_no[november7_2020 > november_2001]}")
-   print(f"{year2k!s:>10} before {ad100!s:<10} ? {yes_no[year2k > ad100]}")
-   print(f"{year2k!s:>10}  after {jan2001} ? {yes_no[year2k > jan2001]}")
+   print(f"{year2k!s:>10} after {ad100!s:<10} ? {yes_no[year2k > ad100]}")
+   print(f"{year2k!s:>10} after {jan2001} ? {yes_no[year2k > jan2001]}")
 
 
 When dates cannot be compared due to ambiguity or precision, comparison
