@@ -2,7 +2,7 @@ files: \.py
 repos:
   # ruff for linting and formatting python
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.12
+    rev: v0.15.22
     hooks:
       - id: ruff-check
         args: [ --fix, --show-fixes, --exit-non-zero-on-fix ]
@@ -22,7 +22,7 @@ repos:
         args: [--pytest-test-first]
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v2.0.0
+    rev: v2.3.0
     hooks:
       - id: mypy
         additional_dependencies: [numpy]
@@ -33,7 +33,7 @@ repos:
       - id: yamlfmt
   # Codespell for spell checking
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.4.2
+    rev: v2.4.3
     hooks:
       - id: codespell
         additional_dependencies:
