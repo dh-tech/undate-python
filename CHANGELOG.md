@@ -7,6 +7,7 @@
   - Readme now provides a quick start and a link to usage examples in the documentation
   - Usage examples provide better coverage of current functionality
 
+- Now tested against python 3.14
 - Updates to pre-commit hook versions, GitHub Action versions
 - Updates to comply with new version of ruff linter
 
