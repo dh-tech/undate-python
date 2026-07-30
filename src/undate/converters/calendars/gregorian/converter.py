@@ -53,7 +53,7 @@ class GregorianDateConverter(BaseCalendarConverter):
 
         return max_day
 
-    def representative_years(self, years: None | list[int] = None) -> list[int]:
+    def representative_years(self, years: list[int] | None = None) -> list[int]:
         """Takes a list of years and returns a subset with one leap year and one non-leap year.
         If no years are specified, returns a known leap year and non-leap year.
         """

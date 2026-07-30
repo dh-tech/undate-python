@@ -210,7 +210,7 @@ class TestUndateInterval:
         decade1990s = UndateInterval(Undate(1990), Undate(1999))
         # an interval DOES contain itself
         for interval in [century11th, century20th, decade1990s]:
-            assert interval in interval
+            assert interval in interval  # noqa: PLR0124
 
         # checking if an interval is within another interval
         assert decade1990s in century20th
@@ -252,4 +252,4 @@ class TestUndateInterval:
         assert decade1990s in whenever
         # NOTE: an interval contains itself or an equivalent interval,
         # but that may not make sense for open intervals...
-        assert whenever in whenever
+        assert whenever in whenever  # noqa: PLR0124

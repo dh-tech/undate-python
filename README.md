@@ -63,10 +63,10 @@ november = Undate(2000, 11)
 year2k = Undate(2000)
 partially_known_year = Undate("19XX")
 
-[str(d) for d in [november7, november, year2k, partially_known_year]]
+print([str(d) for d in [november7, november, year2k, partially_known_year]])
 # [‘2000-11-07’, ‘2000-11’, ‘2000’, ‘19XX’]
 
-Undate.parse("Rajab 495", "Islamic")
+print(repr(Undate.parse("Rajab 495", "Islamic")))
 # undate.Undate(year=495, month=7, label="Rajab 495 Islamic", calendar="Islamic")
 ```
 
