@@ -49,7 +49,7 @@ jobs:
 
       # check types with mypy
       - name: Check types in python src directory; install needed types
-        run: uv run mypy --install-types --non-interactive src
+        run: uv run mypy --install-types --non-interactive src --follow-untyped-imports
 
       # use treon to make sure that example notebooks run
       - name: Check jupyter notebooks with treon
