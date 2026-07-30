@@ -59,7 +59,7 @@ class HebrewDateConverter(BaseCalendarConverter):
         """the number of days in the specified year for this calendar"""
         return int(hebrew.year_days(year))
 
-    def representative_years(self, years: None | list[int] = None) -> list[int]:
+    def representative_years(self, years: list[int] | None = None) -> list[int]:
         """Takes a list of years and returns a subset with all possible variations in number of days.
         If no years are specified, returns ...
         """

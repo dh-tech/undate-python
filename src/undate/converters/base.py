@@ -158,9 +158,9 @@ class BaseCalendarConverter(BaseDateConverter):
     LEAP_YEAR: int
 
     # minimum year for this calendar, if there is one
-    MIN_YEAR: None | int = None
+    MIN_YEAR: int | None = None
     # maximum year for this calendar, if there is one
-    MAX_YEAR: None | int = None
+    MAX_YEAR: int | None = None
 
     def min_month(self) -> int:
         """Smallest numeric month for this calendar."""
@@ -195,7 +195,7 @@ class BaseCalendarConverter(BaseDateConverter):
         # add 1 because the difference doesn't include the end point
         return (year_end - year_start).days + 1
 
-    def representative_years(self, years: None | list[int] = None) -> list[int]:
+    def representative_years(self, years: list[int] | None = None) -> list[int]:
         """Returns a list of representative years within the specified list.
         Result should include one for each type of variant year for this
         calendar (e.g., leap year and non-leap year). If no years are specified,

@@ -1,4 +1,4 @@
-from datetime import date, datetime
+import datetime
 from enum import auto
 from unittest import mock
 
@@ -180,11 +180,11 @@ class TestUndate:
             Undate(1990, 22)
 
     def test_to_undate(self):
-        undate_from_date = Undate.to_undate(date(2001, 3, 5))
+        undate_from_date = Undate.to_undate(datetime.date(2001, 3, 5))
         assert isinstance(undate_from_date, Undate)
         assert undate_from_date == Undate(2001, 3, 5)
 
-        now = datetime.now()
+        now = datetime.datetime.now(tz=datetime.timezone.utc)
         undate_from_dt = Undate.to_undate(now)
         assert isinstance(undate_from_dt, Undate)
         assert undate_from_dt == Undate(now.year, now.month, now.day)
@@ -266,13 +266,13 @@ class TestUndate:
 
     def test_eq_datetime_date(self):
         # support comparisons with datetime objects for full day-precision
-        assert Undate(2022, 10, 1) == date(2022, 10, 1)
-        assert Undate(2022, 10, 1) != date(2022, 10, 2)
-        assert Undate(1980, 10, 1) != date(2022, 10, 1)
+        assert Undate(2022, 10, 1) == datetime.date(2022, 10, 1)
+        assert Undate(2022, 10, 1) != datetime.date(2022, 10, 2)
+        assert Undate(1980, 10, 1) != datetime.date(2022, 10, 1)
 
         # other date precisions are not equal
-        assert Undate(2022) != date(2022, 10, 1)
-        assert Undate(2022, 10) != date(2022, 10, 1)
+        assert Undate(2022) != datetime.date(2022, 10, 1)
+        assert Undate(2022, 10) != datetime.date(2022, 10, 1)
 
     def test_not_eq(self):
         assert Undate(2022) != Undate(2023)
@@ -301,8 +301,8 @@ class TestUndate:
         (Undate("19XX"), Undate("20XX")),
         (Undate(1900, "0X"), Undate(1900, "1X")),
         # compare with datetime.date objects
-        (Undate("19XX"), date(2020, 1, 1)),
-        (Undate(1991, 1), date(1992, 3, 4)),
+        (Undate("19XX"), datetime.date(2020, 1, 1)),
+        (Undate(1991, 1), datetime.date(1992, 3, 4)),
     ]
 
     @pytest.mark.parametrize("earlier,later", testdata_lt_gt)
@@ -318,7 +318,7 @@ class TestUndate:
             (Undate(1991, 1), Undate(1991, 1)),
             (Undate(1492, 5, 3), Undate(1492, 5, 3)),
             # compare with datetime.date also
-            (Undate(1492, 5, 3), date(1492, 5, 3)),
+            (Undate(1492, 5, 3), datetime.date(1492, 5, 3)),
         ]
     )
 
@@ -327,8 +327,8 @@ class TestUndate:
         assert not Undate(1900) > Undate(1900)
         assert not Undate(1900) < Undate(1900)
         # same for datetime.date
-        assert not Undate(1903, 1, 5) < date(1903, 1, 5)
-        assert not Undate(1903, 1, 5) > date(1903, 1, 5)
+        assert not Undate(1903, 1, 5) < datetime.date(1903, 1, 5)
+        assert not Undate(1903, 1, 5) > datetime.date(1903, 1, 5)
 
     @pytest.mark.parametrize("earlier,later", testdata_lte_gte)
     def test_lte(self, earlier, later):
@@ -376,8 +376,8 @@ class TestUndate:
         (Undate(2022, 12, 31), Undate(2022)),
         (Undate(2022, 6, 15), Undate(2022, 6)),
         # support contains with datetime.date
-        (date(2022, 6, 1), Undate(2022)),
-        (date(2022, 6, 1), Undate(2022, 6)),
+        (datetime.date(2022, 6, 1), Undate(2022)),
+        (datetime.date(2022, 6, 1), Undate(2022, 6)),
     ]
 
     @pytest.mark.parametrize("date1,date2", testdata_contains)
@@ -393,8 +393,8 @@ class TestUndate:
         (Undate(1980), Undate(2020, 6)),
         (Undate(1980, 6), Undate(2020, 6)),
         # support contains with datetime.date
-        (date(1980, 6, 1), Undate(2022)),
-        (date(3001, 6, 1), Undate(2022, 6)),
+        (datetime.date(1980, 6, 1), Undate(2022)),
+        (datetime.date(3001, 6, 1), Undate(2022, 6)),
         # partially known dates that are similar but same precision,
         # so one does not contain the other
         (Undate("199X"), Undate("19XX")),
@@ -684,6 +684,6 @@ def test_calendar_get_converter():
     # NOTE: this fails because get_converter converts the enum to title case...
     # can't be tested with any of the existing non-calendar converters
     with pytest.raises(
-        ValueError, match="Requested converter 'Dummy' is not a CalendarConverter"
+        TypeError, match="Requested converter 'Dummy' is not a CalendarConverter"
     ):
         Calendar.get_converter(BogusCalendar.DUMMY)

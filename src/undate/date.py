@@ -1,5 +1,5 @@
 import operator
-from collections.abc import Iterable
+from collections.abc import Iterator
 from dataclasses import dataclass, replace
 from enum import IntEnum
 
@@ -49,7 +49,7 @@ class UnInt:
                 f"Lower value ({self.lower}) must be less than upper ({self.upper})"
             )
 
-    def __iter__(self) -> Iterable:
+    def __iter__(self) -> Iterator:
         # yield all integers in range from lower to upper, inclusive
         yield from range(self.lower, self.upper + 1)
 
