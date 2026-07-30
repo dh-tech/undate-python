@@ -1,38 +1,32 @@
 # This workflow will upload a Python Package using Twine when a release is created
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python#publishing-to-package-registries
-
 # This workflow uses actions that are not certified by GitHub.
 # They are provided by a third-party and are governed by
 # separate terms of service, privacy policy, and support
 # documentation.
-
 name: Upload Python Package
-
 on:
   release:
     types: [published]
   # allow manually running on main
   workflow_dispatch:
-
 permissions:
   contents: read
-
+  id-token: write # IMPORTANT: this permission is mandatory for trusted publishing
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - name: Set up uv
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        # use python version in .python-version, currently 3.12
         with:
-          python-version: "3.12"
+          enable-cache: false
       - name: Build package
         run: uv build
       - name: Publish package
         uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2
-        with:
-          user: __token__
-          password: ${{ secrets.PYPI_API_TOKEN }}
+        # configured to use trusted publishing

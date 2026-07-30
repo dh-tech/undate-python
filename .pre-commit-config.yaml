@@ -1,8 +1,7 @@
-files: \.py
 repos:
   # ruff for linting and formatting python
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: cb8c523fd4835aba42af70f4cad5568db4df0b6c  # frozen: v0.16.0
+    rev: cb8c523fd4835aba42af70f4cad5568db4df0b6c # frozen: v0.16.0
     hooks:
       - id: ruff-check
         args: [--fix, --show-fixes, --exit-non-zero-on-fix]
@@ -20,13 +19,11 @@ repos:
       - id: check-yaml
       - id: name-tests-test
         args: [--pytest-test-first]
-
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: 41e691678310dfd3833f7ab4e180ddb014310356  # frozen: v2.3.0
+    rev: 41e691678310dfd3833f7ab4e180ddb014310356 # frozen: v2.3.0
     hooks:
       - id: mypy
         additional_dependencies: [numpy]
-
   # yamlfmt for formatting YAML files
   - repo: https://github.com/google/yamlfmt
     rev: b5ca1890231d5e1e5181fef75a1be609d1e25029 # frozen: v0.21.0
@@ -34,7 +31,7 @@ repos:
       - id: yamlfmt
   # Codespell for spell checking
   - repo: https://github.com/codespell-project/codespell
-    rev: 57b21406f092110c18776e39b0bda50d37c945c8  # frozen: v2.4.3
+    rev: 57b21406f092110c18776e39b0bda50d37c945c8 # frozen: v2.4.3
     hooks:
       - id: codespell
         additional_dependencies:
@@ -45,3 +42,9 @@ repos:
     rev: 76a805bbfcba3506d6cdb4bba1810ab504e0d72b # frozen: v0.9.0
     hooks:
       - id: action-validator
+  # Security-focused GitHub Actions static analysis tool
+  - repo: https://github.com/zizmorcore/zizmor-pre-commit
+    rev: 9257c6050c0261b8c57e712f632dc4a8010109a9 # frozen: v1.25.2
+    hooks:
+      - id: zizmor
+        args: [--fix=safe] # enable safe fixes
