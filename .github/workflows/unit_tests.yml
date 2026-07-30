@@ -13,8 +13,10 @@ on:
     branches:
       - "**"
     paths:
-      - "undate/**"
+      - "src/undate/**"
       - "tests/**"
+      - "pyproject.toml"
+      - "uv.lock"
   pull_request:
     branches:
       - "**"

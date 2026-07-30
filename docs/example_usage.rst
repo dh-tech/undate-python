@@ -86,7 +86,7 @@ can also compare with python ``datetime.date`` objects.
 
    jan2001 = date(2001, 1, 1)
 
-   print(f"{november7_2020!s:>10} before {november_2001!s:<10} ? {yes_no[november7_2020 > november_2001]}")
+   print(f"{november7_2020!s:>10} before {november_2001!s:<10} ? {yes_no[november7_2020 < november_2001]}")
    print(f"{year2k!s:>10} after {ad100!s:<10} ? {yes_no[year2k > ad100]}")
    print(f"{year2k!s:>10} after {jan2001} ? {yes_no[year2k > jan2001]}")
 
@@ -114,8 +114,8 @@ and latest date as part of the range.
 
    century19 = UndateInterval(Undate(1801), Undate(1900), label="19th century")
    century20 = UndateInterval(Undate(1901), Undate(2000), label="20th century")
-   before2000 = UndateInterval(latest=Undate(2000))   # before 2000
-   after1900 = UndateInterval(Undate(1900))            # after 1900
+   before2000 = UndateInterval(latest=Undate(1999))   # before 2000
+   after1900 = UndateInterval(Undate(1901))            # after 1900
 
    for interval in [century19, century20, before2000, after1900]:
        print(f"{repr(interval)}\n{interval}\n")
@@ -199,23 +199,23 @@ comparison across dates from different calendars.
 .. pyodide::
    tammuz4816 = Undate.parse("26 Tammuz 4816", "Hebrew")
    rajab495 = Undate.parse("Rajab 495", "Islamic")
-   y2k = Undate.parse("2001", "EDTF")
+   y2k1 = Undate.parse("2001", "EDTF")
 
-   for d in [tammuz4816, rajab495, y2k]:
+   for d in [tammuz4816, rajab495, y2k1]:
        print(f"{d!s:<10} {repr(d)}")
 
 .. pyodide::
    print("Earliest Gregorian equivalent:")
-   for d in [rajab495, tammuz4816, y2k]:
+   for d in [rajab495, tammuz4816, y2k1]:
        print(f"  {str(d):<20} earliest: {d.earliest}")
 
    print("\nPrecision:")
-   for d in [rajab495, tammuz4816, y2k]:
+   for d in [rajab495, tammuz4816, y2k1]:
        print(f"  {str(d):<20} precision: {d.precision}")
 
 .. pyodide::
    print("Sorted by Gregorian date:")
-   for d in sorted([rajab495, tammuz4816, y2k]):
+   for d in sorted([rajab495, tammuz4816, y2k1]):
        print(f"  {repr(d)}")
 
 Try it yourself

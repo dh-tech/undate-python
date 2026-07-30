@@ -7,8 +7,8 @@
 > [!NOTE]
 > This is beta software; it is still in development and not fully feature complete. If you use it, please let us know and share your feedback.
 
-
 Currently `undate` supports parsing, formatting, and reasoning with dates in varying precision and calendars; dates with different precision and from different original calendars can be used together. Supported formats include:
+
 - portions of **EDTF** (Extended Date Time Format)
 - **ISO8601**
 - parsing and calendar conversion for dates in **Hebrew Anno Mundi** and **Islamic Hijri** calendars
@@ -63,10 +63,10 @@ november = Undate(2000, 11)
 year2k = Undate(2000)
 partially_known_year = Undate("19XX")
 
-[str(d) for d in [november7, november, year2k, partially_known_year]]
+print([str(d) for d in [november7, november, year2k, partially_known_year]])
 # [‘2000-11-07’, ‘2000-11’, ‘2000’, ‘19XX’]
 
-Undate.parse("Rajab 495", "Islamic")
+print(repr(Undate.parse("Rajab 495", "Islamic")))
 # undate.Undate(year=495, month=7, label="Rajab 495 Islamic", calendar="Islamic")
 ```
 
@@ -80,22 +80,20 @@ For instructions on setting up for local development, see [Developer Notes](DEVE
 
 See [Contributors](CONTRIBUTORS.md) for more detailed information about contributors.
 
-
 ## Publications & Presentations
 
-* Rebecca Sutton Koeser, Julia Damerow, Robert Casties, and Cole Crawford.  “[Undate: Humanistic Dates for Computation](https://doi.org/10.1017/chr.2025.10006).”  Software paper published in _Computational Humanities Research_, August 5, 2025.
-* Rebecca Sutton Koeser. “[Undate: Computing with Uncertain and Partially-Unknown Dates](https://doi.org/10.5281/zenodo.17253974).” Computational notebook presented at USRSE’25. October 6, 2025.
-* Rebecca Sutton Koeser. “[Undate in Action](https://rlskoeser.github.io/undate-in-action/).” Presentation at [Digital Humanities Tech Symposium](https://dh-tech.github.io/2025/06/04/digital-humanities-tech-symposium-agenda/), DH2025. July 14, 2025.
-* Rebecca Sutton Koeser. 2025. “[Undate in Action](https://doi.org/10.63744/SFtXXpIE4ERh).” In Digital Humanities Tech Symposium 2025—Anthology of Computers and the Humanities, edited by Julia Damerow and Rebecca Sutton Koeser, vol. 2.
-* Rebecca Sutton Koeser. [Join me for a DHTech hackathon? It’s an un-date!](https://dh-tech.github.io/blog/2023/02/09/hackathon-undate/) DHTech, February 9, 2023.
+- Rebecca Sutton Koeser, Julia Damerow, Robert Casties, and Cole Crawford. “[Undate: Humanistic Dates for Computation](https://doi.org/10.1017/chr.2025.10006).” Software paper published in _Computational Humanities Research_, August 5, 2025.
+- Rebecca Sutton Koeser. “[Undate: Computing with Uncertain and Partially-Unknown Dates](https://doi.org/10.5281/zenodo.17253974).” Computational notebook presented at USRSE’25. October 6, 2025.
+- Rebecca Sutton Koeser. “[Undate in Action](https://rlskoeser.github.io/undate-in-action/).” Presentation at [Digital Humanities Tech Symposium](https://dh-tech.github.io/2025/06/04/digital-humanities-tech-symposium-agenda/), DH2025. July 14, 2025.
+- Rebecca Sutton Koeser. 2025. “[Undate in Action](https://doi.org/10.63744/SFtXXpIE4ERh).” In Digital Humanities Tech Symposium 2025—Anthology of Computers and the Humanities, edited by Julia Damerow and Rebecca Sutton Koeser, vol. 2.
+- Rebecca Sutton Koeser. [Join me for a DHTech hackathon? It’s an un-date!](https://dh-tech.github.io/blog/2023/02/09/hackathon-undate/) DHTech, February 9, 2023.
 
 ## Related Projects
 
 - ISO8601 date support and dates with unknown years, including duration, adapted from [Shakespeare and Company Project](https://shakespeareandco.princeton.edu/) ([codebase](https://github.com/Princeton-CDH/mep-django))
-- Parsing and calendar conversion for Hebrew Anno Mundi and Islamic Hijri calendars adapted from [Princeton Geniza Project (PGP)](https://geniza.princeton.edu/) ([codebase](https://github.com/Princeton-CDH/geniza/)); improved and verified with data and logic from the [Islamic Scientific Manuscripts Initiative (ISMI)](https://ismi.mpiwg-berlin.mpg.de/) 
+- Parsing and calendar conversion for Hebrew Anno Mundi and Islamic Hijri calendars adapted from [Princeton Geniza Project (PGP)](https://geniza.princeton.edu/) ([codebase](https://github.com/Princeton-CDH/geniza/)); improved and verified with data and logic from the [Islamic Scientific Manuscripts Initiative (ISMI)](https://ismi.mpiwg-berlin.mpg.de/)
 - Parsing for dates in African languages inspired by work on and partially checked against data from [MasakhaNER](https://github.com/masakhane-io/masakhane-ner)
 - Parsing and calendar conversion for Christian liturgical holidays adapted from work on [Hale/Eliot Letters project](https://cdh.princeton.edu/projects/haleeliot-letters/)
-
 
 ## License
 
