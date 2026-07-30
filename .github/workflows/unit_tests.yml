@@ -24,6 +24,10 @@ on:
 env:
   # python version used to calculate and submit code coverage
   COV_PYTHON_VERSION: "3.12"
+  # Prevent uv from including develop dependencies by default
+  UV_NO_DEV: 1
+  # Prevent uv run from syncing by default
+  UV_NO_SYNC: 1
 
 jobs:
   python-unit:
