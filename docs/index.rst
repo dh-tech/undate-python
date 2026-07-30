@@ -91,6 +91,7 @@ To install a development version or specific branch:
    CONTRIBUTING
    DEVELOPER_NOTES
    CONTRIBUTORS
+   CHANGELOG
    LICENSE
 
 Indices and tables
