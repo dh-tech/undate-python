@@ -1,4 +1,4 @@
-from convertdate import islamic  # type: ignore
+from convertdate import islamic
 from lark.exceptions import UnexpectedInput
 
 from undate import Undate, UndateInterval
@@ -25,7 +25,7 @@ class IslamicDateConverter(BaseCalendarConverter):
     LEAP_YEAR: int = 1458
 
     # minimum year for islamic calendar is 1 AH, does not go negative
-    MIN_YEAR: None | int = 1
+    MIN_YEAR: int | None = 1
     # convertdate gives a month 34 for numpy max year 2.5^16, so scale it back a bit
     MAX_YEAR = int(2.5e12)
 
@@ -44,7 +44,7 @@ class IslamicDateConverter(BaseCalendarConverter):
         """maximum numeric month for this calendar"""
         return 12
 
-    def representative_years(self, years: None | list[int] = None) -> list[int]:
+    def representative_years(self, years: list[int] | None = None) -> list[int]:
         """Takes a list of years and returns a subset with one leap year and one non-leap year.
         If no years are specified, returns a known leap year and non-leap year.
         """

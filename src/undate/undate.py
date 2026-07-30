@@ -40,7 +40,7 @@ class Calendar(StrEnum):
         except KeyError as err:
             raise ValueError(f"Unknown calendar '{calendar}'") from err
         if not issubclass(converter_cls, BaseCalendarConverter):
-            raise ValueError(
+            raise TypeError(
                 f"Requested converter '{calendar.value.title()}' is not a CalendarConverter"
             )
         return converter_cls()

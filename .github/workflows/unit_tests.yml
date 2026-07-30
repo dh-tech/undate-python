@@ -13,8 +13,10 @@ on:
     branches:
       - "**"
     paths:
-      - 'undate/**'
-      - 'tests/**'
+      - "src/undate/**"
+      - "tests/**"
+      - "pyproject.toml"
+      - "uv.lock"
   pull_request:
     branches:
       - "**"
@@ -28,21 +30,21 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: ["3.10", "3.11", "3.12", "3.13"]
+        python: ["3.10", "3.11", "3.12", "3.13", "3.14"]
     defaults:
       run:
         working-directory: .
 
     steps:
-      - uses: actions/checkout@v5
-
-      # use github python action instead of uv to take advantage of caching
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - name: Set up Python ${{ matrix.python }}
-        uses: astral-sh/setup-uv@v8.1.0
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
           python-version: ${{ matrix.python }}
-          cache: 'pip'
-          cache-dependency-path: '**/pyproject.toml'
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
 
       - name: Install package with check dependencies
         run: uv sync --group test
@@ -58,8 +60,7 @@ jobs:
         if: ${{ matrix.python == env.COV_PYTHON_VERSION }}
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@0fb7174895f61a3b6b78fc075e0cd60383518dac # v5.5.5
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         if: ${{ matrix.python == env.COV_PYTHON_VERSION }}
-

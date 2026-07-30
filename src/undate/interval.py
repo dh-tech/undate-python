@@ -145,9 +145,9 @@ class UndateInterval:
             try:
                 other = Undate.to_undate(other)
                 other_latest = other_earliest = other
-            except TypeError:
+            except TypeError as err:
                 # if conversion fails, then we don't support comparison
-                raise
+                raise TypeError(f"Comparison not supported with {other}") from err
 
         # if either bound of the current interval is None,
         # then it is an open interval and we don't need to check the other value.

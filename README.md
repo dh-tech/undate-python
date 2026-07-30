@@ -7,20 +7,19 @@
 > [!NOTE]
 > This is beta software; it is still in development and not fully feature complete. If you use it, please let us know and share your feedback.
 
-
 Currently `undate` supports parsing, formatting, and reasoning with dates in varying precision and calendars; dates with different precision and from different original calendars can be used together. Supported formats include:
-- portions of EDTF (Extended Date Time Format)
-- ISO8601
-- parsing and calendar conversion for dates in Hebrew Anno Mundi and Islamic Hijri calendars
-- Gregorian dates with full or abbreviated month names in any order for multiple languages (English, Spanish, French, German, Kinyarwanda, Ganda, Tigrinya)
-- Christian liturgical dates (fixed holidays and movable feasts)
+
+- portions of **EDTF** (Extended Date Time Format)
+- **ISO8601**
+- parsing and calendar conversion for dates in **Hebrew Anno Mundi** and **Islamic Hijri** calendars
+- **Gregorian** dates with full or abbreviated month names in any order for multiple languages (English, Spanish, French, German, Kinyarwanda, Ganda, Tigrinya)
+- **Christian liturgical** dates (fixed holidays and movable feasts)
 
 For unambiguous dates, there is an experimental omnibus parser which combines all available dates (bare years are currently assumed to be Gregorian calendar).
 
 For more about the origin and goals of `undate`, read our 2025 software paper:
 
-> Rebecca Sutton Koeser, Julia Damerow, Robert Casties, and Cole Crawford. “[Undate: Humanistic Dates for Computation](https://doi.org/10.1017/chr.2025.10006).” _Computational Humanities Research_, August 5, 2025.
-
+> Rebecca Sutton Koeser, Julia Damerow, Robert Casties, and Cole Crawford. "[Undate: Humanistic Dates for Computation](https://doi.org/10.1017/chr.2025.10006)." _Computational Humanities Research_, August 5, 2025.
 
 ---
 
@@ -30,8 +29,6 @@ For more about the origin and goals of `undate`, read our 2025 software paper:
 [![unit tests](https://github.com/dh-tech/undate-python/actions/workflows/unit_tests.yml/badge.svg)](https://github.com/dh-tech/undate-python/actions/workflows/unit_tests.yml)
 [![codecov](https://codecov.io/gh/dh-tech/undate-python/branch/main/graph/badge.svg?token=GE7HZE8C9D)](https://codecov.io/gh/dh-tech/undate-python)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
-
-Project documentation is [available on ReadTheDocs](https://undate-python.readthedocs.io/en/latest/).
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 
@@ -54,198 +51,26 @@ Use the `@name` notation to specify the branch or tag; e.g., to install developm
 pip install git+https://github.com/dh-tech/undate-python@develop#egg=undate
 ```
 
-## Example Usage
+## Quick Start
 
-Often humanities and cultural data include imprecise or uncertain
-temporal information. We want to store that information but also work
-with it in a structured way, not just treat it as text for display.
-Different projects may need to work with or convert between different
-date formats or even different calendars.
-
-An `undate.Undate` is analogous to python’s builtin `datetime.date`
-object, but with support for varying degrees of precision and unknown
-information. You can initialize an `Undate` with either strings or
-numbers for whichever parts of the date are known or partially known.
-An `Undate` can take an optional label.
+An `Undate` is analogous to python’s `datetime.date` but supports varying degrees of precision and unknown information. Initialize with strings or numbers for whichever parts of the date are known:
 
 ```python
-from undate import Undate
+from undate import Undate, UndateInterval
 
 november7 = Undate(2000, 11, 7)
 november = Undate(2000, 11)
 year2k = Undate(2000)
-november7_some_year = Undate(month=11, day=7)
-
 partially_known_year = Undate("19XX")
-partially_known_month = Undate(2022, "1X")
 
-easter1916 = Undate(1916, 4, 23, label="Easter 1916")
+print([str(d) for d in [november7, november, year2k, partially_known_year]])
+# [‘2000-11-07’, ‘2000-11’, ‘2000’, ‘19XX’]
+
+print(repr(Undate.parse("Rajab 495", "Islamic")))
+# undate.Undate(year=495, month=7, label="Rajab 495 Islamic", calendar="Islamic")
 ```
 
-You can convert an `Undate` to string using a date formatter (current default is ISO8601):
-
-```python
->>> [str(d) for d in [november7, november, year2k, november7_some_year]]
-['2000-11-07', '2000-11', '2000', '--11-07']
-```
-
-If enough information is known, an `Undate` object can report on its duration:
-
-```python
->>> december = Undate(2000, 12)
->>> feb_leapyear = Undate(2024, 2)
->>> feb_regularyear = Undate(2023, 2)
->>> for d in [november7, november, december, year2k, november7_some_year, feb_regularyear, feb_leapyear]:
-...    print(f"{d}  - duration in days: {d.duration().days}")
-...
-2000-11-07  - duration in days: 1
-2000-11  - duration in days: 30
-2000-12  - duration in days: 31
-2000  - duration in days: 366
---11-07  - duration in days: 1
-2023-02  - duration in days: 28
-2024-02  - duration in days: 29
-```
-
-If enough of the date is known and the precision supports it, you can
-check if one date falls within another date:
-
-```python
->>> november7 = Undate(2000, 11, 7)
->>> november2000 = Undate(2000, 11)
->>> year2k = Undate(2000)
->>> ad100 = Undate(100)
->>> november7 in november
-True
->>> november2000 in year2k
-True
->>> november7 in year2k
-True
->>> november2000 in ad100
-False
->>> november7 in ad100
-False
-```
-
-For dates that are imprecise or partially known, `undate` calculates
-earliest and latest possible dates for comparison purposes so you can
-sort dates and compare with equals, greater than, and less than. You
-can also compare with python `datetime.date` objects.
-
-```python 
->>> november7_2020 = Undate(2020, 11, 7)
->>> november_2001 = Undate(2001, 11)
->>> year2k = Undate(2000)
->>> ad100 = Undate(100)
->>> sorted([november7_2020, november_2001, year2k, ad100])
-[undate.Undate(year=100, calendar="Gregorian"), undate.Undate(year=2000, calendar="Gregorian"), undate.Undate(year=2001, month=11, calendar="Gregorian"), undate.Undate(year=2020, month=11, day=7, calendar="Gregorian")]
->>> november7_2020 > november_2001
-True
->>> year2k < ad100
-False
->>> from datetime import date
->>> year2k > date(2001, 1, 1)
-False
-```
-
-When dates cannot be compared due to ambiguity or precision, comparison
-methods raise a `NotImplementedError`.
-
-```python
->>> november_2020 = Undate(2020, 11)
->>> november7_2020 > november_2020
-Traceback (most recent call last):
-  File "<stdin>", line 1, in <module>
-  File "/Users/rkoeser/workarea/github/undate-python/src/undate/undate.py", line 262, in __gt__
-    return not (self < other or self == other)
-  File "/Users/rkoeser/workarea/github/undate-python/src/undate/undate.py", line 245, in __lt__
-    raise NotImplementedError(
-NotImplementedError: Can't compare when one date falls within the other
-```
-
-An `UndateInterval` is a date range between two `Undate` objects.
-Intervals can be open-ended, allow for optional labels, and can
-calculate duration if enough information is known. `UndateIntervals`
-are inclusive (i.e., a closed interval), and include both the earliest
-and latest date as part of the range.
-
-```python
->>> from undate import UndateInterval
->>> UndateInterval(Undate(1900), Undate(2000))
-undate.UndateInterval(earliest=undate.Undate(year=1900, calendar="Gregorian"), latest=undate.Undate(year=2000, calendar="Gregorian"))
->>> UndateInterval(Undate(1801), Undate(1900), label="19th century")
-undate.UndateInterval(earliest=undate.Undate(year=1801, calendar="Gregorian"), latest=undate.Undate(year=1900, calendar="Gregorian"), label="19th century")
->>> UndateInterval(Undate(1801), Undate(1900), label="19th century").duration().days
-36524
->>> UndateInterval(Undate(1901), Undate(2000), label="20th century")
-undate.UndateInterval(earliest=undate.Undate(year=1901, calendar="Gregorian"), latest=undate.Undate(year=2000, calendar="Gregorian"), label="20th century")
->>> UndateInterval(latest=Undate(2000))  # before 2000
-undate.UndateInterval(latest=undate.Undate(year=2000, calendar="Gregorian"))
->>> UndateInterval(Undate(1900))  # after 1900
-undate.UndateInterval(earliest=undate.Undate(year=1900, calendar="Gregorian"))
->>> UndateInterval(Undate(1900), Undate(2000), label="19th century").duration().days
-36890
->>> UndateInterval(Undate(2000, 1, 1), Undate(2000, 1,31)).duration().days
-31
-```
-
-You can initialize `Undate` or `UndateInterval` objects by parsing a
-date string with a specific converter, and you can also output an
-`Undate` object in those formats. Currently available converters
-are "ISO8601" and "EDTF" and supported calendars.
-
-```python
->>> from undate import Undate
->>> Undate.parse("2002", "ISO8601")
-undate.Undate(year=2002, calendar="Gregorian")
->>> Undate.parse("2002-05", "EDTF")
-undate.Undate(year=2002, month=5, calendar="Gregorian")
->>> Undate.parse("--05-03", "ISO8601")
-undate.Undate(month=5, day=3, calendar="Gregorian")
->>> Undate.parse("--05-03", "ISO8601").format("EDTF")
-'XXXX-05-03'
->>> Undate.parse("1800/1900", format="EDTF")
-undate.UndateInterval(earliest=undate.Undate(year=1800, calendar="Gregorian"), latest=undate.Undate(year=1900, calendar="Gregorian"))
-```
-
-### Calendars
-
-All `Undate` objects are calendar aware, and date converters include
-support for parsing and working with dates from other calendars. The
-Gregorian calendar is used by default; currently `undate` supports the
-Islamic Hijri calendar and the Hebrew Anno Mundi calendar based on
-calendar conversion logic implemented in the
-[convertdate](https://convertdate.readthedocs.io/en/latest/) package.
-
-Dates are stored with the year, month, day and appropriate precision for
-the original calendar; internally, earliest and latest dates are
-calculated in Gregorian / Proleptic Gregorian calendar for standardized
-comparison across dates from different calendars.
-
-```python
->>> from undate import Undate
->>> tammuz4816 = Undate.parse("26 Tammuz 4816", "Hebrew")
->>> tammuz4816
-undate.Undate(year=4816, month=4, day=26, label="26 Tammuz 4816 Anno Mundi", calendar="Hebrew")
->>> rajab495 = Undate.parse("Rajab 495", "Islamic")
->>> rajab495
-undate.Undate(year=495, month=7, label="Rajab 495 Islamic", calendar="Islamic")
->>> y2k = Undate.parse("2001", "EDTF")
->>> y2k
-undate.Undate(year=2001, calendar="Gregorian")
->>> [str(d.earliest) for d in [rajab495, tammuz4816, y2k]]
-['1102-04-28', '1056-07-17', '2001-01-01']
->>> [str(d.precision) for d in [rajab495, tammuz4816, y2k]]
-['MONTH', 'DAY', 'YEAR']
->>> sorted([rajab495, tammuz4816, y2k])
-[undate.Undate(year=4816, month=4, day=26, label="26 Tammuz 4816 Anno Mundi", calendar="Hebrew"), undate.Undate(year=495, month=7, label="Rajab 495 Islamic", calendar="Islamic"), undate.Undate(year=2001, calendar="Gregorian")]
-```
-
----
-
-For more examples, refer to the code notebooks included in the 
-[examples](https://github.com/dh-tech/undate-python/tree/main/examples/) 
-directory in this repository.
+For full examples including duration, comparison, intervals, parsing, and calendar support, see the [interactive documentation](https://undate-python.readthedocs.io/en/latest/).
 
 ## Documentation
 
@@ -255,22 +80,20 @@ For instructions on setting up for local development, see [Developer Notes](DEVE
 
 See [Contributors](CONTRIBUTORS.md) for more detailed information about contributors.
 
-
 ## Publications & Presentations
 
-* Rebecca Sutton Koeser, Julia Damerow, Robert Casties, and Cole Crawford.  “[Undate: Humanistic Dates for Computation](https://doi.org/10.1017/chr.2025.10006).”  Software paper published in _Computational Humanities Research_, August 5, 2025.
-* Rebecca Sutton Koeser. “[Undate: Computing with Uncertain and Partially-Unknown Dates](https://doi.org/10.5281/zenodo.17253974).” Computational notebook presented at USRSE’25. October 6, 2025.
-* Rebecca Sutton Koeser. “[Undate in Action](https://rlskoeser.github.io/undate-in-action/).” Presentation at [Digital Humanities Tech Symposium](https://dh-tech.github.io/2025/06/04/digital-humanities-tech-symposium-agenda/), DH2025. July 14, 2025.
-* Rebecca Sutton Koeser. 2025. “[Undate in Action](https://doi.org/10.63744/SFtXXpIE4ERh).” In Digital Humanities Tech Symposium 2025—Anthology of Computers and the Humanities, edited by Julia Damerow and Rebecca Sutton Koeser, vol. 2.
-* Rebecca Sutton Koeser. [Join me for a DHTech hackathon? It’s an un-date!](https://dh-tech.github.io/blog/2023/02/09/hackathon-undate/) DHTech, February 9, 2023.
+- Rebecca Sutton Koeser, Julia Damerow, Robert Casties, and Cole Crawford. “[Undate: Humanistic Dates for Computation](https://doi.org/10.1017/chr.2025.10006).” Software paper published in _Computational Humanities Research_, August 5, 2025.
+- Rebecca Sutton Koeser. “[Undate: Computing with Uncertain and Partially-Unknown Dates](https://doi.org/10.5281/zenodo.17253974).” Computational notebook presented at USRSE’25. October 6, 2025.
+- Rebecca Sutton Koeser. “[Undate in Action](https://rlskoeser.github.io/undate-in-action/).” Presentation at [Digital Humanities Tech Symposium](https://dh-tech.github.io/2025/06/04/digital-humanities-tech-symposium-agenda/), DH2025. July 14, 2025.
+- Rebecca Sutton Koeser. 2025. “[Undate in Action](https://doi.org/10.63744/SFtXXpIE4ERh).” In Digital Humanities Tech Symposium 2025—Anthology of Computers and the Humanities, edited by Julia Damerow and Rebecca Sutton Koeser, vol. 2.
+- Rebecca Sutton Koeser. [Join me for a DHTech hackathon? It’s an un-date!](https://dh-tech.github.io/blog/2023/02/09/hackathon-undate/) DHTech, February 9, 2023.
 
 ## Related Projects
 
 - ISO8601 date support and dates with unknown years, including duration, adapted from [Shakespeare and Company Project](https://shakespeareandco.princeton.edu/) ([codebase](https://github.com/Princeton-CDH/mep-django))
-- Parsing and calendar conversion for Hebrew Anno Mundi and Islamic Hijri calendars adapted from [Princeton Geniza Project (PGP)](https://geniza.princeton.edu/) ([codebase](https://github.com/Princeton-CDH/geniza/)); improved and verified with data and logic from the [Islamic Scientific Manuscripts Initiative (ISMI)](https://ismi.mpiwg-berlin.mpg.de/) 
+- Parsing and calendar conversion for Hebrew Anno Mundi and Islamic Hijri calendars adapted from [Princeton Geniza Project (PGP)](https://geniza.princeton.edu/) ([codebase](https://github.com/Princeton-CDH/geniza/)); improved and verified with data and logic from the [Islamic Scientific Manuscripts Initiative (ISMI)](https://ismi.mpiwg-berlin.mpg.de/)
 - Parsing for dates in African languages inspired by work on and partially checked against data from [MasakhaNER](https://github.com/masakhane-io/masakhane-ner)
 - Parsing and calendar conversion for Christian liturgical holidays adapted from work on [Hale/Eliot Letters project](https://cdh.princeton.edu/projects/haleeliot-letters/)
-
 
 ## License
 

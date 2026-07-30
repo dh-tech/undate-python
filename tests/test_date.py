@@ -252,7 +252,7 @@ class TestUnDelta:
         # not equal to equivalent undelta range
         assert udelt1 != udelt2
         # equal to self
-        assert udelt1 is udelt1
+        assert udelt1 is udelt1  # noqa: PLR0124
 
     def test_lt(self):
         week_or_tenday = UnDelta(7, 10)
