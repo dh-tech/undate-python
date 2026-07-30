@@ -2,7 +2,6 @@
 # package ecosystems to update and where the package manifests are located.
 # Please see the documentation for all configuration options:
 # https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
-
 version: 2
 updates:
   # Enable version updates for GitHub Actions
@@ -15,7 +14,8 @@ updates:
     schedule:
       # Check for updates to GitHub Actions every week
       interval: "weekly"
-
+    cooldown:
+      default-days: 7
   # Enable version updates for pre-commit hooks
   - package-ecosystem: "pre-commit"
     directory: "/"
@@ -25,3 +25,5 @@ updates:
       pre-commit:
         patterns:
           - "*"
+    cooldown:
+      default-days: 7

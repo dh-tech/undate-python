@@ -1,13 +1,10 @@
 name: unit tests
-
 permissions:
   contents: read
   id-token: write
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-
 on:
   push:
     branches:
@@ -20,7 +17,6 @@ on:
   pull_request:
     branches:
       - "**"
-
 env:
   # python version used to calculate and submit code coverage
   COV_PYTHON_VERSION: "3.12"
@@ -28,7 +24,6 @@ env:
   UV_NO_DEV: 1
   # Prevent uv run from syncing by default
   UV_NO_SYNC: 1
-
 jobs:
   python-unit:
     runs-on: ubuntu-latest
@@ -38,7 +33,6 @@ jobs:
     defaults:
       run:
         working-directory: .
-
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -49,20 +43,16 @@ jobs:
           python-version: ${{ matrix.python }}
           enable-cache: true
           cache-dependency-glob: "uv.lock"
-
       - name: Install package with check dependencies
         run: uv sync --group test
-
       # for all versions but the one we use for code coverage, run normally
       - name: Run unit tests without code coverage
         run: uv run pytest
         if: ${{ matrix.python != env.COV_PYTHON_VERSION }}
-
       # run code coverage in one version only
       - name: Run unit tests with code coverage reporting
         run: uv run pytest --cov=.
         if: ${{ matrix.python == env.COV_PYTHON_VERSION }}
-
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@0fb7174895f61a3b6b78fc075e0cd60383518dac # v5.5.5
         env:

@@ -1,23 +1,17 @@
 name: Check style + docs + types
-
 on:
   pull_request:
-
 permissions:
   contents: read
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-
 jobs:
   check:
     runs-on: ubuntu-latest
-
     defaults:
       run:
         working-directory: .
-
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -28,29 +22,23 @@ jobs:
           python-version: "3.12"
           enable-cache: true
           cache-dependency-glob: "uv.lock"
-
       - name: Install package with check dependencies
         run: uv sync --group check
-
       - name: Run Ruff linter
-        uses: astral-sh/ruff-action@278981a28ce3188b1e39527901f38254bf3aac89b # v4.1.0
+        uses: astral-sh/ruff-action@278981a28ce3188b1e39527901f38254bf3aac89 # v4.1.0
         with:
           args: "check --output-format=github"
-
       - name: Run Ruff formatter
         # NOTE: ruff format does not currently support github output format
         run: ruff format --check --diff  src tests
         # Check formatting even if the previous step failed
         if: always()
-
       # check docs build
       - name: Check that documentation builds with no errors or warnings
         run: uv run sphinx-build docs docs/_build --fail-on-warning
-
       # check types with mypy
       - name: Check types in python src directory; install needed types
         run: uv run mypy --install-types --non-interactive src --follow-untyped-imports
-
       # use treon to make sure that example notebooks run
       - name: Check jupyter notebooks with treon
         run: uv run treon
