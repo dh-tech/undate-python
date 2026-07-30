@@ -14,8 +14,11 @@ permissions:
   contents: read
   id-token: write # IMPORTANT: this permission is mandatory for trusted publishing
 jobs:
-  deploy:
+  python-publish:
     runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/project/undate/
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
