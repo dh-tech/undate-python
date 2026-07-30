@@ -1,4 +1,4 @@
-from convertdate import hebrew  # type: ignore
+from convertdate import hebrew
 from lark.exceptions import UnexpectedInput
 
 from undate import Undate, UndateInterval

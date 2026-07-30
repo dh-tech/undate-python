@@ -1,4 +1,4 @@
-from convertdate import islamic  # type: ignore
+from convertdate import islamic
 from lark.exceptions import UnexpectedInput
 
 from undate import Undate, UndateInterval

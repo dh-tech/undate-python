@@ -121,7 +121,7 @@ class BaseDateConverter:
         """
         Dictionary of available converters keyed on name.
         """
-        return {c.name: c for c in cls.subclasses()}  # type: ignore
+        return {c.name: c for c in cls.subclasses()}
 
     @classmethod
     def subclasses(cls) -> set[type["BaseDateConverter"]]:
