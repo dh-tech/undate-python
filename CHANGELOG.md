@@ -2,6 +2,14 @@
 
 ## 0.8
 
+- **Documentation update**: examples are now rendered with [sphinx-pyodide](https://rlskoeser.github.io/sphinx-pyodide/)
+
+  - Readme now provides a quick start and a link to usage examples in the documentation
+  - Usage examples provide better coverage of current functionality
+
+- Updates to pre-commit hook versions, GitHub Action versions
+- Updates to comply with new version of ruff linter
+
 -
 
 ## 0.7
@@ -13,6 +21,7 @@
 - Updates to pyproject.toml, pre-commit hooks, ruff rules, dependabot configuration
 
 ## 0.6.1
+
 - Updated Read the Docs build to use Ubuntu 24.04
 
 ## 0.6
@@ -23,12 +32,14 @@
 - Update action versions in GitHub Workflows (contributed by @rettinghaus)
 
 ## 0.5.2
+
 - repr for Undate, UndateInterval, and UnDelta now produce fully-qualified, constructor-style strings with deterministic field ordering.
 - Added Undate.unknown_year property and is_unknown() method to check for fully-unknown year/month/day.
 - bugfix: comparisons (eq, gt, lt) and contains (in) now return False when year is unknown
 - bugfix: month durations for non-Gregorian dates now returns an integer when month length is known
 
 ## 0.5.1
+
 - Correct license identifier in CITATION.cff so it is valid
 
 ## 0.5
